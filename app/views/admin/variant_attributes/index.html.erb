@@ -1,0 +1,27 @@
+<% content_for :title, "Preciso — Attributes" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Attributes</h1>
+    <p class="pagehead-sub">Reusable options like Size or Color, used to build product variations.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_variant_attribute_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New attribute</a>
+  </div>
+</div>
+<div class="admin-pad">
+  <% if @attributes.empty? %>
+    <div class="empty-state">No attributes yet.</div>
+  <% else %>
+    <div class="admin-list">
+      <% @attributes.each do |a| %>
+        <a href="<%= edit_admin_variant_attribute_path(a) %>" class="admin-row">
+          <div class="admin-row-main">
+            <div class="admin-row-name"><%= a.name %></div>
+            <div class="admin-row-sub"><%= a.variant_attribute_values.map(&:value).join(", ") %></div>
+          </div>
+          <span class="admin-row-go"><%= icon :arrow, size: 16 %></span>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+</div>
