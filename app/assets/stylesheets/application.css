@@ -557,3 +557,10 @@ a.cat-row:hover{background:var(--paper);}
 .campaign-items { width: 100%; border-collapse: collapse; margin-top: 10px; }
 .campaign-items td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 13px; }
 .input.sm { padding: 6px 8px; font-size: 13px; }
+
+.campaign-banner { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 16px; overflow: hidden; margin: 0 0 50px; background: var(--paper-2); }
+.campaign-banner-frame { position: relative; min-height: 240px; }
+.campaign-banner-text { padding: 40px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.campaign-banner-name { font-size: 30px; font-family: "Cormorant Garamond", serif; }
+.campaign-banner-blurb { color: var(--muted); margin-bottom: 10px; }
+@media (max-width: 720px) { .campaign-banner { grid-template-columns: 1fr; } }

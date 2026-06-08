@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "set/:id", to: "sets#show", as: :product_set
   get "collections", to: "collections#index", as: :collections
   get "collection/:slug", to: "collections#show", as: :collection
+  get "campaign/:slug", to: "campaigns#show", as: :campaign
   get "product/:id", to: "products#show", as: :product
   get "about", to: "pages#about", as: :about
 

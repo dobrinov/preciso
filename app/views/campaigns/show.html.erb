@@ -1,0 +1,23 @@
+<% content_for :title, "Preciso — #{@campaign.name}" %>
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [[@campaign.name, nil]] %>
+  <div class="list-head">
+    <div>
+      <div class="eyebrow clay">Campaign</div>
+      <h1 class="display list-title"><%= @campaign.name %></h1>
+      <p class="list-blurb"><%= @campaign.blurb %></p>
+    </div>
+  </div>
+  <% if @campaign.banner.attached? %>
+    <div class="ratio-box img-frame shop-hero" style="padding-top:32%"><%= image_tag @campaign.banner, alt: @campaign.name, class: "cover-img" %></div>
+  <% end %>
+  <% if @records.empty? %>
+    <div class="empty-state">No items in this campaign.</div>
+  <% else %>
+    <div class="grid-3 shop-grid">
+      <% @records.each do |rec| %>
+        <%= render "shared/product_card", record: rec, kind: rec.kind %>
+      <% end %>
+    </div>
+  <% end %>
+</main>
