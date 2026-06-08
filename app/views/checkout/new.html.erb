@@ -48,7 +48,7 @@
                   <span class="summary-qty"><%= l.qty %></span>
                 </div>
                 <div style="flex:1;min-width:0">
-                  <div class="summary-name"><%= l.record.name %></div>
+                  <div class="summary-name"><%= l.record.name %><% if l.variant %> <span style="color:var(--muted)">· <%= l.variant.label %></span><% end %></div>
                   <div style="font-size:12px;color:var(--muted)"><%= money l.unit_price %><%= " × #{l.qty}" if l.qty > 1 %></div>
                 </div>
                 <div class="serif" style="font-size:16px"><%= money l.subtotal %></div>

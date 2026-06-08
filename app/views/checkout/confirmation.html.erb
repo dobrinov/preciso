@@ -17,7 +17,7 @@
     </div>
     <% @order.order_lines.each do |l| %>
       <div class="confirm-line">
-        <span><%= l.name %> <span style="color:var(--muted)">× <%= l.qty %></span></span>
+        <span><%= l.display_name %> <span style="color:var(--muted)">× <%= l.qty %></span></span>
         <span class="serif" style="font-size:16px"><%= money l.subtotal %></span>
       </div>
     <% end %>
