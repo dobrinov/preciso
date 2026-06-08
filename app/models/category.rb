@@ -1,5 +1,6 @@
 class Category < ApplicationRecord
   has_many :products, dependent: :nullify
+  has_one_attached :image
 
   default_scope { order(:position) }
 
@@ -19,7 +20,7 @@ class Category < ApplicationRecord
     "espresso" => "#e9e2d8",
     "vases" => "#f0ebe4",
     "plates" => "#ece8e1",
-    "set" => "#e7e0d6",
+    "set" => "#e7e0d6"
   }.freeze
 
   def tone

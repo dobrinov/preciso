@@ -532,3 +532,4 @@ a.cat-row:hover{background:var(--paper);}
 .brand-logo { height: 30px; width: auto; display: block; }
 .foot-logo { height: 34px; width: auto; margin-bottom: 14px; }
 .flash-saved{color:var(--clay-deep);font-size:13px;display:flex;align-items:center;gap:6px;}
+.shop-hero { border-radius: 14px; overflow: hidden; margin: 6px 0 30px; }

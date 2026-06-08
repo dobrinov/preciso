@@ -40,7 +40,11 @@
         <% count = c.products.count %>
         <a href="<%= shop_category_path(c.slug) %>" class="cat-tile <%= 'span2' if i.zero? %>">
           <div class="cat-frame <%= i.zero? ? 'wide' : 'square' %>">
-            <%= placeholder(tone: c.tone, caption: "category · #{count} pieces") %>
+            <% if c.image.attached? %>
+              <%= image_tag c.image, alt: c.name, class: "cover-img" %>
+            <% else %>
+              <%= placeholder(tone: c.tone, caption: "category · #{count} pieces") %>
+            <% end %>
             <div class="cat-overlay">
               <div>
                 <div class="cat-name"><%= c.name %></div>

@@ -10,6 +10,12 @@
 
   <%= render "shared/catnav", active: @category.slug %>
 
+  <% if @category.image.attached? %>
+    <div class="ratio-box img-frame shop-hero" style="padding-top:36%">
+      <%= image_tag @category.image, alt: @category.name, class: "cover-img" %>
+    </div>
+  <% end %>
+
   <% if @products.empty? %>
     <div class="empty-state">No pieces in this category yet.</div>
   <% else %>
