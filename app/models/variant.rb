@@ -7,8 +7,13 @@ class Variant < ApplicationRecord
   default_scope { order(:position) }
   validates :price, numericality: { greater_than_or_equal_to: 0 }
 
-  # "Large / Red", ordered by attribute position.
+  # Custom name when set, otherwise the attribute combination.
   def label
+    name.presence || options_label
+  end
+
+  # "Large / Red", ordered by attribute position.
+  def options_label
     variant_attribute_values
       .includes(:variant_attribute)
       .sort_by { |v| v.variant_attribute.position }
