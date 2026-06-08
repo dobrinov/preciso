@@ -40,13 +40,18 @@
 
       <div style="display:flex;gap:12px;margin-top:8px">
         <%= f.submit (is_new ? "Create attribute" : "Save changes"), class: "btn clay" %>
-        <% unless is_new %>
-          <%= button_to admin_variant_attribute_path(@attribute), method: :delete, class: "danger-btn",
-                form: { data: { turbo_confirm: "Delete this attribute? Variations using it will lose those values." } } do %>
-            <%= icon :trash, size: 16 %> Delete
-          <% end %>
-        <% end %>
       </div>
     </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Delete is its own form — must NOT be nested inside the edit form above,
+      or its _method=delete leaks into the edit submit and destroys the record. %>
+  <div class="admin-pad" style="max-width:640px;padding-top:0">
+    <%= button_to admin_variant_attribute_path(@attribute), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this attribute? Variations using it will lose those values." } } do %>
+      <%= icon :trash, size: 16 %> Delete attribute
+    <% end %>
   </div>
 <% end %>
