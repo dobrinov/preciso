@@ -28,7 +28,7 @@
         <div class="ord-num"><%= o.number %></div>
         <div style="min-width:0">
           <div class="ord-customer"><%= o.customer_name %></div>
-          <div class="ord-items"><%= o.order_lines.map { |l| l.name + (l.qty > 1 ? " ×#{l.qty}" : "") }.join(", ") %></div>
+          <div class="ord-items"><%= o.order_lines.map { |l| l.display_name + (l.qty > 1 ? " ×#{l.qty}" : "") }.join(", ") %></div>
         </div>
         <div class="ord-date"><%= time_ago o.created_at %></div>
         <div><%= render "admin/shared/status_pill", status: o.status %></div>

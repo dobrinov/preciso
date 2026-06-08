@@ -1,7 +1,8 @@
-# Session-backed cart. Lines are plain hashes: {"kind"=>, "id"=>, "qty"=>}.
+# Session-backed cart. Lines are plain hashes: {"kind"=>, "id"=>, "variant_id"=>, "qty"=>}.
+# variant_id is nil for sets and variant-less products.
 class Cart
-  # :variant is nil until product variations land (Phase 4 populates it from
-  # the session line and resolves it in #detailed); current_price ignores nil.
+  # A resolved line: record is the live Product/ProductSet, variant the live
+  # Variant (or nil). current_price ignores a nil variant.
   Line = Struct.new(:kind, :id, :qty, :record, :variant, keyword_init: true) do
     def unit_price = record.current_price(variant: variant)
     def subtotal = unit_price * qty
@@ -43,7 +44,15 @@ class Cart
       rec = l["kind"] == "set" ? ProductSet.find_by(id: l["id"]) : Product.find_by(id: l["id"])
       next unless rec
 
-      variant = l["variant_id"].present? ? Variant.find_by(id: l["variant_id"]) : nil
+      # A line that names a variant which no longer exists is dropped, the same
+      # way a deleted product/set drops out — rather than silently falling back
+      # to the product's base price (which would be a wrong charge).
+      if l["variant_id"].present?
+        variant = Variant.find_by(id: l["variant_id"])
+        next unless variant
+      else
+        variant = nil
+      end
       Line.new(kind: l["kind"], id: l["id"], qty: l["qty"].to_i, record: rec, variant: variant)
     end
   end
