@@ -1,17 +1,17 @@
 class CartController < ApplicationController
   def add
-    current_cart.add(params[:kind], params[:id])
+    current_cart.add(params[:kind], params[:id], params[:variant_id])
     @toast = "#{params[:name].presence || 'Item'} added"
     respond
   end
 
   def update
-    current_cart.set_qty(params[:kind], params[:id], params[:qty])
+    current_cart.set_qty(params[:kind], params[:id], params[:qty], params[:variant_id])
     respond
   end
 
   def remove
-    current_cart.remove(params[:kind], params[:id])
+    current_cart.remove(params[:kind], params[:id], params[:variant_id])
     respond
   end
 

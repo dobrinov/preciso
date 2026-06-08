@@ -7,4 +7,8 @@ class OrderLine < ApplicationRecord
   end
 
   def subtotal = price * qty
+
+  def display_name
+    variant_label.present? ? "#{name} — #{variant_label}" : name
+  end
 end

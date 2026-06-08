@@ -16,7 +16,7 @@
       <div class="item">
         <div class="order-thumb"><%= media_for(l.record, kind: l.kind, cover: true) if l.record %></div>
         <div style="flex:1">
-          <div class="order-line-name"><%= l.name %></div>
+          <div class="order-line-name"><%= l.display_name %></div>
           <div class="order-line-meta"><%= l.kind == "set" ? "Set" : "Piece" %> · <%= money l.price %> each</div>
         </div>
         <div class="order-line-qty">×<%= l.qty %></div>

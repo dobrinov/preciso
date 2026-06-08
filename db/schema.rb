@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_124858) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_130616) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -130,6 +130,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_124858) do
     t.integer "price", default: 0, null: false
     t.integer "qty", default: 1, null: false
     t.datetime "updated_at", null: false
+    t.integer "variant_id"
+    t.string "variant_label"
     t.index ["order_id"], name: "index_order_lines_on_order_id"
   end
 

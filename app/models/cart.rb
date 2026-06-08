@@ -14,24 +14,26 @@ class Cart
 
   def raw = @session[:cart]
 
-  def add(kind, id)
+  def add(kind, id, variant_id = nil)
     id = id.to_s
-    line = find(kind, id)
+    variant_id = variant_id.presence&.to_s
+    line = find(kind, id, variant_id)
     if line
       line["qty"] += 1
     else
-      raw << { "kind" => kind, "id" => id, "qty" => 1 }
+      raw << { "kind" => kind, "id" => id, "variant_id" => variant_id, "qty" => 1 }
     end
   end
 
-  def set_qty(kind, id, qty)
-    line = find(kind, id.to_s)
+  def set_qty(kind, id, qty, variant_id = nil)
+    line = find(kind, id.to_s, variant_id.presence&.to_s)
     line["qty"] = qty.to_i if line
     raw.reject! { |l| l["qty"].to_i <= 0 }
   end
 
-  def remove(kind, id)
-    raw.reject! { |l| l["kind"] == kind && l["id"] == id.to_s }
+  def remove(kind, id, variant_id = nil)
+    variant_id = variant_id.presence&.to_s
+    raw.reject! { |l| l["kind"] == kind && l["id"] == id.to_s && l["variant_id"] == variant_id }
   end
 
   def clear = raw.clear
@@ -39,7 +41,10 @@ class Cart
   def detailed
     raw.filter_map do |l|
       rec = l["kind"] == "set" ? ProductSet.find_by(id: l["id"]) : Product.find_by(id: l["id"])
-      Line.new(kind: l["kind"], id: l["id"], qty: l["qty"].to_i, record: rec) if rec
+      next unless rec
+
+      variant = l["variant_id"].present? ? Variant.find_by(id: l["variant_id"]) : nil
+      Line.new(kind: l["kind"], id: l["id"], qty: l["qty"].to_i, record: rec, variant: variant)
     end
   end
 
@@ -49,5 +54,5 @@ class Cart
 
   private
 
-  def find(kind, id) = raw.find { |l| l["kind"] == kind && l["id"] == id }
+  def find(kind, id, variant_id = nil) = raw.find { |l| l["kind"] == kind && l["id"] == id && l["variant_id"] == variant_id }
 end
