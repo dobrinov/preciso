@@ -57,6 +57,8 @@ module Admin
       Array(params[:items]).each do |key, attrs|
         next if attrs[:enabled] != "1"
         kind, id = key.split("-", 2)
+        next unless CampaignItem::KINDS.include?(kind)
+        next unless (kind == "set" ? ProductSet : Product).exists?(id)
         dk = attrs[:discount_kind].presence || "fixed"
         # Skip an enabled row left without its required value rather than
         # raising RecordInvalid (the model requires the value matching dk).

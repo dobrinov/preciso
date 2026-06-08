@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_120504) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_122700) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_120504) do
     t.integer "percent_off"
     t.integer "sale_price"
     t.datetime "updated_at", null: false
+    t.index ["campaign_id", "kind", "item_id"], name: "idx_campaign_items_unique", unique: true
     t.index ["campaign_id"], name: "index_campaign_items_on_campaign_id"
     t.index ["kind", "item_id"], name: "index_campaign_items_on_kind_and_item_id"
   end
