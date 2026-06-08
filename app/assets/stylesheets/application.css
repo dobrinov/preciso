@@ -569,3 +569,7 @@ a.cat-row:hover{background:var(--paper);}
 .value-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 13px; }
 .chip input { accent-color: var(--clay); }
+
+.variant-pick { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.variant-chip input { margin-right: 6px; }
+.variant-chip:has(input:checked) { border-color: var(--clay); background: var(--paper-2); }
