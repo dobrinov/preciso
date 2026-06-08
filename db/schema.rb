@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_130616) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_151001) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -207,6 +207,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_130616) do
 
   create_table "variants", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "name"
     t.integer "position", default: 0
     t.integer "price", default: 0, null: false
     t.integer "product_id", null: false
