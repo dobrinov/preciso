@@ -45,7 +45,7 @@
 
       <div class="field" data-campaign-form-target="all">
         <div class="field-label">Percentage off all products</div>
-        <%= f.number_field :percent_off, value: @campaign.percent_off, min: 1, max: 99, placeholder: "%", class: "input sm", style: "width:90px" %>
+        <%= f.number_field :percent_off, min: 1, max: 99, placeholder: "%", class: "input sm", style: "width:90px" %>
         <div class="field-hint">Applies to every product and set, including future ones. Percentage only.</div>
       </div>
 

@@ -57,6 +57,7 @@ module Admin
     # model validations, then (for selection scope) flags any enabled row left
     # without its required value, so nothing is silently dropped.
     def valid_with_items?(campaign)
+      campaign.percent_off = nil unless campaign.all_products?
       campaign.valid?
       add_item_errors(campaign) unless campaign.all_products?
       campaign.errors.empty?

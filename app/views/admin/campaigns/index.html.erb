@@ -19,7 +19,7 @@
             <div class="admin-row-name"><%= c.name %>
               <% if c.active %><span class="pill" style="background:#e8efe9;color:#5a7060">Active</span><% else %><span class="pill" style="background:#efece8;color:#9a9088">Off</span><% end %>
             </div>
-            <div class="admin-row-sub"><%= c.campaign_items.size %> items · /campaign/<%= c.slug %></div>
+            <div class="admin-row-sub"><%= c.all_products? ? "All products · #{c.percent_off}% off" : "#{c.campaign_items.size} items" %> · /campaign/<%= c.slug %></div>
           </div>
           <span class="admin-row-go"><%= icon :arrow, size: 16 %></span>
         </a>
