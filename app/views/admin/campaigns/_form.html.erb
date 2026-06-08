@@ -33,11 +33,11 @@
         <div class="field-label">Scope</div>
         <div class="value-chips">
           <label class="chip">
-            <%= f.radio_button :all_products, false, checked: !@campaign.all_products?, data: { action: "change->campaign-form#scopeChanged" } %>
+            <%= f.radio_button :all_products, false, data: { action: "change->campaign-form#scopeChanged" } %>
             <span>Selection of products</span>
           </label>
           <label class="chip">
-            <%= f.radio_button :all_products, true, checked: @campaign.all_products?, data: { action: "change->campaign-form#scopeChanged" } %>
+            <%= f.radio_button :all_products, true, data: { action: "change->campaign-form#scopeChanged" } %>
             <span>All products</span>
           </label>
         </div>
@@ -50,31 +50,31 @@
       </div>
 
       <div data-campaign-form-target="selection">
-      <div class="field">
-        <div class="field-label">Discounted items</div>
-        <div class="field-hint">Tick an item, pick a discount type, and enter the value. Products with variations support percentage only.</div>
-        <table class="campaign-items">
-          <% (products.to_a + sets.to_a).each do |rec| %>
-            <% kind = rec.kind %>
-            <% key = "#{kind}-#{rec.id}" %>
-            <% ci = existing[key] %>
-            <tr>
-              <td><%= check_box_tag "items[#{key}][enabled]", "1", ci.present? %></td>
-              <td><%= rec.name %> <span class="mono" style="color:var(--faint)"><%= kind == "set" ? "set" : rec.category&.name %></span></td>
-              <td>
-                <% percent_only = kind == "product" && rec.respond_to?(:has_variants?) && rec.has_variants? %>
-                <%= select_tag "items[#{key}][discount_kind]",
-                      options_for_select(percent_only ? [["% off", "percent"]] : [["Fixed €", "fixed"], ["% off", "percent"]], ci&.discount_kind),
-                      class: "input sm", data: { kind_select: "", action: "change->campaign-form#kindChanged" } %>
-              </td>
-              <td>
-                <%= number_field_tag "items[#{key}][sale_price]", ci&.sale_price, min: 0, placeholder: "€", class: "input sm js-fixed", style: "width:90px" %>
-                <%= number_field_tag "items[#{key}][percent_off]", ci&.percent_off, min: 1, max: 99, placeholder: "%", class: "input sm js-percent", style: "width:70px" %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
-      </div>
+        <div class="field">
+          <div class="field-label">Discounted items</div>
+          <div class="field-hint">Tick an item, pick a discount type, and enter the value. Products with variations support percentage only.</div>
+          <table class="campaign-items">
+            <% (products.to_a + sets.to_a).each do |rec| %>
+              <% kind = rec.kind %>
+              <% key = "#{kind}-#{rec.id}" %>
+              <% ci = existing[key] %>
+              <tr>
+                <td><%= check_box_tag "items[#{key}][enabled]", "1", ci.present? %></td>
+                <td><%= rec.name %> <span class="mono" style="color:var(--faint)"><%= kind == "set" ? "set" : rec.category&.name %></span></td>
+                <td>
+                  <% percent_only = kind == "product" && rec.respond_to?(:has_variants?) && rec.has_variants? %>
+                  <%= select_tag "items[#{key}][discount_kind]",
+                        options_for_select(percent_only ? [["% off", "percent"]] : [["Fixed €", "fixed"], ["% off", "percent"]], ci&.discount_kind),
+                        class: "input sm", data: { kind_select: "", action: "change->campaign-form#kindChanged" } %>
+                </td>
+                <td>
+                  <%= number_field_tag "items[#{key}][sale_price]", ci&.sale_price, min: 0, placeholder: "€", class: "input sm js-fixed", style: "width:90px" %>
+                  <%= number_field_tag "items[#{key}][percent_off]", ci&.percent_off, min: 1, max: 99, placeholder: "%", class: "input sm js-percent", style: "width:70px" %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
       </div>
     </div>
 
