@@ -1,4 +1,4 @@
-<% banner_campaign = Campaign.active.detect { |c| c.banner.attached? } %>
+<% banner_campaign = Campaign.active.with_attached_banner.detect { |c| c.banner.attached? } %>
 <% if banner_campaign %>
   <a href="<%= campaign_path(banner_campaign.slug) %>" class="campaign-banner">
     <div class="campaign-banner-frame"><%= image_tag banner_campaign.banner, alt: banner_campaign.name, class: "cover-img" %></div>
