@@ -3,7 +3,7 @@ module Admin
     before_action :set_campaign, only: [ :edit, :update, :destroy ]
 
     def index
-      @campaigns = Campaign.all
+      @campaigns = Campaign.all.includes(:campaign_items)
     end
 
     def new
@@ -58,6 +58,10 @@ module Admin
         next if attrs[:enabled] != "1"
         kind, id = key.split("-", 2)
         dk = attrs[:discount_kind].presence || "fixed"
+        # Skip an enabled row left without its required value rather than
+        # raising RecordInvalid (the model requires the value matching dk).
+        value = dk == "fixed" ? attrs[:sale_price] : attrs[:percent_off]
+        next if value.blank?
         campaign.campaign_items.create!(
           kind: kind, item_id: id, discount_kind: dk,
           sale_price: (dk == "fixed" ? attrs[:sale_price] : nil),
