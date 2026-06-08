@@ -41,8 +41,9 @@ module Admin
 
     private
 
+    # Collection#to_param is the slug, so admin URLs carry the slug in :id.
     def set_collection
-      @collection = Collection.find(params[:id])
+      @collection = Collection.find_by!(slug: params[:id])
     end
 
     def collection_params
