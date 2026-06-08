@@ -1,5 +1,7 @@
 # Session-backed cart. Lines are plain hashes: {"kind"=>, "id"=>, "qty"=>}.
 class Cart
+  # :variant is nil until product variations land (Phase 4 populates it from
+  # the session line and resolves it in #detailed); current_price ignores nil.
   Line = Struct.new(:kind, :id, :qty, :record, :variant, keyword_init: true) do
     def unit_price = record.current_price(variant: variant)
     def subtotal = unit_price * qty
