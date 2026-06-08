@@ -19,6 +19,6 @@ class CreateCampaigns < ActiveRecord::Migration[8.1]
       t.integer :percent_off
       t.timestamps
     end
-    add_index :campaign_items, [:kind, :item_id]
+    add_index :campaign_items, [ :kind, :item_id ]
   end
 end

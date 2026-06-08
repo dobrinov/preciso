@@ -15,6 +15,6 @@ class CreateCollections < ActiveRecord::Migration[8.1]
       t.integer :position, default: 0
       t.timestamps
     end
-    add_index :collection_memberships, [:collection_id, :product_id], unique: true
+    add_index :collection_memberships, [ :collection_id, :product_id ], unique: true
   end
 end

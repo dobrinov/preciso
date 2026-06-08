@@ -32,15 +32,15 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     get "dashboard", to: "dashboard#index"
 
-    get  "analytics", to: "analytics#index"
+    get "analytics", to: "analytics#index"
     delete "analytics", to: "analytics#reset", as: :reset_analytics
 
-    resources :orders, only: [:index, :show, :update, :destroy], param: :number
+    resources :orders, only: [ :index, :show, :update, :destroy ], param: :number
     resources :categories
     resources :products
     resources :sets, controller: "product_sets"
     resources :collections
     resources :campaigns
-    resource :about, only: [:edit, :update], controller: "about"
+    resource :about, only: [ :edit, :update ], controller: "about"
   end
 end
