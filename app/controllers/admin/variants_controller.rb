@@ -8,9 +8,10 @@ module Admin
     end
 
     def create
-      @variant = @product.variants.new(price: params.dig(:variant, :price).to_i)
+      @variant = @product.variants.new(price: variant_price)
+      return render_duplicate(:new) if duplicate_variation?
       if @variant.save
-        rebuild_values(@variant)
+        apply_values(@variant)
         attach_images(@variant)
         redirect_to edit_admin_product_path(@product)
       else
@@ -21,8 +22,9 @@ module Admin
     def edit; end
 
     def update
-      if @variant.update(price: params.dig(:variant, :price).to_i)
-        rebuild_values(@variant)
+      return render_duplicate(:edit) if duplicate_variation?(except: @variant)
+      if @variant.update(price: variant_price)
+        apply_values(@variant)
         purge_images(@variant)
         attach_images(@variant)
         redirect_to edit_admin_product_path(@product)
@@ -46,10 +48,38 @@ module Admin
       @variant = @product.variants.find(params[:id])
     end
 
-    def rebuild_values(variant)
-      ids = Array(params[:value_ids]).reject(&:blank?).uniq
+    def variant_price
+      params.dig(:variant, :price).to_i
+    end
+
+    # The form posts one value per attribute as value_ids[<attribute_id>] (radio),
+    # so a variation can hold at most one value from each attribute. Collect the
+    # chosen, non-blank, existing value ids.
+    def chosen_value_ids
+      @chosen_value_ids ||= params.fetch(:value_ids, {}).values
+                                  .reject(&:blank?).map(&:to_i).uniq
+                                  .select { |id| VariantAttributeValue.exists?(id) }
+    end
+
+    # A variation is a duplicate when another variation of the same product has
+    # the identical set of attribute values.
+    def duplicate_variation?(except: nil)
+      target = chosen_value_ids.sort
+      @product.variants.includes(:variant_values).any? do |v|
+        next false if except && v.id == except.id
+
+        v.variant_attribute_value_ids.sort == target
+      end
+    end
+
+    def render_duplicate(action)
+      @variant.errors.add(:base, "A variation with these exact options already exists.")
+      render action, status: :unprocessable_entity
+    end
+
+    def apply_values(variant)
       variant.variant_values.destroy_all
-      ids.each { |vid| variant.variant_values.create!(variant_attribute_value_id: vid) if VariantAttributeValue.exists?(vid) }
+      chosen_value_ids.each { |vid| variant.variant_values.create!(variant_attribute_value_id: vid) }
     end
 
     def attach_images(variant)

@@ -14,13 +14,20 @@
       method: (is_new ? :post : :patch), scope: :variant, html: { multipart: true } do |f| %>
   <div class="admin-pad editor-grid">
     <div class="card-pad">
+      <% if @variant.errors.any? %><div class="login-err"><%= @variant.errors.full_messages.to_sentence %></div><% end %>
+      <div class="field-hint">Pick at most one value per attribute. Each combination can only exist once.</div>
       <% VariantAttribute.includes(:variant_attribute_values).each do |attr| %>
+        <% chosen = (selected & attr.variant_attribute_values.map(&:id)).first %>
         <div class="field">
           <div class="field-label"><%= attr.name %></div>
           <div class="value-chips">
+            <label class="chip">
+              <%= radio_button_tag "value_ids[#{attr.id}]", "", chosen.nil? %>
+              <span>—</span>
+            </label>
             <% attr.variant_attribute_values.each do |v| %>
               <label class="chip">
-                <%= check_box_tag "value_ids[]", v.id, selected.include?(v.id) %>
+                <%= radio_button_tag "value_ids[#{attr.id}]", v.id, chosen == v.id %>
                 <span><%= v.value %></span>
               </label>
             <% end %>

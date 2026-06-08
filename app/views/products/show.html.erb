@@ -1,19 +1,32 @@
 <main class="wrap fade-up page-top">
   <%= render "shared/breadcrumb", trail: [[@category&.name || "Shop", @category ? shop_category_path(@category.slug) : nil], [@product.name, nil]] %>
+  <%
+    # Initial gallery: the first variation that has photos, else the product's
+    # own photos. The variant switcher (JS) swaps these to the selected
+    # variation's photos on the client, falling back to the product's.
+    gallery_imgs =
+      if @product.has_variants?
+        (@variants.detect { |v| v.images.attached? }&.images) || (@product.images.attached? ? @product.images : [])
+      elsif @product.images.attached?
+        @product.images
+      else
+        []
+      end
+  %>
   <div class="detail-grid" data-controller="variants">
     <div class="detail-media" data-controller="gallery">
       <div class="detail-media-frame">
-        <% if @product.images.attached? %>
+        <% if gallery_imgs.any? %>
           <div class="ratio-box" style="padding-top:120%">
-            <%= image_tag @product.images.first, alt: @product.name, class: "cover-img", data: { gallery_target: "main", variants_target: "mainImage" } %>
+            <%= image_tag gallery_imgs.first, alt: @product.name, class: "cover-img", data: { gallery_target: "main", variants_target: "mainImage" } %>
           </div>
         <% else %>
           <%= media_for(@product, kind: "product", ratio: "120%") %>
         <% end %>
       </div>
-      <% if @product.images.attached? && @product.images.size > 1 %>
+      <% if gallery_imgs.any? && (@product.has_variants? || gallery_imgs.size > 1) %>
         <div class="gallery-thumbs" data-variants-target="thumbs">
-          <% @product.images.each_with_index do |img, i| %>
+          <% gallery_imgs.each_with_index do |img, i| %>
             <button type="button" class="gallery-thumb <%= 'active' if i.zero? %>"
                     data-action="gallery#show" data-gallery-target="thumb" data-src="<%= url_for(img) %>">
               <%= image_tag img, alt: "#{@product.name} photo #{i + 1}", class: "cover-img" %>
