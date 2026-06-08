@@ -31,11 +31,16 @@ class ProductSet < ApplicationRecord
 
   def current_price(variant: nil)
     base = base_price(variant: variant)
-    ci = Campaign.discount_for("set", id)
-    ci ? ci.price_for(base) : base
+    campaign_item ? campaign_item.price_for(base) : base
   end
 
   def on_sale?(variant: nil)
     current_price(variant: variant) < base_price(variant: variant)
+  end
+
+  # Active campaign discount for this set, memoized per instance (caches nil too).
+  def campaign_item
+    return @campaign_item if defined?(@campaign_item)
+    @campaign_item = Campaign.discount_for("set", id)
   end
 end

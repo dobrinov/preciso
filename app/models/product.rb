@@ -24,11 +24,17 @@ class Product < ApplicationRecord
   # Price after any active campaign discount.
   def current_price(variant: nil)
     base = base_price(variant: variant)
-    ci = Campaign.discount_for("product", id)
-    ci ? ci.price_for(base) : base
+    campaign_item ? campaign_item.price_for(base) : base
   end
 
   def on_sale?(variant: nil)
     current_price(variant: variant) < base_price(variant: variant)
+  end
+
+  # Active campaign discount for this product, memoized per instance (caches
+  # nil too, so the common "no active campaign" case is a single query).
+  def campaign_item
+    return @campaign_item if defined?(@campaign_item)
+    @campaign_item = Campaign.discount_for("product", id)
   end
 end
