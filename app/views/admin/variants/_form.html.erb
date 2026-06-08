@@ -37,6 +37,10 @@
       <% if VariantAttribute.none? %>
         <div class="field-hint">No attributes defined yet. Add some under <a href="<%= admin_variant_attributes_path %>">Attributes</a> first.</div>
       <% end %>
+      <label class="field"><div class="field-label">Name</div>
+        <%= f.text_field :name, value: @variant.name, class: "input", placeholder: "e.g. Studio second" %>
+        <div class="field-hint">Optional. Leave blank to use the attribute combination.</div>
+      </label>
       <label class="field"><div class="field-label">Price (€)</div>
         <%= f.number_field :price, value: @variant.price, min: 0, class: "input" %>
       </label>

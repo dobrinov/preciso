@@ -8,7 +8,7 @@ module Admin
     end
 
     def create
-      @variant = @product.variants.new(price: variant_price)
+      @variant = @product.variants.new(price: variant_price, name: variant_name)
       return render_duplicate(:new) if duplicate_variation?
       if @variant.save
         apply_values(@variant)
@@ -23,7 +23,7 @@ module Admin
 
     def update
       return render_duplicate(:edit) if duplicate_variation?(except: @variant)
-      if @variant.update(price: variant_price)
+      if @variant.update(price: variant_price, name: variant_name)
         apply_values(@variant)
         purge_images(@variant)
         attach_images(@variant)
@@ -50,6 +50,10 @@ module Admin
 
     def variant_price
       params.dig(:variant, :price).to_i
+    end
+
+    def variant_name
+      params.dig(:variant, :name).presence
     end
 
     # The form posts one value per attribute as value_ids[<attribute_id>] (radio),
