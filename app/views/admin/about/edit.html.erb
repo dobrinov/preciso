@@ -1,5 +1,5 @@
 <% content_for :title, "Preciso — About page" %>
-<%= form_with url: admin_about_path, method: :patch, data: { controller: "abouteditor", turbo: false } do %>
+<%= form_with url: admin_about_path, method: :patch, html: { multipart: true }, data: { controller: "abouteditor imageupload", turbo: false } do %>
   <div class="pagehead">
     <div>
       <h1 class="display pagehead-title">About page</h1>
@@ -43,6 +43,26 @@
             <button type="button" class="icon-square" data-action="abouteditor#remove"><%= icon :trash, size: 16 %></button>
           </div>
         </template>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Studio photograph</div>
+        <div class="dropzone" data-imageupload-target="zone" data-action="click->imageupload#browse dragover->imageupload#dragover dragleave->imageupload#dragleave drop->imageupload#drop" style="max-width:340px">
+          <% if @about.image.attached? %>
+            <%= image_tag @about.image, data: { imageupload_target: "preview" } %>
+          <% else %>
+            <div data-imageupload-target="placeholder"><%= placeholder(tone: "#ebe5dc", name: "Studio", caption: "click or drop photo") %></div>
+            <img data-imageupload-target="preview" style="display:none">
+          <% end %>
+        </div>
+        <%= file_field_tag :image, accept: "image/*", style: "display:none", data: { imageupload_target: "input", action: "imageupload#changed" } %>
+        <%= hidden_field_tag :remove_image, "0", data: { imageupload_target: "removeFlag" } %>
+        <div class="dropzone-actions" style="max-width:340px">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#browse">Upload</button>
+          <% if @about.image.attached? %>
+            <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#remove">Remove</button>
+          <% end %>
+        </div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">

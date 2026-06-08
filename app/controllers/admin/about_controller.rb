@@ -13,6 +13,8 @@ module Admin
         signature: params[:signature],
         studio: params[:studio]
       )
+      @about.image.attach(params[:image]) if params[:image].present?
+      @about.image.purge if params[:remove_image] == "1"
       redirect_to edit_admin_about_path, notice: "Saved"
     end
   end

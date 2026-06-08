@@ -1,6 +1,7 @@
 class About < ApplicationRecord
   # body is stored as a JSON array of paragraph strings.
   serialize :body, coder: JSON, type: Array
+  has_one_attached :image
 
   def self.instance
     first || create!(

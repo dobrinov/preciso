@@ -7,7 +7,13 @@
     </div>
   </section>
   <section class="wrap">
-    <div class="about-figure"><%= placeholder(tone: "#ebe5dc", caption: "studio photograph", name: "The studio") %></div>
+    <div class="about-figure">
+      <% if @about.image.attached? %>
+        <%= image_tag @about.image, alt: "Studio", class: "cover-img" %>
+      <% else %>
+        <%= placeholder(tone: "#ebe5dc", caption: "studio photograph", name: "The studio") %>
+      <% end %>
+    </div>
   </section>
   <section class="wrap">
     <div class="about-body">
