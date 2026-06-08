@@ -1,0 +1,29 @@
+<% content_for :title, "Preciso — Categories" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Categories</h1>
+    <p class="pagehead-sub"><%= @categories.size %> categories. These shape the shop navigation and storefront tiles.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_category_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New category</a>
+  </div>
+</div>
+
+<div class="admin-pad">
+  <div class="cat-table panel">
+    <div class="cat-row cat-row-head">
+      <div>Category</div><div>Blurb</div><div>Tone</div><div class="text-right">Pieces</div>
+    </div>
+    <% @categories.each do |c| %>
+      <a href="<%= edit_admin_category_path(c) %>" class="cat-row">
+        <div>
+          <div class="serif" style="font-size:19px"><%= c.name %></div>
+          <div class="mono" style="font-size:10.5px;color:var(--faint)">/shop/<%= c.slug %></div>
+        </div>
+        <div class="cat-row-blurb"><%= c.blurb %></div>
+        <div><span class="tone-swatch" style="background:<%= c.tone %>"></span></div>
+        <div class="text-right mono" style="font-size:12px;color:var(--muted)"><%= c.products.count %></div>
+      </a>
+    <% end %>
+  </div>
+</div>

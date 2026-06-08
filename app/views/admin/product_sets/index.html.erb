@@ -1,0 +1,21 @@
+<% content_for :title, "Preciso — Sets" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Sets</h1>
+    <p class="pagehead-sub">Combine individual pieces into sets sold together.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_set_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New set</a>
+  </div>
+</div>
+
+<div class="admin-pad">
+  <div class="admin-card-grid sets">
+    <% @sets.each do |s| %>
+      <%= render "admin/shared/item_card", record: s, kind: "set", href: edit_admin_set_path(s), sub: "#{s.piece_count} pieces" %>
+    <% end %>
+    <% if @sets.empty? %>
+      <div class="empty-state">No sets yet — create one from your pieces.</div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<% piece_total = @grouped.sum { |g| g[:product].price * g[:qty] } %>
+<% piece_count = @grouped.sum { |g| g[:qty] } %>
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [["Sets", sets_path], [@set.name, nil]] %>
+  <div class="detail-grid">
+    <div class="detail-media">
+      <div class="detail-media-frame"><%= media_for(@set, kind: "set", ratio: "120%") %></div>
+    </div>
+    <div style="padding-top:6px">
+      <div class="eyebrow clay">Set · <%= piece_count %> pieces</div>
+      <h1 class="display detail-title"><%= @set.name %></h1>
+      <div class="detail-price"><%= money @set.price %></div>
+      <p class="detail-long"><%= @set.long_desc %></p>
+
+      <div class="set-contents">
+        <div class="set-contents-head">In this set</div>
+        <% @grouped.each do |g| %>
+          <a href="<%= product_path(g[:product]) %>" class="set-row">
+            <div class="set-row-thumb"><%= media_for(g[:product], kind: "product", cover: true) %></div>
+            <div style="flex:1">
+              <div class="set-row-name"><%= g[:product].name %><%= " ×#{g[:qty]}" if g[:qty] > 1 %></div>
+              <div class="set-row-short"><%= g[:product].short %></div>
+            </div>
+            <span style="color:var(--faint)"><%= icon :arrow, size: 16 %></span>
+          </a>
+        <% end %>
+        <div class="set-sep">
+          <span>Bought separately</span>
+          <span class="strike"><%= money piece_total %></span>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <%= button_to cart_add_path, params: { kind: "set", id: @set.id, name: @set.name },
+              form: { data: { turbo_stream: true } }, class: "btn clay", style: "width:100%;padding:17px 30px" do %>
+          <%= icon :cart %> Add to cart — <%= money @set.price %>
+        <% end %>
+      </div>
+      <div class="detail-notes">
+        <span>· Made to order in small batches</span>
+        <span>· Arrange payment &amp; pickup after</span>
+      </div>
+    </div>
+  </div>
+</main>

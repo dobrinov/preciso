@@ -1,0 +1,53 @@
+<% lines = cart.detailed %>
+<div class="cart-head">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="cart-head-title">Your cart</span>
+    <span class="mono" style="color:var(--muted)"><%= cart.count %> items</span>
+  </div>
+  <button class="icon-btn" data-action="storefront#closeCart" aria-label="Close"><%= icon :close %></button>
+</div>
+
+<% if lines.empty? %>
+  <div class="cart-empty">
+    <div style="color:var(--line-2)"><%= icon :cart, size: 46, "stroke-width": 1 %></div>
+    <div>Your cart is empty.</div>
+    <button class="btn ghost sm" data-action="storefront#closeCart">Continue browsing</button>
+  </div>
+<% else %>
+  <div class="cart-body scroll-thin">
+    <% lines.each do |l| %>
+      <div class="cart-line">
+        <a href="<%= link_path_for(l.record, l.kind) %>" class="cart-line-thumb" data-action="storefront#closeCart">
+          <%= media_for(l.record, kind: l.kind, cover: true) %>
+        </a>
+        <div class="cart-line-main">
+          <div class="cart-line-top">
+            <div class="cart-line-name"><%= l.record.name %></div>
+            <%= button_to cart_remove_path, method: :delete, params: { kind: l.kind, id: l.id },
+                  form: { data: { turbo_stream: true } }, class: "icon-btn",
+                  style: "color:var(--faint)", "aria-label": "Remove" do %><%= icon :close %><% end %>
+          </div>
+          <% if l.kind == "set" %><div class="cart-line-tag">Set</div><% end %>
+          <div class="cart-line-bottom">
+            <div class="qty small">
+              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty - 1 },
+                    form: { data: { turbo_stream: true } }, "aria-label": "Decrease" do %><%= icon :minus, size: 16 %><% end %>
+              <span class="num"><%= l.qty %></span>
+              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty + 1 },
+                    form: { data: { turbo_stream: true } }, "aria-label": "Increase" do %><%= icon :plus, size: 16 %><% end %>
+            </div>
+            <div class="serif" style="font-size:18px"><%= money l.subtotal %></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total"><%= money cart.total %></span>
+    </div>
+    <div class="cart-foot-note">Payment &amp; pickup arranged after you order.</div>
+    <a href="<%= checkout_path %>" class="btn clay block" data-action="storefront#closeCart">Checkout <%= icon :arrow, size: 16 %></a>
+  </div>
+<% end %>

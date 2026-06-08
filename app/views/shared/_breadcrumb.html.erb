@@ -1,0 +1,7 @@
+<div class="breadcrumb">
+  <a href="<%= root_path %>">Home</a>
+  <% trail.each do |label, path| %>
+    <span class="sep">/</span>
+    <% if path %><a href="<%= path %>"><%= label %></a><% else %><span class="current"><%= label %></span><% end %>
+  <% end %>
+</div>

@@ -1,0 +1,55 @@
+<% is_new = @category.new_record? %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New category" : (@category.name.presence || "Edit category") %></h1>
+    <p class="pagehead-sub"><%= is_new ? "Add a category to the shop." : "Editing an existing category." %></p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_categories_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back</a>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @category] do |f| %>
+  <div class="admin-pad editor-grid">
+    <div class="card-pad">
+      <% if @category.errors.any? %>
+        <div class="login-err"><%= @category.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <label class="field">
+        <div class="field-label">Name</div>
+        <%= f.text_field :name, class: "input", placeholder: "e.g. Bowls" %>
+        <% unless is_new %><div class="field-hint">URL: <span class="mono">/shop/<%= @category.slug %></span> — changing the name updates the link.</div><% end %>
+      </label>
+      <label class="field">
+        <div class="field-label">Blurb</div>
+        <%= f.text_field :blurb, class: "input", placeholder: "One quiet line shown under the category." %>
+        <div class="field-hint">Shown on the home category tiles and shop header.</div>
+      </label>
+    </div>
+
+    <div class="stack-18">
+      <div class="box" data-controller="tone">
+        <div class="box-label">Placeholder tone</div>
+        <div class="tone-preview" data-tone-target="preview" style="background:<%= @category.tone %>">
+          <%= placeholder(tone: @category.tone, name: @category.name.presence || "Category", caption: "tile preview") %>
+        </div>
+        <div class="tone-controls">
+          <%= f.color_field :tone, class: "tone-input", data: { tone_target: "input", action: "tone#change" } %>
+          <span class="mono" data-tone-target="value" style="font-size:11px;color:var(--muted)"><%= @category.tone %></span>
+        </div>
+        <div class="field-hint">A quiet, near-white wash used behind pieces that have no photo yet.</div>
+      </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Add category" : "Save changes"), class: "btn clay" %>
+        <% unless is_new %>
+          <% has_products = @category.products.exists? %>
+          <%= button_to admin_category_path(@category), method: :delete, class: "danger-btn",
+                form: { data: { turbo_confirm: has_products ? "This category has #{@category.products.count} piece(s). Deleting it leaves them uncategorised — continue?" : "Delete this category?" } } do %>
+            <%= icon :trash, size: 16 %> Delete category
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

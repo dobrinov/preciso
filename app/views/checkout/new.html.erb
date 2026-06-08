@@ -1,0 +1,68 @@
+<% if @lines.empty? %>
+  <main class="wrap" style="padding:120px 0;text-align:center">
+    <h1 class="display" style="font-size:44px">Your cart is empty</h1>
+    <p style="color:var(--muted);margin-top:12px">Add a piece or two before checking out.</p>
+    <a href="<%= shop_category_path('bowls') %>" class="btn clay" style="margin-top:26px">Browse the shop <%= icon :arrow, size: 16 %></a>
+  </main>
+<% else %>
+  <main class="wrap fade-up page-top" data-controller="checkout">
+    <%= render "shared/breadcrumb", trail: [["Checkout", nil]] %>
+    <h1 class="display checkout-title">Checkout</h1>
+    <%= form_with url: checkout_path, method: :post, data: { turbo: false } do %>
+      <div class="checkout-grid">
+        <div>
+          <div class="checkout-note">No payment is taken here. Leave your details and Bianna will be in touch to confirm your pieces, the total, and pickup or delivery.</div>
+          <div class="form-stack">
+            <label class="field">
+              <div class="field-label">Full name</div>
+              <input class="input" type="text" name="name" placeholder="Your name" autofocus
+                     data-checkout-target="name" data-action="input->checkout#validate">
+            </label>
+            <div class="contact-grid">
+              <label class="field">
+                <div class="field-label">Email</div>
+                <input class="input" type="email" name="email" placeholder="you@email.com"
+                       data-checkout-target="email" data-action="input->checkout#validate">
+              </label>
+              <label class="field">
+                <div class="field-label">Phone</div>
+                <input class="input" type="tel" name="phone" placeholder="+43 …"
+                       data-checkout-target="phone" data-action="input->checkout#validate">
+              </label>
+            </div>
+            <label class="field">
+              <div class="field-label">Note for the studio</div>
+              <textarea class="input" rows="3" name="note" placeholder="Anything Bianna should know…"></textarea>
+              <div class="field-hint">Optional — a gift, a pickup preference, a question.</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-head">Your order</div>
+          <div class="summary-lines scroll-thin">
+            <% @lines.each do |l| %>
+              <div class="summary-line">
+                <div class="summary-thumb">
+                  <%= media_for(l.record, kind: l.kind, cover: true) %>
+                  <span class="summary-qty"><%= l.qty %></span>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div class="summary-name"><%= l.record.name %></div>
+                  <div style="font-size:12px;color:var(--muted)"><%= money l.record.price %><%= " × #{l.qty}" if l.qty > 1 %></div>
+                </div>
+                <div class="serif" style="font-size:16px"><%= money l.subtotal %></div>
+              </div>
+            <% end %>
+          </div>
+          <div class="summary-total-row">
+            <span class="cart-total-label">Total</span>
+            <span class="serif" style="font-size:30px"><%= money @total %></span>
+          </div>
+          <button type="submit" class="btn clay block" style="margin-top:20px" data-checkout-target="submit" disabled>Place order <%= icon :arrow, size: 16 %></button>
+          <div style="font-size:11.5px;color:var(--faint);margin-top:12px;text-align:center">You won't be charged now.</div>
+        </div>
+      </div>
+    <% end %>
+  </main>
+<% end %>

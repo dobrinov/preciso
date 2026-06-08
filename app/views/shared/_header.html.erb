@@ -1,0 +1,27 @@
+<header class="site-header" data-storefront-target="header">
+  <div class="wrap header-bar">
+    <button class="menu-btn" data-action="storefront#toggleMenu" aria-label="Menu"><%= icon :menu, size: 20 %></button>
+    <a href="<%= root_path %>" class="brand">
+      <span class="brand-name">Preciso</span>
+      <span class="brand-sub">Porcelain Studio</span>
+    </a>
+    <nav class="desk-nav">
+      <% Category.all.each do |c| %>
+        <a href="<%= shop_category_path(c.slug) %>" class="navlink"><%= c.name %></a>
+      <% end %>
+      <a href="<%= sets_path %>" class="navlink">Sets</a>
+      <a href="<%= about_path %>" class="navlink">About</a>
+    </nav>
+    <button class="cart-btn" data-action="storefront#openCart" aria-label="Cart">
+      <%= icon :cart %>
+      <%= render "shared/cart_badge" %>
+    </button>
+  </div>
+  <div class="wrap mob-nav" data-storefront-target="mobNav">
+    <% Category.all.each do |c| %>
+      <a href="<%= shop_category_path(c.slug) %>"><%= c.name %></a>
+    <% end %>
+    <a href="<%= sets_path %>">Sets</a>
+    <a href="<%= about_path %>">About</a>
+  </div>
+</header>

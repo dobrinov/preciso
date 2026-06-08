@@ -1,0 +1,31 @@
+<% content_for :title, "Preciso — Products" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Products</h1>
+    <p class="pagehead-sub"><%= @products.size %> pieces in the catalogue.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_product_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New piece</a>
+  </div>
+</div>
+
+<div class="admin-pad">
+  <% groups = @categories.map { |c| [c.name, @products.select { |p| p.category_id == c.id }] } %>
+  <% uncategorised = @products.select { |p| p.category_id.nil? } %>
+  <% groups << ["Uncategorised", uncategorised] if uncategorised.any? %>
+  <% groups.each do |name, items| %>
+    <% next if items.empty? %>
+    <div class="admin-cat-block">
+      <div class="admin-cat-head">
+        <div class="name"><%= name %></div>
+        <div class="rule"></div>
+        <div class="ct"><%= items.size %></div>
+      </div>
+      <div class="admin-card-grid">
+        <% items.each do |p| %>
+          <%= render "admin/shared/item_card", record: p, kind: "product", href: edit_admin_product_path(p) %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

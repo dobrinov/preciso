@@ -1,0 +1,4 @@
+<%= turbo_stream.replace "cart_panel" do %>
+  <div id="cart_panel" class="cart-inner"><%= render "shared/cart_contents", cart: current_cart %></div>
+<% end %>
+<%= turbo_stream.replace "cart_badge" do %><%= render "shared/cart_badge" %><% end %>

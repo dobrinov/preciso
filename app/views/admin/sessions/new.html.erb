@@ -1,0 +1,18 @@
+<div class="login-wrap">
+  <%= form_with url: admin_login_path, method: :post, class: "login-card fade-up", data: { turbo: false } do %>
+    <div class="login-brand">
+      <div class="name">Preciso</div>
+      <div class="sub">Studio Admin</div>
+    </div>
+    <div style="margin-top:30px">
+      <label class="field">
+        <div class="field-label">Password</div>
+        <input class="input" type="password" name="password" placeholder="••••••" autofocus>
+      </label>
+    </div>
+    <% if flash[:error] %><div class="login-err"><%= flash[:error] %></div><% end %>
+    <button type="submit" class="btn block" style="margin-top:22px">Enter studio <%= icon :arrow, size: 16 %></button>
+    <a href="<%= root_path %>" style="display:block;text-align:center;margin-top:18px;font-size:12.5px;color:var(--muted)">← Back to storefront</a>
+    <div class="login-demo">Demo access — password is <strong style="color:var(--ink-soft)">studio</strong></div>
+  <% end %>
+</div>

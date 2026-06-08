@@ -1,0 +1,104 @@
+<% is_new = @set.new_record? %>
+<%
+  products = Product.includes(:category).order(:id)
+  products_json = products.map { |p| { id: p.id, name: p.name, price: p.price, tone: p.tone } }
+  initial_items = @set.set_items.flat_map { |si| [si.product_id] * si.quantity }
+%>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New set" : (@set.name.presence || "Edit set") %></h1>
+    <p class="pagehead-sub">Pick pieces, then price the set.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_sets_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back</a>
+  </div>
+</div>
+
+<%= form_with model: @set, url: (is_new ? admin_sets_path : admin_set_path(@set)),
+      method: (is_new ? :post : :patch), scope: :set, html: { multipart: true },
+      data: { controller: "setbuilder imageupload",
+              setbuilder_items_value: initial_items.to_json,
+              setbuilder_products_value: products_json.to_json } do |f| %>
+  <div class="admin-pad editor-grid set" style="align-items:start">
+    <%# left: details + picker %>
+    <div class="form-stack">
+      <div class="card-pad">
+        <label class="field"><div class="field-label">Set name</div>
+          <%= f.text_field :name, class: "input", placeholder: "e.g. The Morning Set", data: { setbuilder_target: "name", action: "input->setbuilder#validate" } %>
+        </label>
+        <label class="field"><div class="field-label">Short description</div>
+          <%= f.text_field :short, class: "input", placeholder: "One line about the set." %>
+        </label>
+        <label class="field"><div class="field-label">Long description</div>
+          <%= f.text_area :long_desc, rows: 3, class: "input", placeholder: "What's in it and who it's for." %>
+        </label>
+      </div>
+
+      <div class="card-pad" style="gap:16px">
+        <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft)">Add pieces to the set</div>
+        <div class="piece-picker">
+          <% products.each do |p| %>
+            <button type="button" class="piece-btn" data-id="<%= p.id %>" data-setbuilder-target="picker" data-action="setbuilder#add">
+              <div class="thumb"><%= media_for(p, kind: "product", cover: true) %></div>
+              <div style="min-width:0">
+                <div class="pname"><%= p.name %></div>
+                <div class="pprice"><%= money p.price %></div>
+              </div>
+              <span class="count" data-count-for="<%= p.id %>" style="display:none">0</span>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# right: chosen + price + image %>
+    <div class="stack-18">
+      <div class="box">
+        <div class="box-label">In this set (<span data-setbuilder-target="count">0</span>)</div>
+        <div data-setbuilder-target="empty" style="font-size:13px;color:var(--faint);padding:10px 0">No pieces yet. Add some from the left.</div>
+        <div data-setbuilder-target="chosen" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="sep-row" data-setbuilder-target="sepRow" style="display:none">
+          <span>Pieces bought separately</span><span data-setbuilder-target="sepTotal"></span>
+        </div>
+        <div data-setbuilder-target="hidden"></div>
+      </div>
+
+      <div class="box">
+        <label class="field"><div class="field-label">Set price (€)</div>
+          <%= f.number_field :price, min: 0, class: "input", placeholder: "0", data: { setbuilder_target: "price", action: "input->setbuilder#validate" } %>
+          <div class="field-hint" data-setbuilder-target="hint">Often a little under the separate total.</div>
+        </label>
+      </div>
+
+      <div class="box" data-controller="imageupload">
+        <div class="box-label">Set photograph</div>
+        <div class="dropzone" data-imageupload-target="zone" data-action="click->imageupload#browse dragover->imageupload#dragover dragleave->imageupload#dragleave drop->imageupload#drop">
+          <% if @set.image.attached? %>
+            <%= image_tag @set.image, data: { imageupload_target: "preview" } %>
+          <% else %>
+            <div data-imageupload-target="placeholder"><%= placeholder(tone: Category::TONES["set"], name: @set.name.presence || "Set", caption: "click or drop photo") %></div>
+            <img data-imageupload-target="preview" style="display:none">
+          <% end %>
+        </div>
+        <%= f.file_field :image, accept: "image/*", style: "display:none", data: { imageupload_target: "input", action: "imageupload#changed" } %>
+        <%= hidden_field_tag :remove_image, "0", data: { imageupload_target: "removeFlag" } %>
+        <div class="dropzone-actions">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#browse">Upload</button>
+          <% if @set.image.attached? %>
+            <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#remove">Remove</button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Create set" : "Save changes"), class: "btn clay", data: { setbuilder_target: "submit" } %>
+        <% unless is_new %>
+          <%= button_to admin_set_path(@set), method: :delete, class: "danger-btn",
+                form: { data: { turbo_confirm: "Delete this set?" } } do %>
+            <%= icon :trash, size: 16 %> Delete set
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

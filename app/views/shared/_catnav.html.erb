@@ -1,0 +1,6 @@
+<div class="catnav">
+  <% Category.all.each do |c| %>
+    <a href="<%= shop_category_path(c.slug) %>" class="<%= 'active' if active == c.slug %>"><%= c.name %></a>
+  <% end %>
+  <a href="<%= sets_path %>" class="sets-link">Sets</a>
+</div>

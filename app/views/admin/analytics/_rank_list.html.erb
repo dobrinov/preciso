@@ -1,0 +1,21 @@
+<% max = [1, *rows.map { |r| r[:count] }].max %>
+<div class="panel">
+  <div class="panel-head"><span><%= title %></span></div>
+  <div class="rank">
+    <% if rows.empty? %><div style="font-size:13px;color:var(--faint)"><%= empty %></div><% end %>
+    <% rows.each do |r| %>
+      <% inner = capture do %>
+        <div class="rank-top">
+          <span class="nm"><%= r[:label] %></span>
+          <span class="ct"><%= r[:count] %> views</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:<%= (r[:count].to_f / max * 100).round %>%"></div></div>
+      <% end %>
+      <% if link && r[:key] %>
+        <a href="/<%= r[:key] %>" class="rank-row" title="View on storefront" style="display:block"><%= inner %></a>
+      <% else %>
+        <div><%= inner %></div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

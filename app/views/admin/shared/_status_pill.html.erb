@@ -1,0 +1,4 @@
+<% meta = Order::STATUSES[status] || Order::STATUSES["new"] %>
+<span class="pill <%= 'small' if local_assigns[:small] %>" style="background:<%= meta[:bg] %>;color:<%= meta[:color] %>">
+  <span class="dot" style="background:<%= meta[:color] %>"></span><%= meta[:label] %>
+</span>
