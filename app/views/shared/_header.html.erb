@@ -3,7 +3,6 @@
     <button class="menu-btn" data-action="storefront#toggleMenu" aria-label="Menu"><%= icon :menu, size: 20 %></button>
     <a href="<%= root_path %>" class="brand">
       <%= image_tag "preciso-logo.jpg", alt: "Preciso", class: "brand-logo" %>
-      <span class="brand-sub">Porcelain Studio</span>
     </a>
     <nav class="desk-nav">
       <% Category.all.each do |c| %>

@@ -102,7 +102,6 @@ main{flex:1;}
 .header-bar{display:flex;align-items:center;height:76px;gap:24px;}
 .brand{display:flex;flex-direction:column;line-height:1;margin-right:auto;}
 .brand-name{font-family:var(--serif);font-size:27px;letter-spacing:0.02em;font-weight:500;}
-.brand-sub{font-family:var(--mono);font-size:8.5px;letter-spacing:0.34em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
 .desk-nav{display:flex;gap:30px;align-items:center;}
 .navlink{font-size:12.5px;letter-spacing:0.06em;color:var(--ink-soft);position:relative;padding:4px 0;transition:color .2s;white-space:nowrap;}
 .navlink:hover{color:var(--clay-deep);}
