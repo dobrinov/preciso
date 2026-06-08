@@ -19,8 +19,8 @@ export default class extends Controller {
 
   apply(radio) {
     const price = radio.dataset.priceLabel
-    this.priceTarget.innerHTML = price
-    this.variantIdTarget.value = radio.dataset.variantId
+    if (this.hasPriceTarget) this.priceTarget.innerHTML = price
+    if (this.hasVariantIdTarget) this.variantIdTarget.value = radio.dataset.variantId
     if (this.hasAddLabelTarget) this.addLabelTarget.textContent = `Add — ${radio.dataset.pricePlain}`
     const images = JSON.parse(radio.dataset.images || "[]")
     if (images.length && this.hasMainImageTarget) {
