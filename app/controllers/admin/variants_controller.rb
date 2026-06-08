@@ -68,7 +68,8 @@ module Admin
       @product.variants.includes(:variant_values).any? do |v|
         next false if except && v.id == except.id
 
-        v.variant_attribute_value_ids.sort == target
+        # use the preloaded join rows (the _ids reader would re-query per variant)
+        v.variant_values.map(&:variant_attribute_value_id).sort == target
       end
     end
 

@@ -1,11 +1,12 @@
 <main class="wrap fade-up page-top">
   <%= render "shared/breadcrumb", trail: [[@category&.name || "Shop", @category ? shop_category_path(@category.slug) : nil], [@product.name, nil]] %>
   <%
+    has_variants = @product.has_variants?
     # Initial gallery: the first variation that has photos, else the product's
     # own photos. The variant switcher (JS) swaps these to the selected
     # variation's photos on the client, falling back to the product's.
     gallery_imgs =
-      if @product.has_variants?
+      if has_variants
         (@variants.detect { |v| v.images.attached? }&.images) || (@product.images.attached? ? @product.images : [])
       elsif @product.images.attached?
         @product.images
@@ -24,7 +25,7 @@
           <%= media_for(@product, kind: "product", ratio: "120%") %>
         <% end %>
       </div>
-      <% if gallery_imgs.any? && (@product.has_variants? || gallery_imgs.size > 1) %>
+      <% if gallery_imgs.any? && (has_variants || gallery_imgs.size > 1) %>
         <div class="gallery-thumbs" data-variants-target="thumbs">
           <% gallery_imgs.each_with_index do |img, i| %>
             <button type="button" class="gallery-thumb <%= 'active' if i.zero? %>"
@@ -39,11 +40,11 @@
       <div class="eyebrow clay"><%= @category&.name %></div>
       <h1 class="display detail-title"><%= @product.name %></h1>
       <div class="detail-price" data-variants-target="price">
-        <% if @product.has_variants? %>from <%= money @product.price_from %><% else %><%= price_tag(@product) %><% end %>
+        <% if has_variants %>from <%= money @product.price_from %><% else %><%= price_tag(@product) %><% end %>
       </div>
       <p class="detail-long"><%= @product.long_desc %></p>
 
-      <% if @product.has_variants? %>
+      <% if has_variants %>
         <div class="variant-pick">
           <% @variants.each_with_index do |v, i|
                urls = v.images.attached? ? v.images.map { |img| url_for(img) } : (@product.images.attached? ? @product.images.map { |img| url_for(img) } : [])
@@ -68,11 +69,11 @@
           <input type="hidden" name="kind" value="product">
           <input type="hidden" name="id" value="<%= @product.id %>">
           <input type="hidden" name="name" value="<%= @product.name %>">
-          <% if @product.has_variants? %>
+          <% if has_variants %>
             <input type="hidden" name="variant_id" value="<%= @variants.first&.id %>" data-variants-target="variantId">
           <% end %>
           <button type="submit" class="btn clay" style="width:100%;padding:17px 30px">
-            <%= icon :cart %> <span data-variants-target="addLabel">Add — <%= money(@product.has_variants? ? @variants.first&.current_price_via_product : @product.current_price) %></span>
+            <%= icon :cart %> <span data-variants-target="addLabel">Add — <%= money(has_variants ? @variants.first&.current_price_via_product : @product.current_price) %></span>
           </button>
         <% end %>
       </div>
