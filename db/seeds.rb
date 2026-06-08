@@ -203,3 +203,7 @@ if Event.count.zero?
 end
 
 puts "Seeded: #{Category.count} categories, #{Product.count} products, #{ProductSet.count} sets, #{Order.count} orders, #{Event.count} events."
+
+# ---- example collection (style group) ----
+oro = Collection.find_or_create_by!(slug: "oro") { |c| c.name = "Oro"; c.description = "Pieces finished with a warm, golden cast." }
+oro.products = Product.where(category: cat["vases"]).limit(2) + Product.where(category: cat["cups"]).limit(1)

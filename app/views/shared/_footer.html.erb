@@ -2,7 +2,7 @@
   <div class="wrap footer-inner">
     <div class="foot-grid">
       <div>
-        <%= image_tag "preciso-logo.jpg", alt: "Preciso", class: "foot-logo" %>
+        <%= image_tag "preciso-logo.png", alt: "Preciso", class: "foot-logo" %>
         <p class="foot-blurb">Handmade porcelain by Bianna Taynova. Thrown, trimmed and glazed by hand in small batches.</p>
       </div>
       <div>
@@ -12,6 +12,7 @@
             <a href="<%= shop_category_path(c.slug) %>" class="foot-link"><%= c.name %></a>
           <% end %>
           <a href="<%= sets_path %>" class="foot-link">Sets</a>
+          <% if Collection.nonempty.any? %><a href="<%= collections_path %>" class="foot-link">Collections</a><% end %>
         </div>
       </div>
       <div>

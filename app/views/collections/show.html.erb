@@ -1,0 +1,28 @@
+<% content_for :title, "Preciso — #{@collection.name}" %>
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [["Collections", collections_path], [@collection.name, nil]] %>
+  <div class="list-head">
+    <div>
+      <div class="eyebrow clay">Collection</div>
+      <h1 class="display list-title"><%= @collection.name %></h1>
+      <p class="list-blurb"><%= @collection.description %></p>
+    </div>
+    <div class="list-count"><%= @products.size %> pieces</div>
+  </div>
+
+  <% if @collection.cover.attached? %>
+    <div class="ratio-box img-frame shop-hero" style="padding-top:34%">
+      <%= image_tag @collection.cover, alt: @collection.name, class: "cover-img" %>
+    </div>
+  <% end %>
+
+  <% if @products.empty? %>
+    <div class="empty-state">No pieces in this collection yet.</div>
+  <% else %>
+    <div class="grid-3 shop-grid">
+      <% @products.each do |p| %>
+        <%= render "shared/product_card", record: p, kind: "product" %>
+      <% end %>
+    </div>
+  <% end %>
+</main>

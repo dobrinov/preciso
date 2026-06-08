@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   get "shop/:slug", to: "shop#show", as: :shop_category
   get "sets", to: "sets#index", as: :sets
   get "set/:id", to: "sets#show", as: :product_set
+  get "collections", to: "collections#index", as: :collections
+  get "collection/:slug", to: "collections#show", as: :collection
   get "product/:id", to: "products#show", as: :product
   get "about", to: "pages#about", as: :about
 

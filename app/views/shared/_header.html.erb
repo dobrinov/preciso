@@ -2,13 +2,14 @@
   <div class="wrap header-bar">
     <button class="menu-btn" data-action="storefront#toggleMenu" aria-label="Menu"><%= icon :menu, size: 20 %></button>
     <a href="<%= root_path %>" class="brand">
-      <%= image_tag "preciso-logo.jpg", alt: "Preciso", class: "brand-logo" %>
+      <%= image_tag "preciso-logo.png", alt: "Preciso", class: "brand-logo" %>
     </a>
     <nav class="desk-nav">
       <% Category.all.each do |c| %>
         <a href="<%= shop_category_path(c.slug) %>" class="navlink"><%= c.name %></a>
       <% end %>
       <a href="<%= sets_path %>" class="navlink">Sets</a>
+      <% if Collection.nonempty.any? %><a href="<%= collections_path %>" class="navlink">Collections</a><% end %>
       <a href="<%= about_path %>" class="navlink">About</a>
     </nav>
     <button class="cart-btn" data-action="storefront#openCart" aria-label="Cart">
@@ -21,6 +22,7 @@
       <a href="<%= shop_category_path(c.slug) %>"><%= c.name %></a>
     <% end %>
     <a href="<%= sets_path %>">Sets</a>
+    <% if Collection.nonempty.any? %><a href="<%= collections_path %>">Collections</a><% end %>
     <a href="<%= about_path %>">About</a>
   </div>
 </header>
