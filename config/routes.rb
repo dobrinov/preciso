@@ -38,7 +38,7 @@ Rails.application.routes.draw do
     resources :orders, only: [ :index, :show, :update, :destroy ], param: :number
     resources :categories
     resources :products do
-      resources :variants, only: [:new, :create, :edit, :update, :destroy]
+      resources :variants, only: [ :new, :create, :edit, :update, :destroy ]
     end
     resources :sets, controller: "product_sets"
     resources :collections

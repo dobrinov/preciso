@@ -12,6 +12,6 @@ class CreateVariants < ActiveRecord::Migration[8.1]
       t.references :variant_attribute_value, null: false, foreign_key: true
       t.timestamps
     end
-    add_index :variant_values, [:variant_id, :variant_attribute_value_id], unique: true, name: "idx_variant_values_unique"
+    add_index :variant_values, [ :variant_id, :variant_attribute_value_id ], unique: true, name: "idx_variant_values_unique"
   end
 end
