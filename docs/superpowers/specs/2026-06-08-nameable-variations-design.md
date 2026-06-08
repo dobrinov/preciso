@@ -45,7 +45,7 @@ blocks creating two variations of the same product with an identical attribute s
    - Add an optional "Name" text field at the top of the editor card, with a hint:
      "Leave blank to use the attribute combination."
 
-4. **`VariantsController`** (`app/controllers/admin/variants/...`)
+4. **`VariantsController`** (`app/controllers/admin/variants_controller.rb`)
    - On create and update, set `name` from `params.dig(:variant, :name)`, with blank
      coerced to `nil` (e.g. `.presence`).
    - Duplicate-detection logic is untouched.
