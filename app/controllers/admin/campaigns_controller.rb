@@ -54,7 +54,9 @@ module Admin
     # Only rows whose checkbox is enabled are kept.
     def rebuild_items(campaign)
       campaign.campaign_items.destroy_all
-      Array(params[:items]).each do |key, attrs|
+      # params[:items] is ActionController::Parameters (or nil when none ticked);
+      # iterate its key/value pairs directly — Array(params) would wrap it, not pair it.
+      params.fetch(:items, {}).each do |key, attrs|
         next if attrs[:enabled] != "1"
         kind, id = key.split("-", 2)
         next unless CampaignItem::KINDS.include?(kind)
