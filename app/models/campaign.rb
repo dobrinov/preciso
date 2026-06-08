@@ -18,6 +18,11 @@ class Campaign < ApplicationRecord
   # The active discount for a catalogue item, or nil. At most one campaign is
   # active (enforced by validation); an all-products campaign discounts every
   # item by percent_off via a transient (unsaved) CampaignItem.
+  #
+  # Runs one or two small indexed queries per call; callers (Product/ProductSet)
+  # memoize the result per instance, matching the catalogue's existing per-item
+  # query pattern. If the catalogue grows large, resolve the active campaign once
+  # per request (e.g. ActiveSupport::CurrentAttributes) instead.
   def self.discount_for(kind, id)
     campaign = active.first
     return nil unless campaign
