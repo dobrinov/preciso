@@ -1,6 +1,6 @@
 <main class="wrap fade-up page-top">
   <%= render "shared/breadcrumb", trail: [[@category&.name || "Shop", @category ? shop_category_path(@category.slug) : nil], [@product.name, nil]] %>
-  <div class="detail-grid">
+  <div class="detail-grid" data-controller="variants">
     <div class="detail-media" data-controller="gallery">
       <div class="detail-media-frame">
         <% if @product.images.attached? %>
@@ -22,7 +22,7 @@
         </div>
       <% end %>
     </div>
-    <div style="padding-top:6px" data-controller="variants">
+    <div style="padding-top:6px">
       <div class="eyebrow clay"><%= @category&.name %></div>
       <h1 class="display detail-title"><%= @product.name %></h1>
       <div class="detail-price" data-variants-target="price">

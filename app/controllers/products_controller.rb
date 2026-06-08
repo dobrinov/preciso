@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   def show
-    @product = Product.find_by(id: params[:id])
+    @product = Product.with_attached_images.find_by(id: params[:id])
     return render "shared/not_found", status: :not_found unless @product
 
     @variants = @product.variants.includes(:variant_attribute_values, images_attachments: :blob)

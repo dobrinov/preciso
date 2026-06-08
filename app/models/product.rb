@@ -12,7 +12,11 @@ class Product < ApplicationRecord
   def tone = category&.tone || "#f3efe9"
   def kind = "product"
 
-  def has_variants? = variants.exists?
+  def has_variants?
+    return @has_variants if defined?(@has_variants)
+
+    @has_variants = variants.exists?
+  end
 
   # Minimum current variant price, for "from €X" display.
   def price_from
