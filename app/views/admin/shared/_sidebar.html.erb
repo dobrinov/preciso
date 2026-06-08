@@ -1,0 +1,40 @@
+<%
+  active = case controller_name
+           when "dashboard" then "dashboard"
+           when "analytics" then "analytics"
+           when "orders" then "orders"
+           when "categories" then "categories"
+           when "products" then "products"
+           when "product_sets" then "sets"
+           when "about" then "about"
+           end
+  nav = [
+    ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
+    ["analytics",  "Analytics",  :chart,  admin_analytics_path],
+    ["orders",     "Orders",     :bag,    admin_orders_path],
+    ["categories", "Categories", :tag,    admin_categories_path],
+    ["products",   "Products",   :box,    admin_products_path],
+    ["sets",       "Sets",       :layers, admin_sets_path],
+    ["about",      "About page", :doc,    edit_admin_about_path],
+  ]
+%>
+<aside class="admin-aside">
+  <div class="admin-brand">
+    <div class="name">Preciso</div>
+    <div class="sub">Studio Admin</div>
+  </div>
+  <nav class="admin-nav">
+    <% nav.each do |key, label, ic, path| %>
+      <a href="<%= path %>" class="<%= 'active' if active == key %>">
+        <%= icon ic %> <span class="label-text"><%= label %></span>
+        <% if key == "orders" && new_order_count.positive? %>
+          <span class="nav-badge"><%= new_order_count %></span>
+        <% end %>
+      </a>
+    <% end %>
+  </nav>
+  <div class="admin-foot">
+    <a href="<%= root_path %>"><%= icon :store, size: 16 %> <span class="label-text">View storefront</span></a>
+    <%= button_to admin_logout_path, method: :delete do %><%= icon :out, size: 16 %> <span class="label-text">Sign out</span><% end %>
+  </div>
+</aside>

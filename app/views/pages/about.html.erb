@@ -1,0 +1,30 @@
+<main class="fade-up">
+  <section class="wrap about-hero">
+    <div class="about-hero-inner">
+      <div class="eyebrow clay">The studio</div>
+      <h1 class="display about-title"><%= @about.title %></h1>
+      <p class="about-lead"><%= @about.lead %></p>
+    </div>
+  </section>
+  <section class="wrap">
+    <div class="about-figure"><%= placeholder(tone: "#ebe5dc", caption: "studio photograph", name: "The studio") %></div>
+  </section>
+  <section class="wrap">
+    <div class="about-body">
+      <% @about.paragraphs.each_with_index do |para, i| %>
+        <p class="<%= 'first' if i.zero? %>"><%= para %></p>
+      <% end %>
+      <div class="about-sign">
+        <div class="about-sign-name"><%= @about.signature %></div>
+        <div class="about-sign-studio"><%= @about.studio %></div>
+      </div>
+    </div>
+  </section>
+  <section class="wrap">
+    <div class="about-cta">
+      <h2 class="display" style="font-size:36px">Find a piece for your table</h2>
+      <p style="color:var(--muted);margin-top:12px;font-size:16px">Browse what's available now, fresh from the kiln.</p>
+      <a href="<%= shop_category_path('bowls') %>" class="btn clay" style="margin-top:26px">Browse the shop <%= icon :arrow, size: 16 %></a>
+    </div>
+  </section>
+</main>

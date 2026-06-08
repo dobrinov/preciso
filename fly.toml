@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for preciso on 2026-06-08T10:03:18+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'preciso'
+primary_region = 'fra'
+console_command = '/rails/bin/rails console'
+
+[env]
+  # Thruster (bin/thrust) defaults to port 80, which the non-root container
+  # user can't bind. Listen on 8080 to match internal_port below.
+  HTTP_PORT = '8080'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
+
+[mounts]
+  source="preciso"
+  destination="/mnt/preciso"

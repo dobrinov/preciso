@@ -1,0 +1,2 @@
+<%= render "cart/refresh" %>
+<%= turbo_stream.append "toast_host" do %><%= render "shared/toast", message: @toast %><% end %>

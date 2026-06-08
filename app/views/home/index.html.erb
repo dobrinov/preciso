@@ -1,0 +1,84 @@
+<main class="fade-up">
+  <%# hero %>
+  <section class="wrap hero-sec">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow clay">Handmade Porcelain · Bianna Taynova</div>
+        <h1 class="display hero-title">Quiet objects<br>for daily<span class="italic clay-text"> rituals</span></h1>
+        <p class="hero-lede">Wheel-thrown bowls, cups and vases in fine white porcelain — finished by hand, made in small batches, sold as they leave the kiln.</p>
+        <div class="hero-cta">
+          <a href="<%= shop_category_path('bowls') %>" class="btn">Browse the shop <%= icon :arrow, size: 16 %></a>
+          <a href="<%= about_path %>" class="btn ghost">The studio</a>
+        </div>
+      </div>
+      <% if @hero_set %>
+        <a href="<%= product_set_path(@hero_set) %>" class="hero-feature">
+          <div class="hero-feature-frame"><%= media_for(@hero_set, kind: "set", ratio: "125%") %></div>
+          <div class="hero-feature-card">
+            <div>
+              <div class="hero-feature-eyebrow">Featured set</div>
+              <div class="hero-feature-name"><%= @hero_set.name %></div>
+            </div>
+            <span class="clay-text"><%= icon :arrow, size: 16 %></span>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  </section>
+
+  <%# category tiles %>
+  <section class="wrap section">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Browse by</div>
+        <h2 class="display section-title">Categories</h2>
+      </div>
+      <a href="<%= sets_path %>" class="link-underline">Shop the sets <%= icon :arrow, size: 16 %></a>
+    </div>
+    <div class="cat-grid">
+      <% @categories.each_with_index do |c, i| %>
+        <% count = c.products.count %>
+        <a href="<%= shop_category_path(c.slug) %>" class="cat-tile <%= 'span2' if i.zero? %>">
+          <div class="cat-frame <%= i.zero? ? 'wide' : 'square' %>">
+            <%= placeholder(tone: c.tone, caption: "category · #{count} pieces") %>
+            <div class="cat-overlay">
+              <div>
+                <div class="cat-name"><%= c.name %></div>
+                <div class="cat-blurb"><%= c.blurb %></div>
+              </div>
+              <span class="cat-arrow"><%= icon :arrow, size: 16 %></span>
+            </div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  </section>
+
+  <%# maker strip %>
+  <section class="maker">
+    <div class="wrap maker-grid">
+      <div class="maker-media"><%= placeholder(tone: "#ece6dd", caption: "studio portrait", name: "Bianna at the wheel") %></div>
+      <div>
+        <div class="eyebrow clay">The maker</div>
+        <h2 class="display maker-title">Made by one pair of hands</h2>
+        <p class="maker-text">Each piece begins as fine porcelain on the wheel and passes entirely through my hands — thrown, trimmed, glazed and fired. Small differences are the record of how it was made.</p>
+        <a href="<%= about_path %>" class="link-underline" style="margin-top:30px">Read the studio story <%= icon :arrow, size: 16 %></a>
+      </div>
+    </div>
+  </section>
+
+  <%# featured pieces %>
+  <section class="wrap section">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Latest from the kiln</div>
+        <h2 class="display section-title">New pieces</h2>
+      </div>
+    </div>
+    <div class="grid-4">
+      <% @featured.each do |p| %>
+        <%= render "shared/product_card", record: p, kind: "product" %>
+      <% end %>
+    </div>
+  </section>
+</main>

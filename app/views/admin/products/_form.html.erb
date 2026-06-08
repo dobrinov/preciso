@@ -1,0 +1,79 @@
+<% is_new = @product.new_record? %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New piece" : (@product.name.presence || "Edit piece") %></h1>
+    <p class="pagehead-sub"><%= is_new ? "Add a piece to the catalogue." : "Editing an existing piece." %></p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_products_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back</a>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @product], html: { multipart: true } do |f| %>
+  <div class="admin-pad editor-grid">
+    <div class="card-pad">
+      <label class="field">
+        <div class="field-label">Name</div>
+        <%= f.text_field :name, class: "input", placeholder: "e.g. Morning Cup" %>
+      </label>
+      <div class="row-2">
+        <label class="field">
+          <div class="field-label">Category</div>
+          <%= f.collection_select :category_id, Category.all, :id, :name, { include_blank: "Uncategorised" }, class: "input" %>
+        </label>
+        <label class="field">
+          <div class="field-label">Price (€)</div>
+          <%= f.number_field :price, min: 0, class: "input", placeholder: "0" %>
+        </label>
+      </div>
+      <label class="field">
+        <div class="field-label">Short description</div>
+        <%= f.text_field :short, class: "input", placeholder: "One quiet line about the piece." %>
+        <div class="field-hint">Shown on cards and lists.</div>
+      </label>
+      <label class="field">
+        <div class="field-label">Long description</div>
+        <%= f.text_area :long_desc, rows: 5, class: "input", placeholder: "Materials, size, the making of it…" %>
+        <div class="field-hint">Shown on the product page.</div>
+      </label>
+    </div>
+
+    <div class="stack-18">
+      <div class="box" data-controller="multiupload">
+        <div class="box-label">Photographs</div>
+        <% if @product.images.attached? %>
+          <div class="img-grid">
+            <% @product.images.each_with_index do |img, i| %>
+              <div class="img-tile" data-multiupload-target="tile">
+                <%= image_tag img, class: "cover-img" %>
+                <% if i.zero? %><span class="img-cover-tag">Cover</span><% end %>
+                <input type="checkbox" name="remove_image_ids[]" value="<%= img.id %>" class="img-remove-cb" data-multiupload-target="removeCb">
+                <button type="button" class="img-remove-x" data-action="multiupload#toggleRemove" title="Remove"><%= icon :close, size: 14 %></button>
+              </div>
+            <% end %>
+          </div>
+          <div class="field-hint" style="margin:10px 0">The first photo is the cover. Marked photos are removed on save.</div>
+        <% end %>
+
+        <div class="dropzone dz-multi" data-multiupload-target="zone" data-action="click->multiupload#browse dragover->multiupload#dragover dragleave->multiupload#dragleave drop->multiupload#drop">
+          <div data-multiupload-target="placeholder"><%= placeholder(tone: @product.tone, name: "Add photos", caption: "click or drop photos") %></div>
+          <div class="img-grid previews" data-multiupload-target="previews" style="display:none"></div>
+        </div>
+        <%= f.file_field :images, multiple: true, accept: "image/*", style: "display:none", data: { multiupload_target: "input", action: "multiupload#changed" } %>
+        <div class="dropzone-actions">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="multiupload#browse">Add photos</button>
+        </div>
+      </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Add piece" : "Save changes"), class: "btn clay" %>
+        <% unless is_new %>
+          <%= button_to admin_product_path(@product), method: :delete, class: "danger-btn",
+                form: { data: { turbo_confirm: "Delete this piece? It will be removed from any sets." } } do %>
+            <%= icon :trash, size: 16 %> Delete piece
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,62 @@
+<% content_for :title, "Preciso — About page" %>
+<%= form_with url: admin_about_path, method: :patch, data: { controller: "abouteditor", turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">About page</h1>
+      <p class="pagehead-sub">Edit the studio story shown to visitors.</p>
+    </div>
+    <div class="pagehead-actions">
+      <a href="<%= about_path %>" target="_blank" class="btn ghost sm"><%= icon :store, size: 16 %> View page</a>
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad" style="max-width:820px">
+    <div class="card-pad">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> Saved</div>
+      <% end %>
+      <label class="field"><div class="field-label">Page title</div>
+        <%= text_field_tag :title, @about.title, class: "input" %>
+      </label>
+      <label class="field"><div class="field-label">Lead paragraph</div>
+        <%= text_area_tag :lead, @about.lead, rows: 2, class: "input" %>
+        <div class="field-hint">The large intro line.</div>
+      </label>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="field-label" style="margin-bottom:0">Body paragraphs</div>
+          <button type="button" class="link-underline" style="font-size:11px" data-action="abouteditor#add"><%= icon :plus, size: 16 %> Add paragraph</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px" data-abouteditor-target="list">
+          <% @about.paragraphs.each do |para| %>
+            <div class="para-row">
+              <textarea class="input" rows="3" name="body[]" style="flex:1"><%= para %></textarea>
+              <button type="button" class="icon-square" data-action="abouteditor#remove"><%= icon :trash, size: 16 %></button>
+            </div>
+          <% end %>
+        </div>
+        <template data-abouteditor-target="template">
+          <div class="para-row">
+            <textarea class="input" rows="3" name="body[]" style="flex:1"></textarea>
+            <button type="button" class="icon-square" data-action="abouteditor#remove"><%= icon :trash, size: 16 %></button>
+          </div>
+        </template>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <label class="field"><div class="field-label">Signature</div>
+          <%= text_field_tag :signature, @about.signature, class: "input" %>
+        </label>
+        <label class="field"><div class="field-label">Studio line</div>
+          <%= text_field_tag :studio, @about.studio, class: "input" %>
+        </label>
+      </div>
+
+      <div>
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+  </div>
+<% end %>

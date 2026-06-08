@@ -1,0 +1,22 @@
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [["Shop", nil], [@category.name, nil]] %>
+  <div class="list-head">
+    <div>
+      <h1 class="display list-title"><%= @category.name %></h1>
+      <p class="list-blurb"><%= @category.blurb %></p>
+    </div>
+    <div class="list-count"><%= @products.size %> pieces</div>
+  </div>
+
+  <%= render "shared/catnav", active: @category.slug %>
+
+  <% if @products.empty? %>
+    <div class="empty-state">No pieces in this category yet.</div>
+  <% else %>
+    <div class="grid-3 shop-grid">
+      <% @products.each do |p| %>
+        <%= render "shared/product_card", record: p, kind: "product" %>
+      <% end %>
+    </div>
+  <% end %>
+</main>

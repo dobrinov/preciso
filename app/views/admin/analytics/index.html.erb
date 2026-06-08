@@ -1,0 +1,81 @@
+<% content_for :title, "Preciso — Analytics" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Analytics</h1>
+    <p class="pagehead-sub">What visitors are looking at — measured on this device, no cookies.</p>
+  </div>
+  <div class="pagehead-actions">
+    <div class="range-toggle">
+      <% [["7d", "7 days"], ["30d", "30 days"], ["all", "All"]].each do |k, lbl| %>
+        <a href="<%= admin_analytics_path(range: k) %>" class="range-opt <%= 'active' if @range == k %>"><%= lbl %></a>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="admin-pad">
+  <%# KPIs %>
+  <% per_visit = @summary[:visitors].positive? ? (@summary[:pageviews].to_f / @summary[:visitors]).round(1) : 0 %>
+  <% kpis = [
+       ["Visitors", @summary[:visitors], "unique sessions", false],
+       ["Page views", @summary[:pageviews], "#{per_visit} per visit", false],
+       ["Added to cart", @summary[:carts], "items added", false],
+       ["Orders", @summary[:orders], "#{@summary[:conversion].round(1)}% of visits", true],
+     ] %>
+  <div class="stat-grid">
+    <% kpis.each do |label, value, sub, accent| %>
+      <div class="stat-card">
+        <div class="stat-label"><%= label %></div>
+        <div class="stat-value <%= 'accent' if accent %>"><%= value %></div>
+        <div class="stat-sub"><%= sub %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# traffic chart %>
+  <div class="chart-card">
+    <div class="chart-card-head">
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft)">Traffic · last <%= @days %> days</div>
+      <div class="chart-legend">
+        <span><i class="legend-bar"></i> Page views</span>
+        <span><i class="legend-line"></i> Visitors</span>
+      </div>
+    </div>
+    <div class="chart <%= 'dense' if @daily.size > 14 %>">
+      <% @daily.each do |d| %>
+        <div class="chart-col">
+          <div class="chart-bars" title="<%= d[:views] %> views · <%= d[:visitors] %> visitors">
+            <div class="chart-bar" style="height:<%= (d[:views].to_f / @max_day * 100).round %>%"></div>
+            <div class="chart-line" style="height:<%= (d[:visitors].to_f / @max_day * 100).round %>%"></div>
+          </div>
+          <div class="chart-day"><%= chart_day_label(d[:t], @days) %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# rank lists %>
+  <div class="two-col">
+    <%= render "rank_list", title: "Most visited pages", rows: @top_pages, empty: "No visits in this range yet.", link: false %>
+    <%= render "rank_list", title: "Most viewed pieces", rows: @top_pieces, empty: "No pieces viewed yet.", link: true %>
+  </div>
+
+  <%# activity feed %>
+  <div class="panel" style="margin-top:18px">
+    <div class="panel-head"><span>Recent activity</span></div>
+    <% if @recent.empty? %><div class="empty-state">No activity recorded yet.</div><% end %>
+    <% @recent.each do |e| %>
+      <div class="activity-row">
+        <span class="activity-ic" style="color:<%= event_color(e.event_type) %>"><%= event_icon(e.event_type) %></span>
+        <div class="activity-text"><%= event_text(e) %></div>
+        <span class="activity-time"><%= time_ago e.occurred_at %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="analytics-foot">
+    <div class="note">Privacy-friendly by design — visits are counted on this device only, with no cookies, no IP logging and no third-party trackers. Your own admin views are never counted.</div>
+    <%= button_to "Clear history", admin_reset_analytics_path, method: :delete, class: "clear",
+          form: { data: { turbo_confirm: "Clear all analytics history? This cannot be undone." } } %>
+  </div>
+</div>

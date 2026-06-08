@@ -1,0 +1,13 @@
+<a href="<%= href %>" class="admin-card">
+  <div class="admin-card-media">
+    <%= media_for(record, kind: kind, cover: true) %>
+    <span class="admin-card-edit"><%= icon :edit, size: 16 %> Edit</span>
+  </div>
+  <div class="admin-card-body">
+    <div class="admin-card-top">
+      <div class="admin-card-name"><%= record.name %></div>
+      <div class="admin-card-price"><%= money record.price %></div>
+    </div>
+    <div class="admin-card-sub"><%= local_assigns[:sub] || record.short %></div>
+  </div>
+</a>

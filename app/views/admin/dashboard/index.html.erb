@@ -1,0 +1,64 @@
+<% content_for :title, "Preciso — Dashboard" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Dashboard</h1>
+    <p class="pagehead-sub">A quick look at the studio today.</p>
+  </div>
+</div>
+
+<div class="admin-pad">
+  <div class="stat-grid">
+    <% stats = [
+         ["Revenue", money(@revenue), "all active orders", false],
+         ["Orders", @orders.size, "all time", false],
+         ["New", @new_count, "awaiting action", @new_count.positive?],
+         ["Preparing", @prep_count, "in the kiln", false],
+       ] %>
+    <% stats.each do |label, value, sub, accent| %>
+      <div class="stat-card">
+        <div class="stat-label"><%= label %></div>
+        <div class="stat-value <%= 'accent' if accent %>"><%= value %></div>
+        <div class="stat-sub"><%= sub %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="dash-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <span>Recent orders</span>
+        <a href="<%= admin_orders_path %>" class="link-underline" style="font-size:11px">All orders</a>
+      </div>
+      <% @recent.each do |o| %>
+        <a href="<%= admin_order_path(o) %>" class="dash-row">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="dash-row-num"><%= o.number %></span>
+              <span class="dash-row-name"><%= o.customer_name %></span>
+            </div>
+            <div class="dash-row-meta"><%= o.item_count %> items · <%= time_ago o.created_at %></div>
+          </div>
+          <%= render "admin/shared/status_pill", status: o.status, small: true %>
+          <div class="dash-row-total"><%= money o.total %></div>
+        </a>
+      <% end %>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><span>Best sellers</span></div>
+      <div class="panel-pad best-list">
+        <% if @best.empty? %>
+          <div style="font-size:13px;color:var(--faint)">No sales yet.</div>
+        <% end %>
+        <% @best.each do |name, qty| %>
+          <div>
+            <div class="best-row-top">
+              <span><%= name %></span><span class="mono" style="color:var(--muted)"><%= qty %> sold</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:<%= (qty.to_f / @max_best * 100).round %>%"></div></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

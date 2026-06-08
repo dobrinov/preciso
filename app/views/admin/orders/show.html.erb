@@ -1,0 +1,66 @@
+<% content_for :title, "Preciso — Order #{@order.number}" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Order <%= @order.number %></h1>
+    <p class="pagehead-sub"><%= date_label @order.created_at %> · <%= time_ago @order.created_at %></p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_orders_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> All orders</a>
+  </div>
+</div>
+
+<div class="admin-pad dash-grid even" style="align-items:start">
+  <div class="panel order-items">
+    <div class="panel-head"><span>Items</span></div>
+    <% @order.order_lines.each do |l| %>
+      <div class="item">
+        <div class="order-thumb"><%= media_for(l.record, kind: l.kind, cover: true) if l.record %></div>
+        <div style="flex:1">
+          <div class="order-line-name"><%= l.name %></div>
+          <div class="order-line-meta"><%= l.kind == "set" ? "Set" : "Piece" %> · <%= money l.price %> each</div>
+        </div>
+        <div class="order-line-qty">×<%= l.qty %></div>
+        <div class="order-line-total"><%= money l.subtotal %></div>
+      </div>
+    <% end %>
+    <div class="order-total-row">
+      <span class="cart-total-label">Order total</span>
+      <span class="serif" style="font-size:30px"><%= money @order.total %></span>
+    </div>
+  </div>
+
+  <div class="stack-18">
+    <div class="box">
+      <div class="box-label">Status</div>
+      <div class="status-choices">
+        <% Order::STATUS_ORDER.each do |s| %>
+          <% meta = Order::STATUSES[s] %>
+          <% active = @order.status == s %>
+          <%= button_to admin_order_path(@order), method: :patch, params: { status: s },
+                class: "status-choice",
+                style: active ? "border-color:#{meta[:color]};background:#{meta[:bg]};color:#{meta[:color]}" : "" do %>
+            <%= meta[:label] %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-label">Customer</div>
+      <div class="kv-list">
+        <div class="kv"><span class="k">Name</span><span class="v"><%= @order.customer_name %></span></div>
+        <div class="kv"><span class="k">Email</span><span class="v"><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a></span></div>
+        <div class="kv"><span class="k">Phone</span><span class="v"><a href="tel:<%= @order.customer_phone %>"><%= @order.customer_phone %></a></span></div>
+        <% if @order.note.present? %>
+          <div class="kv"><span class="k">Note</span><span class="v"><%= @order.note %></span></div>
+        <% end %>
+      </div>
+      <div class="subtle-note">No payment is taken online — contact the customer to arrange payment and pickup.</div>
+    </div>
+
+    <%= button_to admin_order_path(@order), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this order permanently?" } } do %>
+      <%= icon :trash, size: 16 %> Delete order
+    <% end %>
+  </div>
+</div>

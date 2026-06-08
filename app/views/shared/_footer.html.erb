@@ -1,0 +1,31 @@
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Preciso</div>
+        <p class="foot-blurb">Handmade porcelain by Bianna Taynova. Thrown, trimmed and glazed by hand in small batches.</p>
+      </div>
+      <div>
+        <div class="eyebrow">Shop</div>
+        <div class="foot-col-list">
+          <% Category.all.each do |c| %>
+            <a href="<%= shop_category_path(c.slug) %>" class="foot-link"><%= c.name %></a>
+          <% end %>
+          <a href="<%= sets_path %>" class="foot-link">Sets</a>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow">Studio</div>
+        <div class="foot-col-list">
+          <a href="<%= about_path %>" class="foot-link">About Bianna</a>
+          <a href="mailto:hello@preciso.com" class="foot-link">hello@preciso.com</a>
+          <a href="<%= admin_login_path %>" class="foot-link">Studio login</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© <%= Date.current.year %> Preciso · Studio by appointment</span>
+      <span class="mono" style="font-size:10px">Made one piece at a time</span>
+    </div>
+  </div>
+</footer>

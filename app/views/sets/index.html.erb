@@ -1,0 +1,12 @@
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [["Sets", nil]] %>
+  <div style="margin-top:16px;padding-bottom:34px;border-bottom:1px solid var(--line)">
+    <h1 class="display list-title">Sets</h1>
+    <p class="list-blurb">Considered groupings of individual pieces, boxed together at a price for the set.</p>
+  </div>
+  <div class="grid-3 shop-grid">
+    <% @sets.each do |s| %>
+      <%= render "shared/product_card", record: s, kind: "set" %>
+    <% end %>
+  </div>
+</main>
