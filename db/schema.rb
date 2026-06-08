@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_113451) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -58,6 +58,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.string "tone"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "collection_memberships", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0
+    t.integer "product_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "product_id"], name: "index_collection_memberships_on_collection_id_and_product_id", unique: true
+    t.index ["collection_id"], name: "index_collection_memberships_on_collection_id"
+    t.index ["product_id"], name: "index_collection_memberships_on_product_id"
+  end
+
+  create_table "collections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_collections_on_slug", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -131,6 +152,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.index ["product_set_id"], name: "index_set_items_on_product_set_id"
   end
 
+  add_foreign_key "collection_memberships", "collections"
+  add_foreign_key "collection_memberships", "products"
   add_foreign_key "order_lines", "orders"
   add_foreign_key "products", "categories"
   add_foreign_key "set_items", "product_sets"

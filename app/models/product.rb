@@ -2,6 +2,8 @@ class Product < ApplicationRecord
   belongs_to :category, optional: true
   has_many_attached :images
   has_many :set_items, dependent: :destroy
+  has_many :collection_memberships, dependent: :destroy
+  has_many :collections, through: :collection_memberships
 
   validates :name, presence: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }
