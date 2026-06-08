@@ -30,11 +30,12 @@ class ProductSet < ApplicationRecord
   end
 
   def current_price(variant: nil)
+    base = base_price(variant: variant)
     ci = Campaign.discount_for("set", id)
-    ci ? ci.price_for(price) : price
+    ci ? ci.price_for(base) : base
   end
 
   def on_sale?(variant: nil)
-    current_price < price
+    current_price(variant: variant) < base_price(variant: variant)
   end
 end
