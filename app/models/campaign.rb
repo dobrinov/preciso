@@ -9,18 +9,31 @@ class Campaign < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
+  validates :percent_off, presence: true, numericality: { only_integer: true, in: 1..99 },
+            if: :all_products?
+  validate :single_active_campaign, if: :active
 
   def to_param = slug
 
-  # The active discount for a catalogue item, or nil. First active campaign wins.
+  # The active discount for a catalogue item, or nil. At most one campaign is
+  # active (enforced by validation); an all-products campaign discounts every
+  # item by percent_off via a transient (unsaved) CampaignItem.
   def self.discount_for(kind, id)
-    CampaignItem.joins(:campaign)
-                .where(campaigns: { active: true }, kind: kind.to_s, item_id: id)
-                .order("campaigns.id")
-                .first
+    campaign = active.first
+    return nil unless campaign
+    if campaign.all_products?
+      CampaignItem.new(discount_kind: "percent", percent_off: campaign.percent_off)
+    else
+      campaign.campaign_items.find_by(kind: kind.to_s, item_id: id)
+    end
   end
 
   private
+
+  def single_active_campaign
+    return unless Campaign.where(active: true).where.not(id: id).exists?
+    errors.add(:base, "Another campaign is already active — deactivate it before activating this one.")
+  end
 
   def assign_slug
     if new_record?
