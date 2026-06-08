@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_113451) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_120504) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -47,6 +47,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_113451) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "campaign_items", force: :cascade do |t|
+    t.integer "campaign_id", null: false
+    t.datetime "created_at", null: false
+    t.string "discount_kind", default: "fixed", null: false
+    t.integer "item_id", null: false
+    t.string "kind", default: "product", null: false
+    t.integer "percent_off"
+    t.integer "sale_price"
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_items_on_campaign_id"
+    t.index ["kind", "item_id"], name: "index_campaign_items_on_kind_and_item_id"
+  end
+
+  create_table "campaigns", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.text "blurb"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_campaigns_on_active"
+    t.index ["slug"], name: "index_campaigns_on_slug", unique: true
   end
 
   create_table "categories", force: :cascade do |t|
@@ -152,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_113451) do
     t.index ["product_set_id"], name: "index_set_items_on_product_set_id"
   end
 
+  add_foreign_key "campaign_items", "campaigns"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
   add_foreign_key "order_lines", "orders"
