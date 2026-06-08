@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_130616) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -49,6 +49,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "campaign_items", force: :cascade do |t|
+    t.integer "campaign_id", null: false
+    t.datetime "created_at", null: false
+    t.string "discount_kind", default: "fixed", null: false
+    t.integer "item_id", null: false
+    t.string "kind", default: "product", null: false
+    t.integer "percent_off"
+    t.integer "sale_price"
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "kind", "item_id"], name: "idx_campaign_items_unique", unique: true
+    t.index ["campaign_id"], name: "index_campaign_items_on_campaign_id"
+    t.index ["kind", "item_id"], name: "index_campaign_items_on_kind_and_item_id"
+  end
+
+  create_table "campaigns", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.text "blurb"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_campaigns_on_active"
+    t.index ["slug"], name: "index_campaigns_on_slug", unique: true
+  end
+
   create_table "categories", force: :cascade do |t|
     t.string "blurb"
     t.datetime "created_at", null: false
@@ -58,6 +83,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.string "tone"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "collection_memberships", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0
+    t.integer "product_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "product_id"], name: "index_collection_memberships_on_collection_id_and_product_id", unique: true
+    t.index ["collection_id"], name: "index_collection_memberships_on_collection_id"
+    t.index ["product_id"], name: "index_collection_memberships_on_product_id"
+  end
+
+  create_table "collections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_collections_on_slug", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -84,6 +130,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.integer "price", default: 0, null: false
     t.integer "qty", default: 1, null: false
     t.datetime "updated_at", null: false
+    t.integer "variant_id"
+    t.string "variant_label"
     t.index ["order_id"], name: "index_order_lines_on_order_id"
   end
 
@@ -131,8 +179,50 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_090000) do
     t.index ["product_set_id"], name: "index_set_items_on_product_set_id"
   end
 
+  create_table "variant_attribute_values", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.integer "variant_attribute_id", null: false
+    t.index ["variant_attribute_id"], name: "index_variant_attribute_values_on_variant_attribute_id"
+  end
+
+  create_table "variant_attributes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "variant_values", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "variant_attribute_value_id", null: false
+    t.integer "variant_id", null: false
+    t.index ["variant_attribute_value_id"], name: "index_variant_values_on_variant_attribute_value_id"
+    t.index ["variant_id", "variant_attribute_value_id"], name: "idx_variant_values_unique", unique: true
+    t.index ["variant_id"], name: "index_variant_values_on_variant_id"
+  end
+
+  create_table "variants", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0
+    t.integer "price", default: 0, null: false
+    t.integer "product_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_variants_on_product_id"
+  end
+
+  add_foreign_key "campaign_items", "campaigns"
+  add_foreign_key "collection_memberships", "collections"
+  add_foreign_key "collection_memberships", "products"
   add_foreign_key "order_lines", "orders"
   add_foreign_key "products", "categories"
   add_foreign_key "set_items", "product_sets"
   add_foreign_key "set_items", "products"
+  add_foreign_key "variant_attribute_values", "variant_attributes"
+  add_foreign_key "variant_values", "variant_attribute_values"
+  add_foreign_key "variant_values", "variants"
+  add_foreign_key "variants", "products"
 end

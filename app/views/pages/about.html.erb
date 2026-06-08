@@ -7,7 +7,13 @@
     </div>
   </section>
   <section class="wrap">
-    <div class="about-figure"><%= placeholder(tone: "#ebe5dc", caption: "studio photograph", name: "The studio") %></div>
+    <div class="about-figure">
+      <% if @about.image.attached? %>
+        <%= image_tag @about.image, alt: "Studio", class: "cover-img" %>
+      <% else %>
+        <%= placeholder(tone: "#ebe5dc", caption: "studio photograph", name: "The studio") %>
+      <% end %>
+    </div>
   </section>
   <section class="wrap">
     <div class="about-body">
@@ -25,6 +31,16 @@
       <h2 class="display" style="font-size:36px">Find a piece for your table</h2>
       <p style="color:var(--muted);margin-top:12px;font-size:16px">Browse what's available now, fresh from the kiln.</p>
       <a href="<%= shop_category_path('bowls') %>" class="btn clay" style="margin-top:26px">Browse the shop <%= icon :arrow, size: 16 %></a>
+      <div class="about-contact">
+        <div class="about-contact-name">Bianna Taynova</div>
+        <a href="tel:+359885448888">+359 88 544 8888</a>
+        <a href="mailto:b_taynova@bondart.eu">b_taynova@bondart.eu</a>
+        <div>Sofia, Vitosha blvd. 200, section A</div>
+        <div class="foot-social" style="justify-content:center;margin-top:12px">
+          <a href="https://www.instagram.com/preciso_handmade/" target="_blank" rel="noopener" aria-label="Instagram"><%= icon :instagram, size: 22 %></a>
+          <a href="https://www.facebook.com/PrecisoHandmade" target="_blank" rel="noopener" aria-label="Facebook"><%= icon :facebook, size: 22 %></a>
+        </div>
+      </div>
     </div>
   </section>
 </main>

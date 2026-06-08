@@ -24,4 +24,23 @@ class ProductSet < ApplicationRecord
   def separate_total
     set_items.includes(:product).sum { |si| (si.product&.price || 0) * si.quantity }
   end
+
+  def base_price(variant: nil)
+    price
+  end
+
+  def current_price(variant: nil)
+    base = base_price(variant: variant)
+    campaign_item ? campaign_item.price_for(base) : base
+  end
+
+  def on_sale?(variant: nil)
+    current_price(variant: variant) < base_price(variant: variant)
+  end
+
+  # Active campaign discount for this set, memoized per instance (caches nil too).
+  def campaign_item
+    return @campaign_item if defined?(@campaign_item)
+    @campaign_item = Campaign.discount_for("set", id)
+  end
 end

@@ -25,4 +25,18 @@ module ApplicationHelper
   def link_path_for(line_or_record, kind)
     kind == "set" ? product_set_path(line_or_record) : product_path(line_or_record)
   end
+
+  # Renders the current price, with the original struck through when discounted.
+  def price_tag(record, variant: nil)
+    cur = record.current_price(variant: variant)
+    base = record.base_price(variant: variant)
+    if cur < base
+      safe_join([
+        content_tag(:span, money(cur), class: "price-now"),
+        content_tag(:span, money(base), class: "price-was")
+      ], " ")
+    else
+      money(cur)
+    end
+  end
 end

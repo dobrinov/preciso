@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   get "shop/:slug", to: "shop#show", as: :shop_category
   get "sets", to: "sets#index", as: :sets
   get "set/:id", to: "sets#show", as: :product_set
+  get "collections", to: "collections#index", as: :collections
+  get "collection/:slug", to: "collections#show", as: :collection
+  get "campaign/:slug", to: "campaigns#show", as: :campaign
   get "product/:id", to: "products#show", as: :product
   get "about", to: "pages#about", as: :about
 
@@ -29,13 +32,18 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     get "dashboard", to: "dashboard#index"
 
-    get  "analytics", to: "analytics#index"
+    get "analytics", to: "analytics#index"
     delete "analytics", to: "analytics#reset", as: :reset_analytics
 
-    resources :orders, only: [:index, :show, :update, :destroy], param: :number
+    resources :orders, only: [ :index, :show, :update, :destroy ], param: :number
     resources :categories
-    resources :products
+    resources :products do
+      resources :variants, only: [ :new, :create, :edit, :update, :destroy ]
+    end
     resources :sets, controller: "product_sets"
-    resource :about, only: [:edit, :update], controller: "about"
+    resources :collections
+    resources :campaigns
+    resources :variant_attributes, path: "attributes"
+    resource :about, only: [ :edit, :update ], controller: "about"
   end
 end

@@ -1,0 +1,30 @@
+<% content_for :title, "Preciso — Collections" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Collections</h1>
+    <p class="pagehead-sub">Groups of pieces that share a style.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_collection_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New collection</a>
+  </div>
+</div>
+<div class="admin-pad">
+  <% if @collections.empty? %>
+    <div class="empty-state">No collections yet.</div>
+  <% else %>
+    <div class="admin-list">
+      <% @collections.each do |c| %>
+        <a href="<%= edit_admin_collection_path(c) %>" class="admin-row">
+          <div class="admin-row-thumb">
+            <% if c.cover.attached? %><%= image_tag c.cover, class: "cover-img" %><% else %><%= placeholder(tone: "#ece6dd", name: c.name) %><% end %>
+          </div>
+          <div class="admin-row-main">
+            <div class="admin-row-name"><%= c.name %></div>
+            <div class="admin-row-sub"><%= c.products.count %> pieces · /collection/<%= c.slug %></div>
+          </div>
+          <span class="admin-row-go"><%= icon :arrow, size: 16 %></span>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<%= form_with model: [:admin, @category] do |f| %>
+<%= form_with model: [:admin, @category], html: { multipart: true } do |f| %>
   <div class="admin-pad editor-grid">
     <div class="card-pad">
       <% if @category.errors.any? %>
@@ -28,6 +28,26 @@
     </div>
 
     <div class="stack-18">
+      <div class="box" data-controller="imageupload">
+        <div class="box-label">Category image</div>
+        <div class="dropzone" data-imageupload-target="zone" data-action="click->imageupload#browse dragover->imageupload#dragover dragleave->imageupload#dragleave drop->imageupload#drop">
+          <% if @category.image.attached? %>
+            <%= image_tag @category.image, data: { imageupload_target: "preview" } %>
+          <% else %>
+            <div data-imageupload-target="placeholder"><%= placeholder(tone: @category.tone, name: @category.name.presence || "Category", caption: "click or drop photo") %></div>
+            <img data-imageupload-target="preview" style="display:none">
+          <% end %>
+        </div>
+        <%= f.file_field :image, accept: "image/*", style: "display:none", data: { imageupload_target: "input", action: "imageupload#changed" } %>
+        <%= hidden_field_tag "category[remove_image]", "0", data: { imageupload_target: "removeFlag" } %>
+        <div class="dropzone-actions">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#browse">Upload</button>
+          <% if @category.image.attached? %>
+            <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#remove">Remove</button>
+          <% end %>
+        </div>
+      </div>
+
       <div class="box" data-controller="tone">
         <div class="box-label">Placeholder tone</div>
         <div class="tone-preview" data-tone-target="preview" style="background:<%= @category.tone %>">

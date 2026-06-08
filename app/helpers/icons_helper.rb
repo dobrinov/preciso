@@ -21,6 +21,8 @@ module IconsHelper
     user:  %(<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>),
     chart: %(<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>),
     tag:   %(<path d="M3 11l8-8 10 10-8 8-10-10ZM3 11V4h7"/><circle cx="8.5" cy="8.5" r="1.2"/>),
+    instagram: %(<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/>),
+    facebook:  %(<path d="M14 8h2V5h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2.2l.4-3H14v-1.6c0-.5.2-.4.6-.4Z"/>)
   }.freeze
 
   def icon(name, size: 18, **opts)

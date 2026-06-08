@@ -23,17 +23,18 @@
         <div class="cart-line-main">
           <div class="cart-line-top">
             <div class="cart-line-name"><%= l.record.name %></div>
-            <%= button_to cart_remove_path, method: :delete, params: { kind: l.kind, id: l.id },
+            <%= button_to cart_remove_path, method: :delete, params: { kind: l.kind, id: l.id, variant_id: l.variant&.id },
                   form: { data: { turbo_stream: true } }, class: "icon-btn",
                   style: "color:var(--faint)", "aria-label": "Remove" do %><%= icon :close %><% end %>
           </div>
+          <% if l.variant %><div class="cart-line-tag"><%= l.variant.label %></div><% end %>
           <% if l.kind == "set" %><div class="cart-line-tag">Set</div><% end %>
           <div class="cart-line-bottom">
             <div class="qty small">
-              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty - 1 },
+              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty - 1, variant_id: l.variant&.id },
                     form: { data: { turbo_stream: true } }, "aria-label": "Decrease" do %><%= icon :minus, size: 16 %><% end %>
               <span class="num"><%= l.qty %></span>
-              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty + 1 },
+              <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty + 1, variant_id: l.variant&.id },
                     form: { data: { turbo_stream: true } }, "aria-label": "Increase" do %><%= icon :plus, size: 16 %><% end %>
             </div>
             <div class="serif" style="font-size:18px"><%= money l.subtotal %></div>

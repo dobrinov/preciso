@@ -8,7 +8,7 @@ CATEGORIES = [
   { slug: "cups",     name: "Cups",          blurb: "For coffee, tea, and slow mornings." },
   { slug: "espresso", name: "Espresso Cups", blurb: "Small, dense, made for a single shot." },
   { slug: "vases",    name: "Vases",         blurb: "Stems, buds, and quiet sculpture." },
-  { slug: "plates",   name: "Plates",        blurb: "Coupe and rimmed, glazed to the edge." },
+  { slug: "plates",   name: "Plates",        blurb: "Coupe and rimmed, glazed to the edge." }
 ]
 
 CATEGORIES.each_with_index do |c, i|
@@ -61,7 +61,7 @@ PRODUCTS = [
     long: "The dinner plate's smaller companion, for bread and butter, fruit, or the first course. About 19 cm." },
   { id: "p-coupe", name: "Coupe Plate", category: "plates", price: 34,
     short: "Deep-rimmed plate for pasta and broth.",
-    long: "A deeper coupe with a gentle well, between a plate and a shallow bowl — right for pasta, grains, and anything with a little broth. About 23 cm." },
+    long: "A deeper coupe with a gentle well, between a plate and a shallow bowl — right for pasta, grains, and anything with a little broth. About 23 cm." }
 ]
 
 seed_to_product = {}
@@ -84,7 +84,7 @@ SETS = [
     long: "One plain and one ribbed espresso cup — a pair for two people, or for the contrast of the two forms side by side." },
   { name: "Table for Four", price: 232, items: %w[p-dinner p-dinner p-side p-side p-coupe p-coupe],
     short: "Plates to set the table for guests.",
-    long: "A starting table service: two dinner plates, two side plates, and two coupes. Built to be added to over time as your table grows." },
+    long: "A starting table service: two dinner plates, two side plates, and two coupes. Built to be added to over time as your table grows." }
 ]
 
 SETS.each do |s|
@@ -106,7 +106,7 @@ if about.paragraphs.empty?
     body: [
       "Every piece begins as a ball of fine porcelain on the wheel. I throw, trim, and finish each one by hand, which means small differences travel from my hands into yours — a softened rim, the trace of a brush, a foot left bare. I think of these not as flaws but as the record of how a thing was made.",
       "I work in a quiet palette: white slips, satin and dry-matte glazes, the warm grey of unglazed clay. The forms are meant to disappear into daily life — to be the cup you reach for first, the bowl that holds the morning, the vase for the one stem you brought home.",
-      "Pieces are made in small batches and often sell as they leave the kiln. If something you want is gone, write to me and I will tell you when the next firing lands.",
+      "Pieces are made in small batches and often sell as they leave the kiln. If something you want is gone, write to me and I will tell you when the next firing lands."
     ],
     signature: "Bianna Taynova",
     studio: "Studio Preciso · by appointment"
@@ -150,14 +150,14 @@ if Event.count.zero?
 
   (0..8).to_a.reverse.each do |d|
     day_start = now.beginning_of_day - d.days
-    weekend = [0, 6].include?(day_start.wday)
+    weekend = [ 0, 6 ].include?(day_start.wday)
     sessions = (rnd.(7, 15) * (weekend ? 1.35 : 1) * (d.zero? ? 0.6 : 1)).round
     sessions.times do |si|
       sidv = "seed-#{d}-#{si}"
       tcur = day_start + (rnd.(8, 22) * 3600).seconds
       session_rows = []
       step = lambda do |attrs|
-        t = [now, tcur].min
+        t = [ now, tcur ].min
         rows << attrs.merge(sid: sidv, occurred_at: t)
         session_rows << attrs.merge(sid: sidv)
         tcur += rnd.(20, 140).seconds
@@ -168,7 +168,7 @@ if Event.count.zero?
         c = pick.(cats)
         step.(event_type: "pageview", page_key: "shop/#{c.slug}", label: "Shop · #{c.name}", piece: false)
         in_cat = products.select { |pr| pr.category_id == c.id }
-        view_n = rnd.(1, [3, in_cat.size].min + 1).floor
+        view_n = rnd.(1, [ 3, in_cat.size ].min + 1).floor
         view_n.times do
           pr = pick.(in_cat)
           break unless pr
@@ -203,3 +203,7 @@ if Event.count.zero?
 end
 
 puts "Seeded: #{Category.count} categories, #{Product.count} products, #{ProductSet.count} sets, #{Order.count} orders, #{Event.count} events."
+
+# ---- example collection (style group) ----
+oro = Collection.find_or_create_by!(slug: "oro") { |c| c.name = "Oro"; c.description = "Pieces finished with a warm, golden cast." }
+oro.products = Product.where(category: cat["vases"]).limit(2) + Product.where(category: cat["cups"]).limit(1)

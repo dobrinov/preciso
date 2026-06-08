@@ -1,19 +1,33 @@
 <main class="wrap fade-up page-top">
   <%= render "shared/breadcrumb", trail: [[@category&.name || "Shop", @category ? shop_category_path(@category.slug) : nil], [@product.name, nil]] %>
-  <div class="detail-grid">
+  <%
+    has_variants = @product.has_variants?
+    # Initial gallery: the first variation that has photos, else the product's
+    # own photos. The variant switcher (JS) swaps these to the selected
+    # variation's photos on the client, falling back to the product's.
+    gallery_imgs =
+      if has_variants
+        (@variants.detect { |v| v.images.attached? }&.images) || (@product.images.attached? ? @product.images : [])
+      elsif @product.images.attached?
+        @product.images
+      else
+        []
+      end
+  %>
+  <div class="detail-grid" data-controller="variants">
     <div class="detail-media" data-controller="gallery">
       <div class="detail-media-frame">
-        <% if @product.images.attached? %>
+        <% if gallery_imgs.any? %>
           <div class="ratio-box" style="padding-top:120%">
-            <%= image_tag @product.images.first, alt: @product.name, class: "cover-img", data: { gallery_target: "main" } %>
+            <%= image_tag gallery_imgs.first, alt: @product.name, class: "cover-img", data: { gallery_target: "main", variants_target: "mainImage" } %>
           </div>
         <% else %>
           <%= media_for(@product, kind: "product", ratio: "120%") %>
         <% end %>
       </div>
-      <% if @product.images.attached? && @product.images.size > 1 %>
-        <div class="gallery-thumbs">
-          <% @product.images.each_with_index do |img, i| %>
+      <% if gallery_imgs.any? && (has_variants || gallery_imgs.size > 1) %>
+        <div class="gallery-thumbs" data-variants-target="thumbs">
+          <% gallery_imgs.each_with_index do |img, i| %>
             <button type="button" class="gallery-thumb <%= 'active' if i.zero? %>"
                     data-action="gallery#show" data-gallery-target="thumb" data-src="<%= url_for(img) %>">
               <%= image_tag img, alt: "#{@product.name} photo #{i + 1}", class: "cover-img" %>
@@ -25,13 +39,42 @@
     <div style="padding-top:6px">
       <div class="eyebrow clay"><%= @category&.name %></div>
       <h1 class="display detail-title"><%= @product.name %></h1>
-      <div class="detail-price"><%= money @product.price %></div>
+      <div class="detail-price" data-variants-target="price">
+        <% if has_variants %>from <%= money @product.price_from %><% else %><%= price_tag(@product) %><% end %>
+      </div>
       <p class="detail-long"><%= @product.long_desc %></p>
 
+      <% if has_variants %>
+        <div class="variant-pick">
+          <% @variants.each_with_index do |v, i|
+               urls = v.images.attached? ? v.images.map { |img| url_for(img) } : (@product.images.attached? ? @product.images.map { |img| url_for(img) } : [])
+               cur = v.current_price_via_product
+               base = v.price
+          %>
+            <label class="chip variant-chip">
+              <input type="radio" name="variant_choice" <%= "checked" if i.zero? %>
+                     data-variants-target="radio" data-action="variants#select"
+                     data-variant-id="<%= v.id %>"
+                     data-price-plain="<%= money cur %>"
+                     data-price-label="<%= j(cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur)) %>"
+                     data-images="<%= urls.to_json %>">
+              <span><%= v.label %> · <%= money cur %></span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+
       <div class="detail-actions">
-        <%= button_to cart_add_path, params: { kind: "product", id: @product.id, name: @product.name },
-              form: { data: { turbo_stream: true } }, class: "btn clay", style: "width:100%;padding:17px 30px" do %>
-          <%= icon :cart %> Add to cart — <%= money @product.price %>
+        <%= form_with url: cart_add_path, data: { turbo_stream: true } do %>
+          <input type="hidden" name="kind" value="product">
+          <input type="hidden" name="id" value="<%= @product.id %>">
+          <input type="hidden" name="name" value="<%= @product.name %>">
+          <% if has_variants %>
+            <input type="hidden" name="variant_id" value="<%= @variants.first&.id %>" data-variants-target="variantId">
+          <% end %>
+          <button type="submit" class="btn clay" style="width:100%;padding:17px 30px">
+            <%= icon :cart %> <span data-variants-target="addLabel">Add — <%= money(has_variants ? @variants.first&.current_price_via_product : @product.current_price) %></span>
+          </button>
         <% end %>
       </div>
       <div class="detail-notes">

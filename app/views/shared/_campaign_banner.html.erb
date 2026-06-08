@@ -1,0 +1,12 @@
+<% banner_campaign = Campaign.active.with_attached_banner.detect { |c| c.banner.attached? } %>
+<% if banner_campaign %>
+  <a href="<%= campaign_path(banner_campaign.slug) %>" class="campaign-banner">
+    <div class="campaign-banner-frame"><%= image_tag banner_campaign.banner, alt: banner_campaign.name, class: "cover-img" %></div>
+    <div class="campaign-banner-text">
+      <div class="eyebrow clay">Now on</div>
+      <div class="campaign-banner-name"><%= banner_campaign.name %></div>
+      <div class="campaign-banner-blurb"><%= banner_campaign.blurb %></div>
+      <span class="link-underline">See the campaign <%= icon :arrow, size: 16 %></span>
+    </div>
+  </a>
+<% end %>

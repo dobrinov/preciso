@@ -1,0 +1,84 @@
+<% is_new = @collection.new_record? %>
+<%
+  products = Product.includes(:category).order(:id)
+  selected_ids = @collection.product_ids
+%>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New collection" : (@collection.name.presence || "Edit collection") %></h1>
+    <p class="pagehead-sub">Pick the pieces that belong to this style.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_collections_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back</a>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @collection], html: { multipart: true } do |f| %>
+  <div class="admin-pad editor-grid" style="align-items:start">
+    <div class="card-pad">
+      <% if @collection.errors.any? %>
+        <div class="login-err"><%= @collection.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <label class="field"><div class="field-label">Name</div>
+        <%= f.text_field :name, class: "input", placeholder: "e.g. Oro" %>
+        <% unless is_new %><div class="field-hint">URL: <span class="mono">/collection/<%= @collection.slug %></span></div><% end %>
+      </label>
+      <label class="field"><div class="field-label">Description</div>
+        <%= f.text_area :description, rows: 3, class: "input", placeholder: "What ties these pieces together." %>
+      </label>
+
+      <div class="field">
+        <div class="field-label">Pieces in this collection</div>
+        <div class="piece-picker">
+          <% products.each do |p| %>
+            <label class="piece-btn" style="cursor:pointer">
+              <%= check_box_tag "collection[product_ids][]", p.id, selected_ids.include?(p.id), style: "margin-right:8px" %>
+              <div class="thumb"><%= media_for(p, kind: "product", cover: true) %></div>
+              <div style="min-width:0">
+                <div class="pname"><%= p.name %></div>
+                <div class="pprice"><%= p.category&.name %></div>
+              </div>
+            </label>
+          <% end %>
+        </div>
+        <%= hidden_field_tag "collection[product_ids][]", "" %>
+      </div>
+    </div>
+
+    <div class="stack-18">
+      <div class="box" data-controller="imageupload">
+        <div class="box-label">Cover image</div>
+        <div class="dropzone" data-imageupload-target="zone" data-action="click->imageupload#browse dragover->imageupload#dragover dragleave->imageupload#dragleave drop->imageupload#drop">
+          <% if @collection.cover.attached? %>
+            <%= image_tag @collection.cover, data: { imageupload_target: "preview" } %>
+          <% else %>
+            <div data-imageupload-target="placeholder"><%= placeholder(tone: "#ece6dd", name: @collection.name.presence || "Collection", caption: "click or drop photo") %></div>
+            <img data-imageupload-target="preview" style="display:none">
+          <% end %>
+        </div>
+        <%= f.file_field :cover, accept: "image/*", style: "display:none", data: { imageupload_target: "input", action: "imageupload#changed" } %>
+        <%= hidden_field_tag "collection[remove_cover]", "0", data: { imageupload_target: "removeFlag" } %>
+        <div class="dropzone-actions">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#browse">Upload</button>
+          <% if @collection.cover.attached? %>
+            <button type="button" class="btn ghost sm" style="flex:1" data-action="imageupload#remove">Remove</button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Create collection" : "Save changes"), class: "btn clay" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Separate form — must not be nested inside the edit form above. %>
+  <div class="admin-pad" style="padding-top:0;max-width:340px">
+    <%= button_to admin_collection_path(@collection), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this collection? The pieces stay in the shop." } } do %>
+      <%= icon :trash, size: 16 %> Delete collection
+    <% end %>
+  </div>
+<% end %>

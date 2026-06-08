@@ -2,7 +2,7 @@
   <div class="wrap footer-inner">
     <div class="foot-grid">
       <div>
-        <div class="foot-brand">Preciso</div>
+        <%= image_tag "preciso-logo.png", alt: "Preciso", class: "foot-logo" %>
         <p class="foot-blurb">Handmade porcelain by Bianna Taynova. Thrown, trimmed and glazed by hand in small batches.</p>
       </div>
       <div>
@@ -12,14 +12,27 @@
             <a href="<%= shop_category_path(c.slug) %>" class="foot-link"><%= c.name %></a>
           <% end %>
           <a href="<%= sets_path %>" class="foot-link">Sets</a>
+          <% if Collection.nonempty.any? %><a href="<%= collections_path %>" class="foot-link">Collections</a><% end %>
         </div>
       </div>
       <div>
         <div class="eyebrow">Studio</div>
         <div class="foot-col-list">
           <a href="<%= about_path %>" class="foot-link">About Bianna</a>
-          <a href="mailto:hello@preciso.com" class="foot-link">hello@preciso.com</a>
           <a href="<%= admin_login_path %>" class="foot-link">Studio login</a>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow">Contact</div>
+        <div class="foot-contact">
+          <div class="foot-contact-name">Bianna Taynova</div>
+          <a href="tel:+359885448888" class="foot-link">+359 88 544 8888</a>
+          <a href="mailto:b_taynova@bondart.eu" class="foot-link">b_taynova@bondart.eu</a>
+          <div class="foot-addr">Sofia, Vitosha blvd. 200, section A</div>
+          <div class="foot-social">
+            <a href="https://www.instagram.com/preciso_handmade/" target="_blank" rel="noopener" aria-label="Instagram"><%= icon :instagram, size: 20 %></a>
+            <a href="https://www.facebook.com/PrecisoHandmade" target="_blank" rel="noopener" aria-label="Facebook"><%= icon :facebook, size: 20 %></a>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,57 @@
+<% is_new = @attribute.new_record? %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New attribute" : (@attribute.name.presence || "Edit attribute") %></h1>
+    <p class="pagehead-sub">Name the attribute and list its values.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_variant_attributes_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back</a>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @attribute], scope: :variant_attribute, data: { controller: "abouteditor", turbo: false } do |f| %>
+  <div class="admin-pad" style="max-width:640px">
+    <div class="card-pad">
+      <% if @attribute.errors.any? %><div class="login-err"><%= @attribute.errors.full_messages.to_sentence %></div><% end %>
+      <label class="field"><div class="field-label">Name</div>
+        <%= f.text_field :name, class: "input", placeholder: "e.g. Size" %>
+      </label>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="field-label" style="margin-bottom:0">Values</div>
+          <button type="button" class="link-underline" style="font-size:11px" data-action="abouteditor#add"><%= icon :plus, size: 16 %> Add value</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px" data-abouteditor-target="list">
+          <% @attribute.variant_attribute_values.each do |v| %>
+            <div class="para-row">
+              <input class="input" name="values[]" value="<%= v.value %>" style="flex:1">
+              <button type="button" class="icon-square" data-action="abouteditor#remove"><%= icon :trash, size: 16 %></button>
+            </div>
+          <% end %>
+        </div>
+        <template data-abouteditor-target="template">
+          <div class="para-row">
+            <input class="input" name="values[]" style="flex:1">
+            <button type="button" class="icon-square" data-action="abouteditor#remove"><%= icon :trash, size: 16 %></button>
+          </div>
+        </template>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <%= f.submit (is_new ? "Create attribute" : "Save changes"), class: "btn clay" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Delete is its own form — must NOT be nested inside the edit form above,
+      or its _method=delete leaks into the edit submit and destroys the record. %>
+  <div class="admin-pad" style="max-width:640px;padding-top:0">
+    <%= button_to admin_variant_attribute_path(@attribute), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this attribute? Variations using it will lose those values." } } do %>
+      <%= icon :trash, size: 16 %> Delete attribute
+    <% end %>
+  </div>
+<% end %>

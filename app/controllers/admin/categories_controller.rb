@@ -1,6 +1,6 @@
 module Admin
   class CategoriesController < BaseController
-    before_action :set_category, only: [:edit, :update, :destroy]
+    before_action :set_category, only: [ :edit, :update, :destroy ]
 
     def index
       @categories = Category.all
@@ -23,6 +23,7 @@ module Admin
 
     def update
       if @category.update(category_params)
+        @category.image.purge if params.dig(:category, :remove_image) == "1"
         redirect_to admin_categories_path
       else
         render :edit, status: :unprocessable_entity
@@ -41,7 +42,7 @@ module Admin
     end
 
     def category_params
-      params.require(:category).permit(:name, :blurb, :tone)
+      params.require(:category).permit(:name, :blurb, :tone, :image)
     end
   end
 end

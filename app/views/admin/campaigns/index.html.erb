@@ -1,0 +1,29 @@
+<% content_for :title, "Preciso — Campaigns" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Campaigns</h1>
+    <p class="pagehead-sub">Promotions with reduced prices. Active campaigns show live on the shop.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= new_admin_campaign_path %>" class="btn clay sm"><%= icon :plus, size: 16 %> New campaign</a>
+  </div>
+</div>
+<div class="admin-pad">
+  <% if @campaigns.empty? %>
+    <div class="empty-state">No campaigns yet.</div>
+  <% else %>
+    <div class="admin-list">
+      <% @campaigns.each do |c| %>
+        <a href="<%= edit_admin_campaign_path(c) %>" class="admin-row">
+          <div class="admin-row-main">
+            <div class="admin-row-name"><%= c.name %>
+              <% if c.active %><span class="pill" style="background:#e8efe9;color:#5a7060">Active</span><% else %><span class="pill" style="background:#efece8;color:#9a9088">Off</span><% end %>
+            </div>
+            <div class="admin-row-sub"><%= c.campaign_items.size %> items · /campaign/<%= c.slug %></div>
+          </div>
+          <span class="admin-row-go"><%= icon :arrow, size: 16 %></span>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+</div>

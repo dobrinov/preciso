@@ -26,6 +26,8 @@
     </div>
   </section>
 
+  <div class="wrap"><%= render "shared/campaign_banner" %></div>
+
   <%# category tiles %>
   <section class="wrap section">
     <div class="section-head">
@@ -40,7 +42,11 @@
         <% count = c.products.count %>
         <a href="<%= shop_category_path(c.slug) %>" class="cat-tile <%= 'span2' if i.zero? %>">
           <div class="cat-frame <%= i.zero? ? 'wide' : 'square' %>">
-            <%= placeholder(tone: c.tone, caption: "category · #{count} pieces") %>
+            <% if c.image.attached? %>
+              <%= image_tag c.image, alt: c.name, class: "cover-img" %>
+            <% else %>
+              <%= placeholder(tone: c.tone, caption: "category · #{count} pieces") %>
+            <% end %>
             <div class="cat-overlay">
               <div>
                 <div class="cat-name"><%= c.name %></div>
@@ -57,7 +63,13 @@
   <%# maker strip %>
   <section class="maker">
     <div class="wrap maker-grid">
-      <div class="maker-media"><%= placeholder(tone: "#ece6dd", caption: "studio portrait", name: "Bianna at the wheel") %></div>
+      <div class="maker-media">
+        <% if @about.image.attached? %>
+          <%= image_tag @about.image, alt: "Studio", class: "cover-img" %>
+        <% else %>
+          <%= placeholder(tone: "#ece6dd", caption: "studio portrait", name: "Bianna at the wheel") %>
+        <% end %>
+      </div>
       <div>
         <div class="eyebrow clay">The maker</div>
         <h2 class="display maker-title">Made by one pair of hands</h2>

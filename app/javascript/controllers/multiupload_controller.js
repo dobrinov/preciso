@@ -1,8 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Multi-photo upload: preview newly selected files and mark existing ones for removal.
+// Multi-photo upload: accumulate newly selected files across clicks/drops,
+// preview them, and mark existing attachments for removal.
 export default class extends Controller {
   static targets = ["input", "zone", "placeholder", "previews"]
+
+  connect() {
+    this.buffer = new DataTransfer()
+  }
 
   browse(e) {
     e?.preventDefault()
@@ -10,7 +15,7 @@ export default class extends Controller {
   }
 
   changed() {
-    this.renderPreviews(this.inputTarget.files)
+    this.absorb(this.inputTarget.files)
   }
 
   dragover(e) {
@@ -26,8 +31,15 @@ export default class extends Controller {
     e.preventDefault()
     this.zoneTarget.classList.remove("drag")
     if (!e.dataTransfer.files.length) return
-    this.inputTarget.files = e.dataTransfer.files
-    this.renderPreviews(e.dataTransfer.files)
+    this.absorb(e.dataTransfer.files)
+  }
+
+  // Append the given files to the buffer, then write the buffer back to the
+  // real input so all of them submit with the form.
+  absorb(files) {
+    Array.from(files).forEach((f) => this.buffer.items.add(f))
+    this.inputTarget.files = this.buffer.files
+    this.renderPreviews(this.buffer.files)
   }
 
   renderPreviews(files) {

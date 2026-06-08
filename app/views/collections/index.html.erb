@@ -1,0 +1,19 @@
+<% content_for :title, "Preciso — Collections" %>
+<main class="wrap fade-up page-top">
+  <%= render "shared/breadcrumb", trail: [["Collections", nil]] %>
+  <div class="list-head"><div><h1 class="display list-title">Collections</h1><p class="list-blurb">Pieces grouped by style.</p></div></div>
+  <% if @collections.empty? %>
+    <div class="empty-state">No collections yet.</div>
+  <% else %>
+    <div class="cat-grid">
+      <% @collections.each do |c| %>
+        <a href="<%= collection_path(c.slug) %>" class="cat-tile">
+          <div class="cat-frame square">
+            <% if c.cover.attached? %><%= image_tag c.cover, alt: c.name, class: "cover-img" %><% else %><%= placeholder(tone: "#ece6dd", caption: "collection") %><% end %>
+            <div class="cat-overlay"><div><div class="cat-name"><%= c.name %></div><div class="cat-blurb"><%= c.products.size %> pieces</div></div><span class="cat-arrow"><%= icon :arrow, size: 16 %></span></div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+</main>

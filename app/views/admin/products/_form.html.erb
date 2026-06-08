@@ -21,10 +21,19 @@
           <div class="field-label">Category</div>
           <%= f.collection_select :category_id, Category.all, :id, :name, { include_blank: "Uncategorised" }, class: "input" %>
         </label>
-        <label class="field">
-          <div class="field-label">Price (€)</div>
-          <%= f.number_field :price, min: 0, class: "input", placeholder: "0" %>
-        </label>
+        <% if @product.has_variants? %>
+          <div class="field">
+            <div class="field-label">Price (€)</div>
+            <div class="input" style="display:flex;align-items:center;color:var(--muted)">Set per variation — from <%= money @product.price_from %></div>
+            <div class="field-hint">This piece is priced by its variations below.</div>
+          </div>
+        <% else %>
+          <label class="field">
+            <div class="field-label">Price (€)</div>
+            <%= f.number_field :price, min: 1, class: "input", placeholder: "e.g. 40", required: true %>
+            <div class="field-hint">Required. Add variations on the right for multiple priced options instead.</div>
+          </label>
+        <% end %>
       </div>
       <label class="field">
         <div class="field-label">Short description</div>
@@ -65,15 +74,43 @@
         </div>
       </div>
 
-      <div class="box" style="display:flex;flex-direction:column;gap:12px">
-        <%= f.submit (is_new ? "Add piece" : "Save changes"), class: "btn clay" %>
-        <% unless is_new %>
-          <%= button_to admin_product_path(@product), method: :delete, class: "danger-btn",
-                form: { data: { turbo_confirm: "Delete this piece? It will be removed from any sets." } } do %>
-            <%= icon :trash, size: 16 %> Delete piece
+      <div class="box">
+        <div class="box-label">Variations</div>
+        <% if is_new %>
+          <div class="field-hint">Save the piece first, then add variations.</div>
+        <% else %>
+          <% if @product.variants.any? %>
+            <div class="admin-list" style="margin-bottom:12px">
+              <% @product.variants.each do |v| %>
+                <a href="<%= edit_admin_product_variant_path(@product, v) %>" class="admin-row" style="padding:10px 12px">
+                  <div class="admin-row-thumb" style="width:42px;height:42px">
+                    <% if v.primary_image %><%= image_tag v.primary_image, class: "cover-img" %><% else %><%= placeholder(tone: @product.tone) %><% end %>
+                  </div>
+                  <div class="admin-row-main"><div class="admin-row-name"><%= v.label.presence || "Variation ##{v.id}" %></div><div class="admin-row-sub"><%= money v.price %></div></div>
+                  <span class="admin-row-go"><%= icon :edit, size: 16 %></span>
+                </a>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="field-hint" style="margin-bottom:12px">No variations — this piece sells as a single option using the price and photos above.</div>
           <% end %>
+          <a href="<%= new_admin_product_variant_path(@product) %>" class="btn ghost sm"><%= icon :plus, size: 16 %> Add variation</a>
         <% end %>
       </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Add piece" : "Save changes"), class: "btn clay" %>
+      </div>
     </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Separate form — must not be nested inside the edit form above. %>
+  <div class="admin-pad" style="padding-top:0;max-width:340px">
+    <%= button_to admin_product_path(@product), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this piece? It will be removed from any sets." } } do %>
+      <%= icon :trash, size: 16 %> Delete piece
+    <% end %>
   </div>
 <% end %>
