@@ -1,0 +1,73 @@
+<% is_new = @variant.new_record? %>
+<% selected = @variant.variant_attribute_value_ids %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title"><%= is_new ? "New variation" : "Edit variation" %></h1>
+    <p class="pagehead-sub">for <%= @product.name %></p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= edit_admin_product_path(@product) %>" class="btn ghost sm"><%= icon :back, size: 16 %> Back to piece</a>
+  </div>
+</div>
+
+<%= form_with url: (is_new ? admin_product_variants_path(@product) : admin_product_variant_path(@product, @variant)),
+      method: (is_new ? :post : :patch), scope: :variant, html: { multipart: true } do |f| %>
+  <div class="admin-pad editor-grid">
+    <div class="card-pad">
+      <% VariantAttribute.all.each do |attr| %>
+        <div class="field">
+          <div class="field-label"><%= attr.name %></div>
+          <div class="value-chips">
+            <% attr.variant_attribute_values.each do |v| %>
+              <label class="chip">
+                <%= check_box_tag "value_ids[]", v.id, selected.include?(v.id) %>
+                <span><%= v.value %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <% if VariantAttribute.none? %>
+        <div class="field-hint">No attributes defined yet. Add some under <a href="<%= admin_variant_attributes_path %>">Attributes</a> first.</div>
+      <% end %>
+      <label class="field"><div class="field-label">Price (€)</div>
+        <%= f.number_field :price, value: @variant.price, min: 0, class: "input" %>
+      </label>
+    </div>
+
+    <div class="stack-18">
+      <div class="box" data-controller="multiupload">
+        <div class="box-label">Variation photos</div>
+        <% if @variant.images.attached? %>
+          <div class="img-grid">
+            <% @variant.images.each do |img| %>
+              <div class="img-tile" data-multiupload-target="tile">
+                <%= image_tag img, class: "cover-img" %>
+                <input type="checkbox" name="remove_image_ids[]" value="<%= img.id %>" class="img-remove-cb" data-multiupload-target="removeCb">
+                <button type="button" class="img-remove-x" data-action="multiupload#toggleRemove" title="Remove"><%= icon :close, size: 14 %></button>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="dropzone dz-multi" data-multiupload-target="zone" data-action="click->multiupload#browse dragover->multiupload#dragover dragleave->multiupload#dragleave drop->multiupload#drop">
+          <div data-multiupload-target="placeholder"><%= placeholder(tone: @product.tone, name: "Add photos", caption: "click or drop photos") %></div>
+          <div class="img-grid previews" data-multiupload-target="previews" style="display:none"></div>
+        </div>
+        <%= f.file_field :images, multiple: true, accept: "image/*", style: "display:none", data: { multiupload_target: "input", action: "multiupload#changed" } %>
+        <div class="dropzone-actions">
+          <button type="button" class="btn ghost sm" style="flex:1" data-action="multiupload#browse">Add photos</button>
+        </div>
+      </div>
+
+      <div class="box" style="display:flex;flex-direction:column;gap:12px">
+        <%= f.submit (is_new ? "Add variation" : "Save variation"), class: "btn clay" %>
+        <% unless is_new %>
+          <%= button_to admin_product_variant_path(@product, @variant), method: :delete, class: "danger-btn",
+                form: { data: { turbo_confirm: "Delete this variation?" } } do %>
+            <%= icon :trash, size: 16 %> Delete variation
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

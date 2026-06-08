@@ -565,3 +565,7 @@ a.cat-row:hover{background:var(--paper);}
 .campaign-banner-name { font-size: 30px; font-family: "Cormorant Garamond", serif; line-height: 1.1; }
 .campaign-banner-blurb { color: var(--muted); margin-bottom: 10px; }
 @media (max-width: 720px) { .campaign-banner { grid-template-columns: 1fr; } .campaign-banner-frame { min-height: 220px; } }
+
+.value-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 13px; }
+.chip input { accent-color: var(--clay); }

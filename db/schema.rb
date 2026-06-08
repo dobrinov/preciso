@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_124124) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_124858) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -193,6 +193,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_124124) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "variant_values", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "variant_attribute_value_id", null: false
+    t.integer "variant_id", null: false
+    t.index ["variant_attribute_value_id"], name: "index_variant_values_on_variant_attribute_value_id"
+    t.index ["variant_id", "variant_attribute_value_id"], name: "idx_variant_values_unique", unique: true
+    t.index ["variant_id"], name: "index_variant_values_on_variant_id"
+  end
+
+  create_table "variants", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0
+    t.integer "price", default: 0, null: false
+    t.integer "product_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_variants_on_product_id"
+  end
+
   add_foreign_key "campaign_items", "campaigns"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
@@ -201,4 +220,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_124124) do
   add_foreign_key "set_items", "product_sets"
   add_foreign_key "set_items", "products"
   add_foreign_key "variant_attribute_values", "variant_attributes"
+  add_foreign_key "variant_values", "variant_attribute_values"
+  add_foreign_key "variant_values", "variants"
+  add_foreign_key "variants", "products"
 end
