@@ -14,7 +14,7 @@
       method: (is_new ? :post : :patch), scope: :variant, html: { multipart: true } do |f| %>
   <div class="admin-pad editor-grid">
     <div class="card-pad">
-      <% VariantAttribute.all.each do |attr| %>
+      <% VariantAttribute.includes(:variant_attribute_values).each do |attr| %>
         <div class="field">
           <div class="field-label"><%= attr.name %></div>
           <div class="value-chips">
