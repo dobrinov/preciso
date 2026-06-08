@@ -68,13 +68,17 @@
 
       <div class="box" style="display:flex;flex-direction:column;gap:12px">
         <%= f.submit (is_new ? "Add variation" : "Save variation"), class: "btn clay" %>
-        <% unless is_new %>
-          <%= button_to admin_product_variant_path(@product, @variant), method: :delete, class: "danger-btn",
-                form: { data: { turbo_confirm: "Delete this variation?" } } do %>
-            <%= icon :trash, size: 16 %> Delete variation
-          <% end %>
-        <% end %>
       </div>
     </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Separate form — must not be nested inside the edit form above. %>
+  <div class="admin-pad" style="padding-top:0;max-width:340px">
+    <%= button_to admin_product_variant_path(@product, @variant), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: "Delete this variation?" } } do %>
+      <%= icon :trash, size: 16 %> Delete variation
+    <% end %>
   </div>
 <% end %>

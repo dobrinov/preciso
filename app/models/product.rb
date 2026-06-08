@@ -7,16 +7,15 @@ class Product < ApplicationRecord
   has_many :variants, dependent: :destroy
 
   validates :name, presence: true
-  validates :price, numericality: { greater_than_or_equal_to: 0 }
+  # A piece is either priced once (no variations) or priced per variation.
+  # Require a real single price only when there are no variations.
+  validates :price, numericality: { greater_than: 0 }, unless: :has_variants?
+  validates :price, numericality: { greater_than_or_equal_to: 0 }, if: :has_variants?
 
   def tone = category&.tone || "#f3efe9"
   def kind = "product"
 
-  def has_variants?
-    return @has_variants if defined?(@has_variants)
-
-    @has_variants = variants.exists?
-  end
+  def has_variants? = variants.exists?
 
   # Minimum current variant price, for "from €X" display.
   def price_from
