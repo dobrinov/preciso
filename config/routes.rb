@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     resources :categories
     resources :products
     resources :sets, controller: "product_sets"
+    resources :collections
     resource :about, only: [:edit, :update], controller: "about"
   end
 end

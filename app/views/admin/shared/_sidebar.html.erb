@@ -6,6 +6,7 @@
            when "categories" then "categories"
            when "products" then "products"
            when "product_sets" then "sets"
+           when "collections" then "collections"
            when "about" then "about"
            end
   nav = [
@@ -14,8 +15,9 @@
     ["orders",     "Orders",     :bag,    admin_orders_path],
     ["categories", "Categories", :tag,    admin_categories_path],
     ["products",   "Products",   :box,    admin_products_path],
-    ["sets",       "Sets",       :layers, admin_sets_path],
-    ["about",      "About page", :doc,    edit_admin_about_path],
+    ["sets",        "Sets",        :layers, admin_sets_path],
+    ["collections", "Collections", :layers, admin_collections_path],
+    ["about",       "About page",  :doc,    edit_admin_about_path],
   ]
 %>
 <aside class="admin-aside">
