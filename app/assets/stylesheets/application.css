@@ -532,3 +532,11 @@ a.cat-row:hover{background:var(--paper);}
 .foot-logo { height: 34px; width: auto; margin-bottom: 14px; }
 .flash-saved{color:var(--clay-deep);font-size:13px;display:flex;align-items:center;gap:6px;}
 .shop-hero { border-radius: 14px; overflow: hidden; margin: 6px 0 30px; }
+.foot-contact { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.foot-contact-name { color: var(--ink); }
+.foot-addr { line-height: 1.4; }
+.foot-social { display: flex; gap: 14px; margin-top: 10px; }
+.foot-social a { color: var(--muted); }
+.foot-social a:hover { color: var(--ink); }
+.about-contact { margin-top: 34px; font-size: 15px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.about-contact-name { color: var(--ink); font-size: 17px; }
