@@ -3,6 +3,4 @@ class VariantAttribute < ApplicationRecord
 
   default_scope { order(:position) }
   validates :name, presence: true
-
-  accepts_nested_attributes_for :variant_attribute_values
 end

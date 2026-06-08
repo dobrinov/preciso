@@ -3,7 +3,7 @@ module Admin
     before_action :set_attribute, only: [ :edit, :update, :destroy ]
 
     def index
-      @attributes = VariantAttribute.all
+      @attributes = VariantAttribute.includes(:variant_attribute_values).all
     end
 
     def new
@@ -42,20 +42,18 @@ module Admin
       @attribute = VariantAttribute.find(params[:id])
     end
 
-    # Replace values from the submitted list. Update existing rows in place by
-    # index (so variant references to a value survive a rename), create new
-    # rows for extras, and delete rows beyond the submitted count.
+    # Reconcile values by their text (not by row position): existing rows whose
+    # value is still submitted keep their id (so future variant references to
+    # them survive add/reorder edits); removed values are destroyed; new values
+    # are created. Position follows submission order.
     def rebuild_values(attribute)
-      submitted = Array(params[:values]).map(&:to_s).map(&:strip).reject(&:empty?)
-      existing = attribute.variant_attribute_values.to_a
-      submitted.each_with_index do |val, i|
-        if (row = existing[i])
-          row.update!(value: val, position: i)
-        else
-          attribute.variant_attribute_values.create!(value: val, position: i)
-        end
+      submitted = Array(params[:values]).map { |v| v.to_s.strip }.reject(&:empty?).uniq
+      existing = attribute.variant_attribute_values.index_by(&:value)
+      existing.each { |value, row| row.destroy unless submitted.include?(value) }
+      submitted.each_with_index do |value, i|
+        row = existing[value] || attribute.variant_attribute_values.build(value: value)
+        row.update!(position: i)
       end
-      existing[submitted.size..]&.each(&:destroy)
     end
   end
 end
