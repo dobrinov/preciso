@@ -553,3 +553,7 @@ a.cat-row:hover{background:var(--paper);}
 
 .price-now { color: var(--clay); }
 .price-was { color: var(--faint); text-decoration: line-through; font-size: 0.85em; margin-left: 4px; }
+
+.campaign-items { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.campaign-items td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 13px; }
+.input.sm { padding: 6px 8px; font-size: 13px; }

@@ -7,6 +7,7 @@
            when "products" then "products"
            when "product_sets" then "sets"
            when "collections" then "collections"
+           when "campaigns" then "campaigns"
            when "about" then "about"
            end
   nav = [
@@ -17,6 +18,7 @@
     ["products",   "Products",   :box,    admin_products_path],
     ["sets",        "Sets",        :layers, admin_sets_path],
     ["collections", "Collections", :layers, admin_collections_path],
+    ["campaigns",   "Campaigns",   :tag,    admin_campaigns_path],
     ["about",       "About page",  :doc,    edit_admin_about_path],
   ]
 %>

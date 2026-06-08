@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     resources :products
     resources :sets, controller: "product_sets"
     resources :collections
+    resources :campaigns
     resource :about, only: [:edit, :update], controller: "about"
   end
 end
