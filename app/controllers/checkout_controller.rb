@@ -23,7 +23,7 @@ class CheckoutController < ApplicationController
       total = 0
       lines = cart.detailed.map do |l|
         total += l.subtotal
-        { kind: l.kind, item_id: l.id, name: l.record.name, price: l.record.price, qty: l.qty }
+        { kind: l.kind, item_id: l.id, name: l.record.name, price: l.unit_price, qty: l.qty }
       end
       order.total = total
       order.save!

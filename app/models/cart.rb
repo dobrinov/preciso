@@ -1,7 +1,8 @@
 # Session-backed cart. Lines are plain hashes: {"kind"=>, "id"=>, "qty"=>}.
 class Cart
-  Line = Struct.new(:kind, :id, :qty, :record, keyword_init: true) do
-    def subtotal = record.price * qty
+  Line = Struct.new(:kind, :id, :qty, :record, :variant, keyword_init: true) do
+    def unit_price = record.current_price(variant: variant)
+    def subtotal = unit_price * qty
   end
 
   def initialize(session)

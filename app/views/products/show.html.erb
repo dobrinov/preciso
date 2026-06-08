@@ -25,13 +25,13 @@
     <div style="padding-top:6px">
       <div class="eyebrow clay"><%= @category&.name %></div>
       <h1 class="display detail-title"><%= @product.name %></h1>
-      <div class="detail-price"><%= money @product.price %></div>
+      <div class="detail-price"><%= price_tag(@product) %></div>
       <p class="detail-long"><%= @product.long_desc %></p>
 
       <div class="detail-actions">
         <%= button_to cart_add_path, params: { kind: "product", id: @product.id, name: @product.name },
               form: { data: { turbo_stream: true } }, class: "btn clay", style: "width:100%;padding:17px 30px" do %>
-          <%= icon :cart %> Add to cart — <%= money @product.price %>
+          <%= icon :cart %> Add to cart — <%= money @product.current_price %>
         <% end %>
       </div>
       <div class="detail-notes">

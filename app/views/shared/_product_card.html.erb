@@ -8,12 +8,12 @@
     <% if kind == "set" %><span class="card-set-tag">Set</span><% end %>
     <%= button_to cart_add_path, params: { kind: kind, id: record.id, name: record.name },
           form: { data: { turbo_stream: true } }, class: "card-add", "aria-label": "Add to cart" do %>
-      <%= icon :cart %> Add — <%= money record.price %>
+      <%= icon :cart %> Add — <%= money record.current_price %>
     <% end %>
   </div>
   <div class="card-head">
     <a href="<%= link %>"><div class="card-name"><%= record.name %></div></a>
-    <div class="card-price"><%= money record.price %></div>
+    <div class="card-price"><%= price_tag(record) %></div>
   </div>
   <div class="card-short"><%= record.short %></div>
 </div>

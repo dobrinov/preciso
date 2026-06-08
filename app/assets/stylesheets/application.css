@@ -550,3 +550,6 @@ a.cat-row:hover{background:var(--paper);}
 .admin-row-name { font-family: var(--serif); font-size: 16px; display: flex; align-items: center; gap: 8px; }
 .admin-row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .admin-row-go { color: var(--faint); flex-shrink: 0; }
+
+.price-now { color: var(--clay, #9c6f4e); }
+.price-was { color: var(--faint); text-decoration: line-through; font-size: 0.85em; margin-left: 4px; }
