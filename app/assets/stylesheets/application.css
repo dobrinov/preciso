@@ -540,3 +540,13 @@ a.cat-row:hover{background:var(--paper);}
 .foot-social a:hover { color: var(--ink); }
 .about-contact { margin-top: 34px; font-size: 15px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
 .about-contact-name { color: var(--ink); font-size: 17px; }
+
+/* Admin list rows (collections, campaigns, attributes indexes) */
+.admin-list { display: flex; flex-direction: column; }
+.admin-row { display: flex; align-items: center; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; transition: background .15s; }
+.admin-row:hover { background: var(--paper-2); }
+.admin-row-thumb { width: 48px; height: 48px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: var(--paper-2); }
+.admin-row-main { flex: 1; min-width: 0; }
+.admin-row-name { font-family: var(--serif); font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.admin-row-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.admin-row-go { color: var(--faint); flex-shrink: 0; }
