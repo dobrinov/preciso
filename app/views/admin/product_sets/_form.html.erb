@@ -92,17 +92,13 @@
 
       <div class="box" style="display:flex;flex-direction:column;gap:12px">
         <%= f.submit (is_new ? "Create set" : "Save changes"), class: "btn clay", data: { setbuilder_target: "submit" } %>
+        <% unless is_new %>
+          <%# Delete is a Turbo link, not a nested <form> — it sits beside Save without breaking the edit form. %>
+          <%= link_to admin_set_path(@set), class: "danger-btn", data: { turbo_method: :delete, turbo: true, turbo_confirm: "Delete this set?" } do %>
+            <%= icon :trash, size: 16 %> Delete set
+          <% end %>
+        <% end %>
       </div>
     </div>
-  </div>
-<% end %>
-
-<% unless is_new %>
-  <%# Separate form — must not be nested inside the edit form above. %>
-  <div class="admin-pad" style="padding-top:0;max-width:340px">
-    <%= button_to admin_set_path(@set), method: :delete, class: "danger-btn",
-          form: { data: { turbo_confirm: "Delete this set?" } } do %>
-      <%= icon :trash, size: 16 %> Delete set
-    <% end %>
   </div>
 <% end %>

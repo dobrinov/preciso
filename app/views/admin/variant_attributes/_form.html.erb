@@ -39,19 +39,14 @@
       </div>
 
       <div style="display:flex;gap:12px;margin-top:8px">
-        <%= f.submit (is_new ? "Create attribute" : "Save changes"), class: "btn clay" %>
+        <%= f.submit (is_new ? "Create attribute" : "Save changes"), class: "btn clay", style: "flex:1" %>
+        <% unless is_new %>
+          <%# Delete is a Turbo link (data-turbo:true overrides the form's turbo:false), not a nested <form>. %>
+          <%= link_to admin_variant_attribute_path(@attribute), class: "danger-btn", style: "flex:1", data: { turbo_method: :delete, turbo: true, turbo_confirm: "Delete this attribute? Variations using it will lose those values." } do %>
+            <%= icon :trash, size: 16 %> Delete attribute
+          <% end %>
+        <% end %>
       </div>
     </div>
-  </div>
-<% end %>
-
-<% unless is_new %>
-  <%# Delete is its own form — must NOT be nested inside the edit form above,
-      or its _method=delete leaks into the edit submit and destroys the record. %>
-  <div class="admin-pad" style="max-width:640px;padding-top:0">
-    <%= button_to admin_variant_attribute_path(@attribute), method: :delete, class: "danger-btn",
-          form: { data: { turbo_confirm: "Delete this attribute? Variations using it will lose those values." } } do %>
-      <%= icon :trash, size: 16 %> Delete attribute
-    <% end %>
   </div>
 <% end %>

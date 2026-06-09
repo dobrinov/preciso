@@ -16,6 +16,9 @@ export default class extends Controller {
   }
 
   apply() {
+    // No attribute dropdowns means this product has no variations — leave the
+    // server-rendered price and enabled Add button untouched.
+    if (this.attrSelectTargets.length === 0) return
     // Numeric sort to match Ruby's integer Array#sort used to build the map keys.
     const key = this.attrSelectTargets
       .map((s) => parseInt(s.value, 10))
