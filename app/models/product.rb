@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+  include ImageOrdering
+
   belongs_to :category, optional: true
   has_many_attached :images
   has_many :set_items, dependent: :destroy
@@ -22,10 +24,10 @@ class Product < ApplicationRecord
     variants.map(&:current_price_via_product).min || current_price
   end
 
-  # The first attachment is treated as the cover image.
+  # The first image (in the admin-chosen order) is the cover.
   # Falls back to the first variant's cover if the product has no direct images.
   def primary_image
-    return images.first if images.attached?
+    return ordered_images.first if images.attached?
 
     variants.detect(&:primary_image)&.primary_image
   end

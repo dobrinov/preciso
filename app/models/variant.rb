@@ -1,4 +1,6 @@
 class Variant < ApplicationRecord
+  include ImageOrdering
+
   belongs_to :product
   has_many_attached :images
   has_many :variant_values, dependent: :destroy
@@ -21,7 +23,7 @@ class Variant < ApplicationRecord
   end
 
   def primary_image
-    images.first if images.attached?
+    ordered_images.first if images.attached?
   end
 
   def current_price_via_product

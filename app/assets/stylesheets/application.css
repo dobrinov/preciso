@@ -442,6 +442,9 @@ select.input{appearance:auto;}
 .img-tile.marked{opacity:.4;}
 .img-tile.marked .cover-img{filter:grayscale(1);}
 .img-cover-tag{position:absolute;top:6px;left:6px;background:rgba(255,255,255,.92);color:var(--clay-deep);font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 7px;}
+.img-tile[draggable]{cursor:grab;}
+.img-tile[draggable]:active{cursor:grabbing;}
+.img-tile.is-cover::after{content:"Cover";position:absolute;top:6px;left:6px;background:rgba(255,255,255,.92);color:var(--clay-deep);font-size:8.5px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 7px;pointer-events:none;}
 .img-remove-cb{display:none;}
 .img-remove-x{position:absolute;top:6px;right:6px;width:24px;height:24px;display:grid;place-items:center;border:none;background:rgba(28,26,23,.72);color:#fff;border-radius:50%;}
 .img-remove-x:hover{background:var(--ink);}

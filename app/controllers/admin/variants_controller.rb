@@ -1,5 +1,6 @@
 module Admin
   class VariantsController < BaseController
+    include ImageReordering
     before_action :set_product
     before_action :set_variant, only: [ :edit, :update, :destroy ]
 
@@ -12,7 +13,7 @@ module Admin
       return render_duplicate(:new) if duplicate_variation?
       if @variant.save
         apply_values(@variant)
-        attach_images(@variant)
+        apply_variant_images(@variant)
         redirect_to edit_admin_product_path(@product)
       else
         render :new, status: :unprocessable_entity
@@ -25,8 +26,7 @@ module Admin
       return render_duplicate(:edit) if duplicate_variation?(except: @variant)
       if @variant.update(price: variant_price, name: variant_name)
         apply_values(@variant)
-        purge_images(@variant)
-        attach_images(@variant)
+        apply_variant_images(@variant)
         redirect_to edit_admin_product_path(@product)
       else
         render :edit, status: :unprocessable_entity
@@ -87,14 +87,10 @@ module Admin
       chosen_value_ids.each { |vid| variant.variant_values.create!(variant_attribute_value_id: vid) }
     end
 
-    def attach_images(variant)
-      files = Array(params.dig(:variant, :images)).reject(&:blank?)
-      variant.images.attach(files) if files.any?
-    end
-
-    def purge_images(variant)
-      ids = Array(params[:remove_image_ids]).reject(&:blank?)
-      variant.images.attachments.where(id: ids).find_each(&:purge) if ids.any?
+    def apply_variant_images(variant)
+      apply_images(variant, files: params.dig(:variant, :images),
+                            remove_ids: params[:remove_image_ids],
+                            tokens: params[:image_order_tokens].to_s.split(","))
     end
   end
 end

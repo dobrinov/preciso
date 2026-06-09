@@ -49,22 +49,22 @@
     <div class="stack-18">
       <div class="box" data-controller="multiupload">
         <div class="box-label">Variation photos</div>
-        <% if @variant.images.attached? %>
-          <div class="img-grid">
-            <% @variant.images.each do |img| %>
-              <div class="img-tile" data-multiupload-target="tile">
-                <%= image_tag img, class: "cover-img" %>
-                <input type="checkbox" name="remove_image_ids[]" value="<%= img.id %>" class="img-remove-cb" data-multiupload-target="removeCb">
-                <button type="button" class="img-remove-x" data-action="multiupload#toggleRemove" title="Remove"><%= icon :close, size: 14 %></button>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-        <div class="dropzone dz-multi" data-multiupload-target="zone" data-action="click->multiupload#browse dragover->multiupload#dragover dragleave->multiupload#dragleave drop->multiupload#drop">
-          <div data-multiupload-target="placeholder"><%= placeholder(tone: @product.tone, name: "Add photos", caption: "click or drop photos") %></div>
-          <div class="img-grid previews" data-multiupload-target="previews" style="display:none"></div>
+        <div class="field-hint" style="margin-bottom:10px">Drag to reorder — the first photo is the cover.</div>
+        <div class="img-grid" data-multiupload-target="grid">
+          <% @variant.ordered_images.each do |img| %>
+            <div class="img-tile" draggable="true" data-image-id="<%= img.id %>"
+                 data-action="dragstart->multiupload#tileDragstart dragover->multiupload#tileDragover drop->multiupload#tileDrop dragend->multiupload#tileDragend">
+              <%= image_tag img, class: "cover-img" %>
+              <input type="checkbox" name="remove_image_ids[]" value="<%= img.id %>" class="img-remove-cb">
+              <button type="button" class="img-remove-x" data-action="multiupload#toggleRemove" title="Remove"><%= icon :close, size: 14 %></button>
+            </div>
+          <% end %>
+        </div>
+        <div class="dropzone dz-multi" data-multiupload-target="zone" data-action="click->multiupload#browse dragover->multiupload#zoneDragover dragleave->multiupload#zoneDragleave drop->multiupload#zoneDrop">
+          <div><%= placeholder(tone: @product.tone, name: "Add photos", caption: "click or drop photos") %></div>
         </div>
         <%= f.file_field :images, multiple: true, accept: "image/*", style: "display:none", data: { multiupload_target: "input", action: "multiupload#changed" } %>
+        <%= hidden_field_tag "image_order_tokens", "", data: { multiupload_target: "order" } %>
         <div class="dropzone-actions">
           <button type="button" class="btn ghost sm" style="flex:1" data-action="multiupload#browse">Add photos</button>
         </div>

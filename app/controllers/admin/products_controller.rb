@@ -1,6 +1,7 @@
 module Admin
   class ProductsController < BaseController
-    before_action :set_product, only: [:edit, :update, :destroy]
+    include ImageReordering
+    before_action :set_product, only: [ :edit, :update, :destroy ]
 
     def index
       @categories = Category.all
@@ -14,7 +15,7 @@ module Admin
     def create
       @product = Product.new(product_params)
       if @product.save
-        attach_images
+        apply_product_images
         redirect_to admin_products_path
       else
         render :new, status: :unprocessable_entity
@@ -25,8 +26,7 @@ module Admin
 
     def update
       if @product.update(product_params)
-        purge_images
-        attach_images
+        apply_product_images
         redirect_to admin_products_path
       else
         render :edit, status: :unprocessable_entity
@@ -48,14 +48,10 @@ module Admin
       params.require(:product).permit(:name, :category_id, :price, :short, :long_desc)
     end
 
-    def attach_images
-      files = Array(params.dig(:product, :images)).reject(&:blank?)
-      @product.images.attach(files) if files.any?
-    end
-
-    def purge_images
-      ids = Array(params[:remove_image_ids]).reject(&:blank?)
-      @product.images.attachments.where(id: ids).find_each(&:purge) if ids.any?
+    def apply_product_images
+      apply_images(@product, files: params.dig(:product, :images),
+                             remove_ids: params[:remove_image_ids],
+                             tokens: params[:image_order_tokens].to_s.split(","))
     end
   end
 end

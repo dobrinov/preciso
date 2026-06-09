@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_103150) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_112559) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -179,6 +179,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_103150) do
   create_table "products", force: :cascade do |t|
     t.integer "category_id"
     t.datetime "created_at", null: false
+    t.text "image_order"
     t.text "long_desc"
     t.string "name", null: false
     t.integer "price", default: 0, null: false
@@ -226,6 +227,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_103150) do
 
   create_table "variants", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "image_order"
     t.string "name"
     t.integer "position", default: 0
     t.integer "price", default: 0, null: false

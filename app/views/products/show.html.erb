@@ -7,9 +7,9 @@
     # variation's photos on the client, falling back to the product's.
     gallery_imgs =
       if has_variants
-        (@variants.detect { |v| v.images.attached? }&.images) || (@product.images.attached? ? @product.images : [])
+        (@variants.detect { |v| v.images.attached? }&.ordered_images) || (@product.images.attached? ? @product.ordered_images : [])
       elsif @product.images.attached?
-        @product.images
+        @product.ordered_images
       else
         []
       end
@@ -27,7 +27,7 @@
       variant_map = @variants.each_with_object({}) do |v, h|
         cur  = v.current_price_via_product
         base = v.price
-        urls = v.images.attached? ? v.images.map { |i| url_for(i) } : (@product.images.attached? ? @product.images.map { |i| url_for(i) } : [])
+        urls = v.images.attached? ? v.ordered_images.map { |i| url_for(i) } : (@product.images.attached? ? @product.ordered_images.map { |i| url_for(i) } : [])
         h[v.variant_attribute_value_ids.sort.join("-")] = {
           variantId:  v.id,
           pricePlain: money(cur),
