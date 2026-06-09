@@ -1,0 +1,19 @@
+<%
+  og_title = [ home_page.hero_title.to_s.split("\n").join(" "), home_page.hero_accent ].reject(&:blank?).join(" ").strip
+  og_desc  = home_page.hero_subtext.to_s
+  og_image = "#{request.base_url}#{image_path('og-image.png')}"
+%>
+<meta name="description" content="<%= og_desc %>">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Preciso">
+<meta property="og:title" content="<%= og_title %>">
+<meta property="og:description" content="<%= og_desc %>">
+<meta property="og:url" content="<%= request.original_url %>">
+<meta property="og:image" content="<%= og_image %>">
+<meta property="og:image:width" content="1050">
+<meta property="og:image:height" content="600">
+<meta property="og:image:alt" content="Preciso">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= og_title %>">
+<meta name="twitter:description" content="<%= og_desc %>">
+<meta name="twitter:image" content="<%= og_image %>">
