@@ -56,7 +56,7 @@
                      data-variants-target="radio" data-action="variants#select"
                      data-variant-id="<%= v.id %>"
                      data-price-plain="<%= money cur %>"
-                     data-price-label="<%= j(cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur)) %>"
+                     data-price-label="<%= cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur) %>"
                      data-images="<%= urls.to_json %>">
               <span><%= v.label %> · <%= money cur %></span>
             </label>
