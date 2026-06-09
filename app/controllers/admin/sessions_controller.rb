@@ -2,18 +2,18 @@ module Admin
   class SessionsController < ApplicationController
     layout "admin"
 
-    PASSWORD = "studio".freeze
+    PASSWORD = "Maboardrulz9".freeze
 
     def new
       redirect_to admin_dashboard_path if session[:admin]
     end
 
     def create
-      if params[:password] == PASSWORD || params[:password].blank?
+      if params[:password] == PASSWORD
         session[:admin] = true
         redirect_to admin_dashboard_path
       else
-        flash.now[:error] = "Incorrect password. Hint: try “studio”."
+        flash.now[:error] = "Incorrect password."
         render :new, status: :unprocessable_entity
       end
     end
