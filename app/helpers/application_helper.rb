@@ -11,6 +11,24 @@ module ApplicationHelper
     @_home_page ||= HomePage.instance
   end
 
+  # Make an asset/blob path absolute for og:image (scrapers need a full URL).
+  def absolute_url(path)
+    path.to_s.start_with?("http") ? path : "#{request.base_url}#{path}"
+  end
+
+  # Whether an image source has an attached blob. Handles a has_one_attached
+  # proxy (responds to attached?), a single ActiveStorage::Attachment (e.g.
+  # Product#primary_image), or nil.
+  def og_image?(image)
+    return false if image.nil?
+    image.respond_to?(:attached?) ? image.attached? : image.present?
+  end
+
+  # Absolute URL for a record's image, falling back to the brand share image.
+  def og_image_url(image)
+    absolute_url(og_image?(image) ? url_for(image) : image_path("og-image.png"))
+  end
+
   # "2 days ago" style relative time.
   def time_ago(ts)
     return "" unless ts

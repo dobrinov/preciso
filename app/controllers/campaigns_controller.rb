@@ -8,6 +8,9 @@ class CampaignsController < ApplicationController
     else
       @campaign.campaign_items.filter_map(&:record)
     end
+    @meta_title = @campaign.name
+    @meta_image = @campaign.banner
+    @meta_description = @campaign.blurb.presence || "A campaign at Preciso."
     track("campaign/#{@campaign.slug}", "Campaign · #{@campaign.name}")
   end
 end

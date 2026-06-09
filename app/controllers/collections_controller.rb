@@ -10,6 +10,9 @@ class CollectionsController < ApplicationController
 
     # @collection.products inherits the membership order(:position) scope (curated order)
     @products = @collection.products
+    @meta_title = @collection.name
+    @meta_image = @collection.cover
+    @meta_description = @collection.description.presence || "A collection by Preciso."
     track("collection/#{@collection.slug}", "Collection · #{@collection.name}")
   end
 end

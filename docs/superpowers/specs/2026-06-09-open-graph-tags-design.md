@@ -41,10 +41,16 @@ HTML-escaped (no XSS even though `home_page` text is user-editable).
 The provided logo (1050×600 PNG, ~28 KB) is copied to
 `app/assets/images/og-image.png` and served by Propshaft (digested URL).
 
-## Out of scope
+## Per-page cards (added as a follow-up)
 
-- Per-page OG (e.g. a product's own photo/price/title when sharing a product link) —
-  a possible follow-up; this change is one site-wide brand card.
+Show actions set `@meta_title`, `@meta_description`, `@meta_image` (an attachment or
+`has_one_attached` proxy), and optionally `@meta_type`/`@meta_price`; the partial uses
+them with home-page fallbacks. Covered: products & sets (`og:type=product`, price in
+the description + `product:price:amount`/`currency`, cover image), categories,
+collections, campaigns, and the about page. `og_image_url`/`og_image?` resolve an
+absolute image URL (custom record image, else the brand image).
+
+## Out of scope
 - Editing the OG image/text from the admin (text already follows the editable hero;
   the image is a static brand asset).
 - The admin layout.
