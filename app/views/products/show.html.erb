@@ -13,8 +13,31 @@
       else
         []
       end
+
+    if has_variants
+      # Attributes this product's variants use, ordered, each with its distinct values.
+      product_attrs = @variants.flat_map(&:variant_attribute_values).uniq
+                               .group_by(&:variant_attribute)
+                               .sort_by { |attr, _| attr.position }
+                               .map { |attr, vals| [ attr, vals.uniq.sort_by(&:position) ] }
+      default_value_ids = @variants.first.variant_attribute_value_ids
+      # Map keyed by each variant's sorted value-ids; the dropdowns resolve a
+      # selection to a variant client-side. priceLabel HTML rides through to_json
+      # (which escapes < as <, not the \/ that escape_javascript produces).
+      variant_map = @variants.each_with_object({}) do |v, h|
+        cur  = v.current_price_via_product
+        base = v.price
+        urls = v.images.attached? ? v.images.map { |i| url_for(i) } : (@product.images.attached? ? @product.images.map { |i| url_for(i) } : [])
+        h[v.variant_attribute_value_ids.sort.join("-")] = {
+          variantId:  v.id,
+          pricePlain: money(cur),
+          priceLabel: (cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur)),
+          images:     urls
+        }
+      end
+    end
   %>
-  <div class="detail-grid" data-controller="variants">
+  <div class="detail-grid" data-controller="variants" <% if has_variants %>data-variants-map="<%= variant_map.to_json %>"<% end %>>
     <div class="detail-media" data-controller="gallery">
       <div class="detail-media-frame">
         <% if gallery_imgs.any? %>
@@ -40,25 +63,23 @@
       <div class="eyebrow clay"><%= @category&.name %></div>
       <h1 class="display detail-title"><%= @product.name %></h1>
       <div class="detail-price" data-variants-target="price">
-        <% if has_variants %>from <%= money @product.price_from %><% else %><%= price_tag(@product) %><% end %>
+        <% if has_variants %><%= price_tag(@product, variant: @variants.first) %><% else %><%= price_tag(@product) %><% end %>
       </div>
+      <% if has_variants %>
+        <div class="variant-unavailable" data-variants-target="unavailable" hidden>This combination isn't available.</div>
+      <% end %>
       <p class="detail-long"><%= @product.long_desc %></p>
 
       <% if has_variants %>
         <div class="variant-pick">
-          <% @variants.each_with_index do |v, i|
-               urls = v.images.attached? ? v.images.map { |img| url_for(img) } : (@product.images.attached? ? @product.images.map { |img| url_for(img) } : [])
-               cur = v.current_price_via_product
-               base = v.price
-          %>
-            <label class="chip variant-chip">
-              <input type="radio" name="variant_choice" <%= "checked" if i.zero? %>
-                     data-variants-target="radio" data-action="variants#select"
-                     data-variant-id="<%= v.id %>"
-                     data-price-plain="<%= money cur %>"
-                     data-price-label="<%= cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur) %>"
-                     data-images="<%= urls.to_json %>">
-              <span><%= v.label %> · <%= money cur %></span>
+          <% product_attrs.each do |attr, values| %>
+            <label class="variant-field">
+              <span class="variant-field-label"><%= attr.name %></span>
+              <select class="variant-select" data-variants-target="attrSelect" data-action="change->variants#select">
+                <% values.each do |val| %>
+                  <option value="<%= val.id %>" <%= "selected" if default_value_ids.include?(val.id) %>><%= val.value %></option>
+                <% end %>
+              </select>
             </label>
           <% end %>
         </div>
@@ -72,7 +93,7 @@
           <% if has_variants %>
             <input type="hidden" name="variant_id" value="<%= @variants.first&.id %>" data-variants-target="variantId">
           <% end %>
-          <button type="submit" class="btn clay" style="width:100%;padding:17px 30px">
+          <button type="submit" class="btn clay" style="width:100%;padding:17px 30px" data-variants-target="addButton">
             <%= icon :cart %> <span data-variants-target="addLabel">Add — <%= money(has_variants ? @variants.first&.current_price_via_product : @product.current_price) %></span>
           </button>
         <% end %>

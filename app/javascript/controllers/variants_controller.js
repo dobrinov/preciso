@@ -1,28 +1,45 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Switches the displayed price, gallery, and add-to-cart variant_id when a
-// variant is selected. Variant data is read from data-* on each radio.
+// Per-attribute dropdowns choose a variant. The selected value-ids resolve to a
+// variant via a server-provided map keyed by the variant's sorted value-ids.
+// Unknown combinations hide the price and disable ordering.
 export default class extends Controller {
-  static targets = ["radio", "price", "variantId", "addLabel", "mainImage", "thumbs"]
+  static targets = ["attrSelect", "price", "variantId", "addLabel", "addButton", "unavailable", "mainImage", "thumbs"]
 
   connect() {
-    const checked = this.radioTargets.find((r) => r.checked) || this.radioTargets[0]
-    if (checked) {
-      checked.checked = true
-      this.apply(checked)
+    this.map = JSON.parse(this.element.dataset.variantsMap || "{}")
+    this.apply()
+  }
+
+  select() {
+    this.apply()
+  }
+
+  apply() {
+    // Numeric sort to match Ruby's integer Array#sort used to build the map keys.
+    const key = this.attrSelectTargets
+      .map((s) => parseInt(s.value, 10))
+      .sort((a, b) => a - b)
+      .join("-")
+    const variant = this.map[key]
+    if (variant) {
+      this.showVariant(variant)
+    } else {
+      this.showUnavailable()
     }
   }
 
-  select(e) {
-    this.apply(e.currentTarget)
-  }
+  showVariant(variant) {
+    if (this.hasPriceTarget) {
+      this.priceTarget.innerHTML = variant.priceLabel
+      this.priceTarget.hidden = false
+    }
+    if (this.hasUnavailableTarget) this.unavailableTarget.hidden = true
+    if (this.hasVariantIdTarget) this.variantIdTarget.value = variant.variantId
+    if (this.hasAddLabelTarget) this.addLabelTarget.textContent = `Add — ${variant.pricePlain}`
+    if (this.hasAddButtonTarget) this.addButtonTarget.disabled = false
 
-  apply(radio) {
-    const price = radio.dataset.priceLabel
-    if (this.hasPriceTarget) this.priceTarget.innerHTML = price
-    if (this.hasVariantIdTarget) this.variantIdTarget.value = radio.dataset.variantId
-    if (this.hasAddLabelTarget) this.addLabelTarget.textContent = `Add — ${radio.dataset.pricePlain}`
-    const images = JSON.parse(radio.dataset.images || "[]")
+    const images = variant.images || []
     if (images.length && this.hasMainImageTarget) {
       this.mainImageTarget.src = images[0]
       if (this.hasThumbsTarget) {
@@ -31,5 +48,13 @@ export default class extends Controller {
           .join("")
       }
     }
+  }
+
+  showUnavailable() {
+    if (this.hasPriceTarget) this.priceTarget.hidden = true
+    if (this.hasUnavailableTarget) this.unavailableTarget.hidden = false
+    if (this.hasVariantIdTarget) this.variantIdTarget.value = ""
+    if (this.hasAddLabelTarget) this.addLabelTarget.textContent = "Unavailable"
+    if (this.hasAddButtonTarget) this.addButtonTarget.disabled = true
   }
 }

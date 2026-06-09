@@ -570,6 +570,9 @@ a.cat-row:hover{background:var(--paper);}
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 13px; }
 .chip input { accent-color: var(--clay); }
 
-.variant-pick { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
-.variant-chip input { margin-right: 6px; }
-.variant-chip:has(input:checked) { border-color: var(--clay); background: var(--paper-2); }
+.variant-pick { display: flex; flex-direction: column; gap: 12px; margin: 18px 0 8px; max-width: 320px; }
+.variant-field { display: flex; flex-direction: column; gap: 5px; }
+.variant-field-label { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.variant-select { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: 14px; color: var(--ink-soft); cursor: pointer; }
+.variant-select:focus { outline: none; border-color: var(--clay); }
+.variant-unavailable { margin-top: 10px; color: var(--clay-deep); font-size: 14px; }
