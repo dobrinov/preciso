@@ -5,8 +5,11 @@ module Admin
 
     private
 
+    # Don't redirect to the login path — that would leak its (intentionally secret)
+    # URL. Just deny with a plain message; the owner navigates to the secret URL.
     def require_admin
-      redirect_to admin_login_path unless session[:admin]
+      return if session[:admin]
+      render plain: "Access allowed only for Bibi", status: :forbidden
     end
 
     def new_order_count
