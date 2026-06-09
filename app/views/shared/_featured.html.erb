@@ -1,0 +1,20 @@
+<% meta = featured_meta(record) %>
+<% if meta %>
+  <a href="<%= meta[:path] %>" class="hero-feature">
+    <div class="hero-feature-frame">
+      <% att = cover_attachment(record) %>
+      <% if att %>
+        <div class="ratio-box img-frame" style="padding-top:125%"><%= image_tag att, alt: record.name, class: "cover-img" %></div>
+      <% else %>
+        <%= placeholder(tone: (record.respond_to?(:tone) ? record.tone : Category::TONES["set"]), name: record.name, caption: "photo", ratio: "125%") %>
+      <% end %>
+    </div>
+    <div class="hero-feature-card">
+      <div>
+        <div class="hero-feature-eyebrow"><%= meta[:eyebrow] %></div>
+        <div class="hero-feature-name"><%= record.name %></div>
+      </div>
+      <span class="clay-text"><%= icon :arrow, size: 16 %></span>
+    </div>
+  </a>
+<% end %>

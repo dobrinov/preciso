@@ -33,6 +33,17 @@
       <label class="field"><div class="field-label">Subtext</div>
         <%= text_area_tag :hero_subtext, @home.hero_subtext, rows: 3, class: "input" %>
       </label>
+      <label class="field"><div class="field-label">Featured item</div>
+        <% current_featured = @home.featured_kind ? "#{@home.featured_kind}:#{@home.featured_id}" : "" %>
+        <%= select_tag :featured,
+              grouped_options_for_select({
+                "Products"    => Product.order(:id).map { |p| [ p.name, "product:#{p.id}" ] },
+                "Sets"        => ProductSet.order(:id).map { |s| [ s.name, "set:#{s.id}" ] },
+                "Collections" => Collection.order(:position).map { |c| [ c.name, "collection:#{c.id}" ] }
+              }, current_featured),
+              include_blank: "None (use the default)", class: "input" %>
+        <div class="field-hint">Shown in the hero. When a campaign is running it's featured automatically; this applies otherwise.</div>
+      </label>
 
       <div class="field-label" style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay-deep);margin-top:6px">Maker section</div>
       <label class="field"><div class="field-label">Eyebrow</div>

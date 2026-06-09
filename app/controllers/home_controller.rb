@@ -2,7 +2,8 @@ class HomeController < ApplicationController
   def index
     @categories = Category.all
     @featured = Product.order(:id).limit(4)
-    @hero_set = ProductSet.order(:id).first
+    # Featured hero slot: active campaign wins, else the admin pick, else first set.
+    @featured_item = Campaign.active.first || HomePage.instance.featured_record || ProductSet.order(:id).first
     @about = About.instance
     track("home", "Home")
   end

@@ -13,4 +13,15 @@ class HomePage < ApplicationRecord
       footer_blurb: "Handmade porcelain by Bianna Taynova. Shaped, trimmed and glazed by hand in small batches."
     )
   end
+
+  FEATURED_KINDS = %w[product set collection].freeze
+
+  # The admin-picked featured record, or nil if unset or since deleted.
+  def featured_record
+    case featured_kind
+    when "product"    then Product.find_by(id: featured_id)
+    when "set"        then ProductSet.find_by(id: featured_id)
+    when "collection" then Collection.find_by(id: featured_id)
+    end
+  end
 end

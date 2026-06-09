@@ -42,6 +42,20 @@ module MediaHelper
       record.primary_image
     elsif record.respond_to?(:image) && record.image.attached?
       record.image
+    elsif record.respond_to?(:cover) && record.cover.attached?
+      record.cover
+    elsif record.respond_to?(:banner) && record.banner.attached?
+      record.banner
+    end
+  end
+
+  # Presentation for the home-page featured card, by record type.
+  def featured_meta(record)
+    case record
+    when Campaign   then { eyebrow: "Featured offer",      path: campaign_path(record) }
+    when ProductSet then { eyebrow: "Featured set",        path: product_set_path(record) }
+    when Collection then { eyebrow: "Featured collection", path: collection_path(record) }
+    when Product    then { eyebrow: "Featured piece",      path: product_path(record) }
     end
   end
 

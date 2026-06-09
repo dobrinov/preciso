@@ -11,22 +11,9 @@
           <a href="<%= about_path %>" class="btn ghost">The studio</a>
         </div>
       </div>
-      <% if @hero_set %>
-        <a href="<%= product_set_path(@hero_set) %>" class="hero-feature">
-          <div class="hero-feature-frame"><%= media_for(@hero_set, kind: "set", ratio: "125%") %></div>
-          <div class="hero-feature-card">
-            <div>
-              <div class="hero-feature-eyebrow">Featured set</div>
-              <div class="hero-feature-name"><%= @hero_set.name %></div>
-            </div>
-            <span class="clay-text"><%= icon :arrow, size: 16 %></span>
-          </div>
-        </a>
-      <% end %>
+      <% if @featured_item %><%= render "shared/featured", record: @featured_item %><% end %>
     </div>
   </section>
-
-  <div class="wrap"><%= render "shared/campaign_banner" %></div>
 
   <%# category tiles %>
   <section class="wrap section">

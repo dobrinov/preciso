@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_075207) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_092748) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -125,6 +125,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_075207) do
 
   create_table "home_pages", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "featured_id"
+    t.string "featured_kind"
     t.text "footer_blurb"
     t.string "hero_accent"
     t.string "hero_eyebrow"
