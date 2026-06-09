@@ -62,14 +62,18 @@
 
       <div class="box" style="display:flex;flex-direction:column;gap:12px">
         <%= f.submit (is_new ? "Add category" : "Save changes"), class: "btn clay" %>
-        <% unless is_new %>
-          <% has_products = @category.products.exists? %>
-          <%= button_to admin_category_path(@category), method: :delete, class: "danger-btn",
-                form: { data: { turbo_confirm: has_products ? "This category has #{@category.products.count} piece(s). Deleting it leaves them uncategorised — continue?" : "Delete this category?" } } do %>
-            <%= icon :trash, size: 16 %> Delete category
-          <% end %>
-        <% end %>
       </div>
     </div>
+  </div>
+<% end %>
+
+<% unless is_new %>
+  <%# Separate form — must not be nested inside the edit form above. %>
+  <% has_products = @category.products.exists? %>
+  <div class="admin-pad" style="padding-top:0;max-width:340px">
+    <%= button_to admin_category_path(@category), method: :delete, class: "danger-btn",
+          form: { data: { turbo_confirm: has_products ? "This category has #{@category.products.count} piece(s). Deleting it leaves them uncategorised — continue?" : "Delete this category?" } } do %>
+      <%= icon :trash, size: 16 %> Delete category
+    <% end %>
   </div>
 <% end %>
