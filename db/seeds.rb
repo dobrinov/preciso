@@ -4,7 +4,7 @@
 # ============================================================
 
 CATEGORIES = [
-  { slug: "bowls",    name: "Bowls",         blurb: "Wheel-thrown forms for everyday and table." },
+  { slug: "bowls",    name: "Bowls",         blurb: "Hand-built forms for everyday and table." },
   { slug: "cups",     name: "Cups",          blurb: "For coffee, tea, and slow mornings." },
   { slug: "espresso", name: "Espresso Cups", blurb: "Small, dense, made for a single shot." },
   { slug: "vases",    name: "Vases",         blurb: "Stems, buds, and quiet sculpture." },
@@ -25,7 +25,7 @@ cat = Category.all.index_by(&:slug)
 PRODUCTS = [
   { id: "p-hakume", name: "Hakume Serving Bowl", category: "bowls", price: 58,
     short: "Wide bowl brushed with white slip.",
-    long: "A generous serving bowl thrown in fine porcelain and finished with hakume — a brushed coat of white slip that leaves soft, gestural strokes under a clear glaze. Each one carries the mark of the brush, so no two are alike. Roughly 24 cm across." },
+    long: "A generous serving bowl shaped in fine porcelain and finished with hakume — a brushed coat of white slip that leaves soft, gestural strokes under a clear glaze. Each one carries the mark of the brush, so no two are alike. Roughly 24 cm across." },
   { id: "p-everyday", name: "Everyday Bowl", category: "bowls", price: 32,
     short: "The one you reach for every day.",
     long: "An honest, medium bowl sized for cereal, soup, or a single serving of pasta. Unglazed foot, satin-white interior. Stacks neatly. About 15 cm across." },
@@ -37,7 +37,7 @@ PRODUCTS = [
     long: "A handle-less cup that sits warm in two hands. Thin at the lip, heavier at the base so it settles on the table. Holds about 220 ml." },
   { id: "p-tumbler", name: "Ribbed Tumbler", category: "cups", price: 34,
     short: "Faceted tumbler, fine vertical ribs.",
-    long: "Thrown and then ribbed by hand while the clay is soft, giving a column of fine facets that catch the light. For water, wine, or a flat white. About 250 ml." },
+    long: "Shaped and then ribbed by hand while the clay is soft, giving a column of fine facets that catch the light. For water, wine, or a flat white. About 250 ml." },
   { id: "p-espresso", name: "Espresso Cup", category: "espresso", price: 24,
     short: "Small and dense, for a single shot.",
     long: "A compact espresso cup with a thick wall that holds heat. Bright white inside to read the crema, raw porcelain on the foot. About 70 ml." },
@@ -102,9 +102,9 @@ about = About.instance
 if about.paragraphs.empty?
   about.update!(
     title: "From a small studio, one piece at a time",
-    lead: "Preciso is the porcelain studio of Bianna Taynova, working by hand from a sunlit room of wheels, shelves, and a single kiln.",
+    lead: "Preciso is the porcelain studio of Bianna Taynova, working by hand from a sunlit room of benches, shelves, and a single kiln.",
     body: [
-      "Every piece begins as a ball of fine porcelain on the wheel. I throw, trim, and finish each one by hand, which means small differences travel from my hands into yours — a softened rim, the trace of a brush, a foot left bare. I think of these not as flaws but as the record of how a thing was made.",
+      "Every piece begins as fine porcelain, built by hand. I shape, trim, and finish each one, which means small differences travel from my hands into yours — a softened rim, the trace of a brush, a foot left bare. I think of these not as flaws but as the record of how a thing was made.",
       "I work in a quiet palette: white slips, satin and dry-matte glazes, the warm grey of unglazed clay. The forms are meant to disappear into daily life — to be the cup you reach for first, the bowl that holds the morning, the vase for the one stem you brought home.",
       "Pieces are made in small batches and often sell as they leave the kiln. If something you want is gone, write to me and I will tell you when the next firing lands."
     ],
