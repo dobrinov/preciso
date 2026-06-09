@@ -18,6 +18,11 @@ class ApplicationController < ActionController::Base
     session[:sid] ||= "s-#{SecureRandom.hex(4)}"
   end
 
+  # Real client IP. Fly's proxy sets Fly-Client-IP; remote_ip is the local fallback.
+  def client_ip
+    request.headers["Fly-Client-IP"].presence || request.remote_ip
+  end
+
   # True while signed into the admin — analytics is suppressed so the studio's
   # own browsing doesn't pollute the numbers.
   def admin_signed_in?
@@ -30,7 +35,8 @@ class ApplicationController < ActionController::Base
     return if admin_signed_in?
     Event.create!(
       event_type: "pageview", sid: analytics_sid, page_key: page_key,
-      label: label, piece: piece, name: name, occurred_at: Time.current
+      label: label, piece: piece, name: name, occurred_at: Time.current,
+      ip: client_ip, user_agent: request.user_agent
     )
   rescue => e
     Rails.logger.warn("analytics track failed: #{e.message}")

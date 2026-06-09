@@ -60,6 +60,10 @@ Android, macOS, Windows, Linux, else omitted.
 In the "Recent activity" rows (`admin/analytics/index.html.erb`), add a muted subline
 under the event text showing `"<ip> · <browser_label(user_agent)>"` (only the IP/
 browser parts that are present), styled inline (`font-size:11px;color:var(--faint)`).
+The IP is a link to an IP-geolocation lookup site —
+`https://ipinfo.io/<ip>` — opened in a new tab (`target="_blank"`,
+`rel="noopener"`), so the admin can see the location on demand without a bundled
+GeoIP database.
 
 ## Files
 

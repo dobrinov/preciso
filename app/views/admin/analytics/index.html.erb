@@ -67,7 +67,11 @@
     <% @recent.each do |e| %>
       <div class="activity-row">
         <span class="activity-ic" style="color:<%= event_color(e.event_type) %>"><%= event_icon(e.event_type) %></span>
-        <div class="activity-text"><%= event_text(e) %></div>
+        <div class="activity-text">
+          <%= event_text(e) %>
+          <% origin = event_origin(e) %>
+          <% if origin %><div style="font-size:11px;color:var(--faint);margin-top:2px"><%= origin %></div><% end %>
+        </div>
         <span class="activity-time"><%= time_ago e.occurred_at %></span>
       </div>
     <% end %>

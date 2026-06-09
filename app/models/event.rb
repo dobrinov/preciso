@@ -1,4 +1,8 @@
 class Event < ApplicationRecord
+  # A unique visitor is identified by IP + browser + cookie. COALESCE keeps older
+  # rows (no ip/user_agent) counting by their sid.
+  VISITOR_KEY = Arel.sql("COALESCE(ip,'') || '~' || COALESCE(user_agent,'') || '~' || COALESCE(sid,'')")
+
   scope :since, ->(from) { where("occurred_at >= ?", from) }
   scope :pageviews, -> { where(event_type: "pageview") }
   scope :carts, -> { where(event_type: "add_cart") }
@@ -7,14 +11,14 @@ class Event < ApplicationRecord
   # ---- summary over a time window ----
   def self.summary(from)
     evs = since(from)
-    visitors = evs.distinct.count(:sid)
+    visitors = evs.distinct.count(VISITOR_KEY)
     pageviews = evs.pageviews.count
     carts = evs.carts.count
     orders = evs.orders.count
     revenue = evs.orders.sum(:total)
     {
       pageviews:, visitors:, carts:, orders:, revenue:,
-      conversion: visitors.positive? ? (orders.to_f / visitors) * 100 : 0,
+      conversion: visitors.positive? ? (orders.to_f / visitors) * 100 : 0
     }
   end
 
@@ -37,7 +41,7 @@ class Event < ApplicationRecord
       day_start = start - i.days
       day_end = day_start + 1.day
       day_views = pageviews.where(occurred_at: day_start...day_end)
-      { t: day_start, views: day_views.count, visitors: day_views.distinct.count(:sid) }
+      { t: day_start, views: day_views.count, visitors: day_views.distinct.count(VISITOR_KEY) }
     end
   end
 
