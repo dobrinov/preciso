@@ -18,6 +18,11 @@ module ApplicationHelper
     @_home_page ||= HomePage.instance
   end
 
+  # The vacation/slower-processing singleton (memoized per request).
+  def vacation
+    @_vacation ||= Vacation.instance
+  end
+
   # Make an asset/blob path absolute against the canonical host (og:image, JSON-LD).
   def absolute_url(path)
     path.to_s.start_with?("http") ? path : "#{CANONICAL_HOST}#{path}"

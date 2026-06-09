@@ -8,7 +8,7 @@
   <main class="wrap fade-up page-top" data-controller="checkout">
     <%= render "shared/breadcrumb", trail: [["Checkout", nil]] %>
     <h1 class="display checkout-title">Checkout</h1>
-    <%= form_with url: checkout_path, method: :post, data: { turbo: false } do %>
+    <%= form_with url: checkout_path, method: :post, data: { turbo: false, checkout_target: "form", action: "submit->checkout#guard" } do %>
       <div class="checkout-grid">
         <div>
           <div class="checkout-note">No payment is taken here. Leave your details and Bianna will be in touch to confirm your pieces, the total, and pickup or delivery.</div>
@@ -61,6 +61,20 @@
           </div>
           <button type="submit" class="btn clay block" style="margin-top:20px" data-checkout-target="submit" disabled>Place order <%= icon :arrow, size: 16 %></button>
           <div style="font-size:11.5px;color:var(--faint);margin-top:12px;text-align:center">You won't be charged now.</div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if vacation.active? %>
+      <div class="vac-modal" data-checkout-target="modal" hidden>
+        <div class="vac-scrim" data-action="click->checkout#cancelOrder"></div>
+        <div class="vac-panel">
+          <div class="vac-title">Before you order</div>
+          <p class="vac-message"><%= vacation.message %></p>
+          <div class="vac-actions">
+            <button type="button" class="btn ghost" data-action="checkout#cancelOrder">Go back</button>
+            <button type="button" class="btn clay" data-action="checkout#confirmOrder">Place order anyway</button>
+          </div>
         </div>
       </div>
     <% end %>

@@ -11,6 +11,7 @@
            when "variant_attributes" then "attributes"
            when "about" then "about"
            when "home_page" then "home"
+           when "vacation" then "vacation"
            end
   nav = [
     ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
@@ -24,6 +25,7 @@
     ["campaigns",   "Campaigns",   :tag,    admin_campaigns_path],
     ["about",       "About page",  :doc,    edit_admin_about_path],
     ["home",        "Home page",   :doc,    edit_admin_home_page_path],
+    ["vacation",    "Vacation",    :doc,    edit_admin_vacation_path],
   ]
 %>
 <aside class="admin-aside">

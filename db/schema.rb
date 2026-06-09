@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_112559) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_124303) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -197,6 +197,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_112559) do
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_set_items_on_product_id"
     t.index ["product_set_id"], name: "index_set_items_on_product_set_id"
+  end
+
+  create_table "vacations", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.text "message"
+    t.datetime "updated_at", null: false
   end
 
   create_table "variant_attribute_values", force: :cascade do |t|
