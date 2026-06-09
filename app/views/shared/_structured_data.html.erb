@@ -1,0 +1,3 @@
+<% structured_data.each do |block| %>
+<script type="application/ld+json"><%= raw block.to_json %></script>
+<% end %>

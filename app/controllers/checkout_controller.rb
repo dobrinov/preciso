@@ -1,4 +1,6 @@
 class CheckoutController < ApplicationController
+  before_action { @noindex = true }
+
   def new
     @lines = current_cart.detailed
     @total = current_cart.total

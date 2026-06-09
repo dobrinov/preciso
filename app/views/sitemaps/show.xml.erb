@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc><%= canonical_url("/") %></loc></url>
+  <url><loc><%= canonical_url(about_path) %></loc></url>
+  <url><loc><%= canonical_url(sets_path) %></loc></url>
+  <url><loc><%= canonical_url(collections_path) %></loc></url>
+<% @categories.each do |c| %>
+  <url><loc><%= canonical_url(shop_category_path(c.slug)) %></loc><lastmod><%= c.updated_at.iso8601 %></lastmod></url>
+<% end %>
+<% @products.each do |p| %>
+  <url><loc><%= canonical_url(product_path(p)) %></loc><lastmod><%= p.updated_at.iso8601 %></lastmod></url>
+<% end %>
+<% @sets.each do |s| %>
+  <url><loc><%= canonical_url(product_set_path(s)) %></loc><lastmod><%= s.updated_at.iso8601 %></lastmod></url>
+<% end %>
+<% @collections.each do |c| %>
+  <url><loc><%= canonical_url(collection_path(c)) %></loc><lastmod><%= c.updated_at.iso8601 %></lastmod></url>
+<% end %>
+<% @campaigns.each do |c| %>
+  <url><loc><%= canonical_url(campaign_path(c)) %></loc><lastmod><%= c.updated_at.iso8601 %></lastmod></url>
+<% end %>
+</urlset>

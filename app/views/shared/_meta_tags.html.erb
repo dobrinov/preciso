@@ -8,11 +8,13 @@
   image = og_image_url(@meta_image)
 %>
 <meta name="description" content="<%= desc %>">
+<link rel="canonical" href="<%= canonical_url %>">
+<% if @noindex %><meta name="robots" content="noindex"><% end %>
 <meta property="og:type" content="<%= type %>">
 <meta property="og:site_name" content="Preciso">
 <meta property="og:title" content="<%= title %>">
 <meta property="og:description" content="<%= desc %>">
-<meta property="og:url" content="<%= request.original_url %>">
+<meta property="og:url" content="<%= canonical_url %>">
 <meta property="og:image" content="<%= image %>">
 <% if custom_image %>
   <meta property="og:image:alt" content="<%= title %>">

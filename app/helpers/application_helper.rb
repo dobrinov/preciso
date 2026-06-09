@@ -1,8 +1,15 @@
 module ApplicationHelper
   CURRENCY = "€".freeze
+  # Single canonical domain so apex / www / fly.dev aren't treated as duplicates.
+  CANONICAL_HOST = "https://www.precisodesign.com".freeze
 
   def money(n)
     "#{CURRENCY}#{n.to_i}"
+  end
+
+  # Canonical absolute URL for a path (defaults to the current request path).
+  def canonical_url(path = nil)
+    "#{CANONICAL_HOST}#{path || request.path}"
   end
 
   # The editable home-page / footer text singleton, memoized per request so the
@@ -11,9 +18,9 @@ module ApplicationHelper
     @_home_page ||= HomePage.instance
   end
 
-  # Make an asset/blob path absolute for og:image (scrapers need a full URL).
+  # Make an asset/blob path absolute against the canonical host (og:image, JSON-LD).
   def absolute_url(path)
-    path.to_s.start_with?("http") ? path : "#{request.base_url}#{path}"
+    path.to_s.start_with?("http") ? path : "#{CANONICAL_HOST}#{path}"
   end
 
   # Whether an image source has an attached blob. Handles a has_one_attached
@@ -62,5 +69,34 @@ module ApplicationHelper
     else
       money(cur)
     end
+  end
+
+  # schema.org JSON-LD blocks for the current page: Organization site-wide, plus
+  # Product on product/set pages (built from the @meta_* values set for OG).
+  def structured_data
+    blocks = [ {
+      "@context" => "https://schema.org",
+      "@type" => "Organization",
+      "name" => "Preciso",
+      "url" => CANONICAL_HOST,
+      "logo" => absolute_url(image_path("og-image.png"))
+    } ]
+    if @meta_type == "product"
+      blocks << {
+        "@context" => "https://schema.org",
+        "@type" => "Product",
+        "name" => @meta_title,
+        "image" => og_image_url(@meta_image),
+        "description" => @meta_description,
+        "offers" => {
+          "@type" => "Offer",
+          "price" => @meta_price.to_s,
+          "priceCurrency" => "EUR",
+          "availability" => "https://schema.org/InStock",
+          "url" => canonical_url
+        }
+      }
+    end
+    blocks
   end
 end
