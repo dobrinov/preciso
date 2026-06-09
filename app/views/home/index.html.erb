@@ -3,9 +3,9 @@
   <section class="wrap hero-sec">
     <div class="hero-grid">
       <div>
-        <div class="eyebrow clay">Handmade Porcelain · Bianna Taynova</div>
-        <h1 class="display hero-title">Quiet objects<br>for daily<span class="italic clay-text"> rituals</span></h1>
-        <p class="hero-lede">Hand-built bowls, cups and vases in fine white porcelain — finished by hand, made in small batches, sold as they leave the kiln.</p>
+        <div class="eyebrow clay"><%= home_page.hero_eyebrow %></div>
+        <h1 class="display hero-title"><%= safe_join(home_page.hero_title.split("\n"), tag.br) %><% if home_page.hero_accent.present? %> <span class="italic clay-text"><%= home_page.hero_accent %></span><% end %></h1>
+        <p class="hero-lede"><%= home_page.hero_subtext %></p>
         <div class="hero-cta">
           <a href="<%= shop_category_path('bowls') %>" class="btn">Browse the shop <%= icon :arrow, size: 16 %></a>
           <a href="<%= about_path %>" class="btn ghost">The studio</a>
@@ -71,9 +71,9 @@
         <% end %>
       </div>
       <div>
-        <div class="eyebrow clay">The maker</div>
-        <h2 class="display maker-title">Made by one pair of hands</h2>
-        <p class="maker-text">Each piece begins as fine porcelain and is built entirely by hand — shaped, refined, glazed and fired. Small differences are the record of how it was made.</p>
+        <div class="eyebrow clay"><%= home_page.maker_eyebrow %></div>
+        <h2 class="display maker-title"><%= home_page.maker_title %></h2>
+        <p class="maker-text"><%= home_page.maker_text %></p>
         <a href="<%= about_path %>" class="link-underline" style="margin-top:30px">Read the studio story <%= icon :arrow, size: 16 %></a>
       </div>
     </div>

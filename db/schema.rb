@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_191129) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_075207) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -121,6 +121,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_191129) do
     t.datetime "updated_at", null: false
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["occurred_at"], name: "index_events_on_occurred_at"
+  end
+
+  create_table "home_pages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "footer_blurb"
+    t.string "hero_accent"
+    t.string "hero_eyebrow"
+    t.text "hero_subtext"
+    t.text "hero_title"
+    t.string "maker_eyebrow"
+    t.text "maker_text"
+    t.string "maker_title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "order_lines", force: :cascade do |t|

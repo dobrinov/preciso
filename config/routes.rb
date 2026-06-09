@@ -45,5 +45,6 @@ Rails.application.routes.draw do
     resources :campaigns
     resources :variant_attributes, path: "attributes"
     resource :about, only: [ :edit, :update ], controller: "about"
+    resource :home_page, only: [ :edit, :update ], controller: "home_page"
   end
 end

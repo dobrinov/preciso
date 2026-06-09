@@ -10,6 +10,7 @@
            when "campaigns" then "campaigns"
            when "variant_attributes" then "attributes"
            when "about" then "about"
+           when "home_page" then "home"
            end
   nav = [
     ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
@@ -22,6 +23,7 @@
     ["collections", "Collections", :layers, admin_collections_path],
     ["campaigns",   "Campaigns",   :tag,    admin_campaigns_path],
     ["about",       "About page",  :doc,    edit_admin_about_path],
+    ["home",        "Home page",   :doc,    edit_admin_home_page_path],
   ]
 %>
 <aside class="admin-aside">

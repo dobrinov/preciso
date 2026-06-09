@@ -5,6 +5,12 @@ module ApplicationHelper
     "#{CURRENCY}#{n.to_i}"
   end
 
+  # The editable home-page / footer text singleton, memoized per request so the
+  # home view and the site-wide footer share one query.
+  def home_page
+    @_home_page ||= HomePage.instance
+  end
+
   # "2 days ago" style relative time.
   def time_ago(ts)
     return "" unless ts

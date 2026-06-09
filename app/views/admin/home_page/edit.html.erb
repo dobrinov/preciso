@@ -1,0 +1,59 @@
+<% content_for :title, "Preciso — Home page" %>
+<%= form_with url: admin_home_page_path, method: :patch, data: { turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">Home page</h1>
+      <p class="pagehead-sub">Edit the text shown on the home page and the footer.</p>
+    </div>
+    <div class="pagehead-actions">
+      <a href="<%= root_path %>" target="_blank" class="btn ghost sm"><%= icon :store, size: 16 %> View page</a>
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad" style="max-width:820px">
+    <div class="card-pad">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> Saved</div>
+      <% end %>
+
+      <div class="field-label" style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay-deep)">Hero</div>
+      <label class="field"><div class="field-label">Eyebrow</div>
+        <%= text_field_tag :hero_eyebrow, @home.hero_eyebrow, class: "input" %>
+        <div class="field-hint">The small line above the title.</div>
+      </label>
+      <label class="field"><div class="field-label">Title</div>
+        <%= text_area_tag :hero_title, @home.hero_title, rows: 2, class: "input" %>
+        <div class="field-hint">The big headline. Each new line becomes a line break.</div>
+      </label>
+      <label class="field"><div class="field-label">Accent</div>
+        <%= text_field_tag :hero_accent, @home.hero_accent, class: "input" %>
+        <div class="field-hint">Optional. Appended to the title in italic, clay colour. Leave blank for none.</div>
+      </label>
+      <label class="field"><div class="field-label">Subtext</div>
+        <%= text_area_tag :hero_subtext, @home.hero_subtext, rows: 3, class: "input" %>
+      </label>
+
+      <div class="field-label" style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay-deep);margin-top:6px">Maker section</div>
+      <label class="field"><div class="field-label">Eyebrow</div>
+        <%= text_field_tag :maker_eyebrow, @home.maker_eyebrow, class: "input" %>
+      </label>
+      <label class="field"><div class="field-label">Heading</div>
+        <%= text_field_tag :maker_title, @home.maker_title, class: "input" %>
+      </label>
+      <label class="field"><div class="field-label">Paragraph</div>
+        <%= text_area_tag :maker_text, @home.maker_text, rows: 3, class: "input" %>
+      </label>
+
+      <div class="field-label" style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay-deep);margin-top:6px">Footer</div>
+      <label class="field"><div class="field-label">Blurb</div>
+        <%= text_area_tag :footer_blurb, @home.footer_blurb, rows: 2, class: "input" %>
+        <div class="field-hint">Shown in the footer on every page.</div>
+      </label>
+
+      <div>
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+  </div>
+<% end %>
