@@ -71,6 +71,17 @@ module ApplicationHelper
     end
   end
 
+  # BreadcrumbList JSON-LD mirroring the visible breadcrumb (Home + the trail).
+  # trail is an array of [name, path]; a nil path (current page) uses the canonical
+  # URL. Google requires an item URL on every entry.
+  def breadcrumb_jsonld(trail)
+    items = ([ [ "Home", root_path ] ] + trail).each_with_index.map do |(name, path), i|
+      { "@type" => "ListItem", "position" => i + 1, "name" => name,
+        "item" => path ? absolute_url(path) : canonical_url }
+    end
+    { "@context" => "https://schema.org", "@type" => "BreadcrumbList", "itemListElement" => items }
+  end
+
   # schema.org JSON-LD blocks for the current page: Organization site-wide, plus
   # Product on product/set pages (built from the @meta_* values set for OG).
   def structured_data

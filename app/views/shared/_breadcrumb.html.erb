@@ -5,3 +5,4 @@
     <% if path %><a href="<%= path %>"><%= label %></a><% else %><span class="current"><%= label %></span><% end %>
   <% end %>
 </div>
+<script type="application/ld+json"><%= raw breadcrumb_jsonld(trail).to_json %></script>
