@@ -34,7 +34,7 @@ class CheckoutController < ApplicationController
     end
 
     Event.create!(event_type: "order", sid: analytics_sid, label: order.number,
-                  total: order.total, occurred_at: Time.current)
+                  total: order.total, occurred_at: Time.current) unless admin_signed_in?
     cart.clear
 
     redirect_to checkout_confirmation_path(order.number)

@@ -18,8 +18,16 @@ class ApplicationController < ActionController::Base
     session[:sid] ||= "s-#{SecureRandom.hex(4)}"
   end
 
-  # Record a storefront pageview (admin views are never tracked).
+  # True while signed into the admin — analytics is suppressed so the studio's
+  # own browsing doesn't pollute the numbers.
+  def admin_signed_in?
+    session[:admin].present?
+  end
+
+  # Record a storefront pageview. Admin views and signed-in admin browsing are
+  # never tracked.
   def track(page_key, label, piece: false, name: nil)
+    return if admin_signed_in?
     Event.create!(
       event_type: "pageview", sid: analytics_sid, page_key: page_key,
       label: label, piece: piece, name: name, occurred_at: Time.current
