@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # One canonical address: precisodesign.com → www.precisodesign.com (permanent).
+  # GET/HEAD only, so a POST in flight (e.g. a myPOS callback) is never broken.
+  constraints(host: "precisodesign.com") do
+    get "(*path)", to: redirect(status: 301) { |_params, req| "https://www.precisodesign.com#{req.fullpath}" },
+                   format: false
+  end
   get "sitemap.xml", to: "sitemaps#show", defaults: { format: "xml" }, as: :sitemap
 
   root "home#index"
