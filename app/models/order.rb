@@ -30,6 +30,10 @@ class Order < ApplicationRecord
   def status_meta = STATUSES[status] || STATUSES["new"]
   def item_count = order_lines.sum(:qty)
   def payment_label = PAYMENT_STATUSES[payment_status]
+  def items_total = order_lines.sum(&:subtotal)
+  # A fixed delivery price applied (country has a DeliveryRate). nil = the
+  # studio quotes delivery by hand.
+  def delivery_priced? = !delivery_cost.nil?
   def paid? = payment_status == "paid"
   def awaiting_payment? = payment_status == "pending"
 

@@ -19,7 +19,7 @@
         <a href="<%= checkout_path %>" class="clay-text">Try again</a>, or write to the studio.
       <% else %>
         Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio. Bianna will email you at
-        <strong><%= @order.customer_email %></strong> to confirm the pieces and arrange payment and pickup.
+        <strong><%= @order.customer_email %></strong> to confirm the pieces<%= ", the delivery cost" if @order.country_name.present? && !@order.delivery_priced? %> and arrange payment and pickup.
       <% end %>
     </p>
   </div>
@@ -32,6 +32,17 @@
       <div class="confirm-line">
         <span><%= l.display_name %> <span style="color:var(--muted)">× <%= l.qty %></span></span>
         <span class="serif" style="font-size:16px"><%= money l.subtotal %></span>
+      </div>
+    <% end %>
+    <% if @order.delivery_priced? %>
+      <div class="confirm-line">
+        <span>Delivery <span style="color:var(--muted)">· <%= @order.country_name %></span></span>
+        <span class="serif" style="font-size:16px"><%= money @order.delivery_cost %></span>
+      </div>
+    <% elsif @order.country_name.present? %>
+      <div class="confirm-line">
+        <span>Delivery <span style="color:var(--muted)">· <%= @order.country_name %></span></span>
+        <span style="color:var(--muted)">quoted by email</span>
       </div>
     <% end %>
     <div style="display:flex;justify-content:space-between;padding:16px 24px;align-items:baseline">

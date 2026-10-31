@@ -588,3 +588,15 @@ a.cat-row:hover{background:var(--paper);}
 .variant-select { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: 14px; color: var(--ink-soft); cursor: pointer; }
 .variant-select:focus { outline: none; border-color: var(--clay); }
 .variant-unavailable { margin-top: 10px; color: var(--clay-deep); font-size: 14px; }
+
+/* ============================================================ Delivery (admin + checkout) */
+.delivery-row{display:grid;grid-template-columns:1fr auto 56px;gap:16px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);}
+.delivery-head{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.delivery-add{background:var(--paper);border-bottom:0;}
+.delivery-cost-form{display:flex;gap:8px;align-items:center;}
+.summary-sub-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--ink-soft);margin-top:10px;}
+.summary-sub-row + .summary-total-row{margin-top:12px;}
+@media(max-width:520px){.delivery-row{grid-template-columns:1fr;gap:8px;}}
+
+/* The hidden attribute always wins over component display rules. */
+[hidden]{display:none !important;}

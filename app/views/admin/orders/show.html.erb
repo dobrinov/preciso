@@ -23,6 +23,16 @@
         <div class="order-line-total"><%= money l.subtotal %></div>
       </div>
     <% end %>
+    <% if @order.country_name.present? %>
+      <div class="item">
+        <div class="order-thumb" style="display:grid;place-items:center;color:var(--muted)"><%= icon :truck %></div>
+        <div style="flex:1">
+          <div class="order-line-name">Delivery — <%= @order.country_name %></div>
+          <div class="order-line-meta"><%= @order.delivery_priced? ? "Fixed rate" : "No set rate for this country — quote delivery to the customer" %></div>
+        </div>
+        <div class="order-line-total"><%= @order.delivery_priced? ? money(@order.delivery_cost) : "—" %></div>
+      </div>
+    <% end %>
     <div class="order-total-row">
       <span class="cart-total-label">Order total</span>
       <span class="serif" style="font-size:30px"><%= money @order.total %></span>
@@ -50,6 +60,9 @@
       <div class="kv-list">
         <div class="kv"><span class="k">Name</span><span class="v"><%= @order.customer_name %></span></div>
         <div class="kv"><span class="k">Email</span><span class="v"><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a></span></div>
+        <% if @order.country_name.present? %>
+          <div class="kv"><span class="k">Country</span><span class="v"><%= @order.country_name %></span></div>
+        <% end %>
         <div class="kv"><span class="k">Phone</span><span class="v"><a href="tel:<%= @order.customer_phone %>"><%= @order.customer_phone %></a></span></div>
         <% if @order.note.present? %>
           <div class="kv"><span class="k">Note</span><span class="v"><%= @order.note %></span></div>

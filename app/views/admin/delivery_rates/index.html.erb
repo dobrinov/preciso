@@ -1,0 +1,46 @@
+<% content_for :title, "Preciso — Delivery" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Delivery</h1>
+    <p class="pagehead-sub">Fixed delivery prices per country. Customers from a country listed here see the delivery cost at checkout and can pay online. Anyone else places their order without paying and you quote delivery by hand.</p>
+  </div>
+</div>
+
+<div class="admin-pad" style="max-width:720px">
+  <% if flash[:notice] %>
+    <div class="flash-saved fade-up" style="margin-bottom:14px"><%= icon :check, size: 16 %> <%= flash[:notice] %></div>
+  <% elsif flash[:alert] %>
+    <div class="flash-saved fade-up" style="margin-bottom:14px;color:#a14a3a"><%= flash[:alert] %></div>
+  <% end %>
+
+  <div class="panel">
+    <div class="delivery-row delivery-head"><div>Country</div><div>Delivery cost (€)</div><div></div></div>
+    <% if @rates.empty? %>
+      <div class="empty-state">No countries yet — every order uses the pay-later flow until you add one.</div>
+    <% end %>
+    <% @rates.each do |r| %>
+      <div class="delivery-row">
+        <div class="serif" style="font-size:18px"><%= r.name %></div>
+        <%= form_with url: admin_delivery_rate_path(r), method: :patch, data: { turbo: false }, class: "delivery-cost-form" do %>
+          <%= number_field_tag :cost, r.cost, min: 0, step: 1, class: "input", style: "width:110px" %>
+          <button type="submit" class="btn ghost sm">Save</button>
+        <% end %>
+        <div class="text-right">
+          <%= button_to admin_delivery_rate_path(r), method: :delete, class: "btn ghost sm",
+                form: { data: { turbo_confirm: "Remove delivery to #{r.name}?" } } do %><%= icon :trash, size: 15 %><% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @available.any? %>
+      <%= form_with url: admin_delivery_rates_path, method: :post, data: { turbo: false }, class: "delivery-row delivery-add" do %>
+        <div><%= select_tag :country_code, options_for_select(@available.invert), prompt: "Add a country…", class: "input", required: true %></div>
+        <div class="delivery-cost-form">
+          <%= number_field_tag :cost, nil, min: 0, step: 1, placeholder: "€", class: "input", style: "width:110px", required: true %>
+          <button type="submit" class="btn clay sm"><%= icon :plus, size: 15 %> Add</button>
+        </div>
+        <div></div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

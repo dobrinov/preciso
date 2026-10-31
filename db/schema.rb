@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_190000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -108,6 +108,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_180000) do
     t.index ["slug"], name: "index_collections_on_slug", unique: true
   end
 
+  create_table "delivery_rates", force: :cascade do |t|
+    t.integer "cost", default: 0, null: false
+    t.string "country_code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["country_code"], name: "index_delivery_rates_on_country_code", unique: true
+  end
+
   create_table "events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "event_type", null: false
@@ -155,10 +163,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_180000) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.string "country_code"
+    t.string "country_name"
     t.datetime "created_at", null: false
     t.string "customer_email"
     t.string "customer_name"
     t.string "customer_phone"
+    t.integer "delivery_cost"
     t.text "note"
     t.string "number", null: false
     t.datetime "paid_at"

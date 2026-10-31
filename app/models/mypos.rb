@@ -80,14 +80,17 @@ module Mypos
       "CustomerEmail" => order.customer_email.to_s,
       "CustomerPhone" => order.customer_phone.to_s,
       "CustomerFirstNames" => first.to_s,
-      "CustomerFamilyName" => family.to_s,
-      "CartItems" => order.order_lines.size.to_s
+      "CustomerFamilyName" => family.to_s
     }
-    order.order_lines.each.with_index(1) do |line, i|
-      params["Article_#{i}"]  = line.display_name.to_s
-      params["Quantity_#{i}"] = line.qty.to_s
-      params["Price_#{i}"]    = amount(line.price)
-      params["Amount_#{i}"]   = amount(line.subtotal)
+    # Delivery goes in as its own cart row so the rows add up to Amount.
+    rows = order.order_lines.map { |l| [ l.display_name.to_s, l.qty, l.price ] }
+    rows << [ "Delivery — #{order.country_name}", 1, order.delivery_cost ] if order.delivery_cost.to_i.positive?
+    params["CartItems"] = rows.size.to_s
+    rows.each.with_index(1) do |(name, qty, price), i|
+      params["Article_#{i}"]  = name
+      params["Quantity_#{i}"] = qty.to_s
+      params["Price_#{i}"]    = amount(price)
+      params["Amount_#{i}"]   = amount(price * qty)
       params["Currency_#{i}"] = currency
     end
     params["CardTokenRequest"] = "0"          # don't store cards
