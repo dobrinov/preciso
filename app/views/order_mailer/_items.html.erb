@@ -1,0 +1,57 @@
+<%# Item rows with photos, delivery and total. total_label: "Total" / "Paid". %>
+<% thumbs = local_assigns.fetch(:thumbs, true); side = local_assigns.fetch(:side, 56) %>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" style="padding:0 <%= side %>px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <% if local_assigns[:heading] %>
+          <tr>
+            <td style="padding:28px 0 14px;border-top:1px solid <%= EmailHelper::LINE %>;<%= label_style %>">Your pieces</td>
+            <td align="right" style="padding:28px 0 14px;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::MONO %>;font-size:11px;color:<%= EmailHelper::MUTED %>;"><%= order.created_at.strftime("%-d %b %Y") %></td>
+          </tr>
+        <% end %>
+        <% order.order_lines.each do |l| %>
+          <tr>
+            <td colspan="2" style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <% if thumbs %>
+                    <td width="56" valign="middle" style="width:56px;padding-right:16px;">
+                      <% if (src = line_image_url(l)) %>
+                        <img src="<%= src %>" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border:0;">
+                      <% else %>
+                        <div style="width:56px;height:56px;background:<%= line_tone(l) %>;"></div>
+                      <% end %>
+                    </td>
+                  <% end %>
+                  <td valign="middle" style="font-family:<%= EmailHelper::SANS %>;">
+                    <div style="font-size:15px;font-weight:400;color:<%= EmailHelper::INK %>;"><%= l.name %></div>
+                    <div style="font-size:13px;font-weight:300;color:<%= EmailHelper::MUTED %>;padding-top:2px;"><%= [l.variant_label.presence, "× #{l.qty}"].compact.join(" · ") %></div>
+                  </td>
+                  <td align="right" valign="middle" style="font-family:<%= EmailHelper::SERIF %>;font-size:19px;color:<%= EmailHelper::INK %>;white-space:nowrap;"><%= money l.subtotal %></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        <% end %>
+        <% if order.country_name.present? %>
+          <tr>
+            <td style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;color:<%= EmailHelper::INK_SOFT %>;">Delivery · <%= order.country_name %></td>
+            <% if order.delivery_priced? %>
+              <td align="right" style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SERIF %>;font-size:19px;color:<%= EmailHelper::INK %>;"><%= money order.delivery_cost %></td>
+            <% else %>
+              <td align="right" style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;color:<%= EmailHelper::MUTED %>;">to be confirmed</td>
+            <% end %>
+          </tr>
+        <% end %>
+        <tr>
+          <td style="padding:18px 0 6px;border-top:1px solid <%= EmailHelper::INK %>;<%= label_style %>"><%= local_assigns.fetch(:total_label, "Total") %></td>
+          <td align="right" style="padding:18px 0 6px;border-top:1px solid <%= EmailHelper::INK %>;font-family:<%= EmailHelper::SERIF %>;font-size:32px;color:<%= EmailHelper::INK %>;white-space:nowrap;"><%= money order.total %><% if order.country_name.present? && !order.delivery_priced? %> <span style="font-family:<%= EmailHelper::SANS %>;font-size:13px;color:<%= EmailHelper::MUTED %>;">+ delivery</span><% end %></td>
+        </tr>
+        <% if local_assigns[:paid_with].present? %>
+          <tr><td colspan="2" align="right" style="font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:12.5px;color:<%= EmailHelper::MUTED %>;"><%= paid_with %></td></tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,17 @@
+<%# Two-column paper panel: [[label, html], [label, html]]. %>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" style="padding:24px 56px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:<%= EmailHelper::PAPER %>;">
+        <tr>
+          <% columns.each do |label, html| %>
+            <td class="col" width="50%" valign="top" style="padding:22px 24px;">
+              <div style="<%= label_style("letter-spacing:2px;") %>"><%= label %></div>
+              <div style="padding-top:8px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;"><%= html %></div>
+            </td>
+          <% end %>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

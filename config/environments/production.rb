@@ -59,6 +59,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "www.precisodesign.com", protocol: "https" }
+  config.action_mailer.asset_host = "https://www.precisodesign.com" # logo in emails
 
   # Order emails go out over SMTP (Brevo, Resend, Gmail, … — any provider).
   # Set SMTP_ADDRESS, SMTP_USERNAME, SMTP_PASSWORD (and optionally SMTP_PORT,

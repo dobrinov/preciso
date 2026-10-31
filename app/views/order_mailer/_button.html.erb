@@ -1,0 +1,15 @@
+<%# Bulletproof button + a quiet line under it. %>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" align="center" style="padding:36px 56px 50px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+        <tr>
+          <td align="center" bgcolor="<%= EmailHelper::ACCENT %>" style="background:<%= EmailHelper::ACCENT %>;">
+            <a href="<%= url %>" style="display:inline-block;padding:16px 36px;font-family:<%= EmailHelper::SANS %>;font-size:12px;font-weight:400;letter-spacing:2.6px;text-transform:uppercase;color:#ffffff;text-decoration:none;"><%= label %></a>
+          </td>
+        </tr>
+      </table>
+      <div style="padding-top:16px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:13px;color:<%= EmailHelper::MUTED %>;">Questions? Just reply to this email.</div>
+    </td>
+  </tr>
+</table>

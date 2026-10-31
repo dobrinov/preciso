@@ -1,5 +1,6 @@
-<p>Hi <%= @order.customer_name.to_s.split(" ").first %>,</p>
-<p>Thank you for your order <strong><%= @order.number %></strong>. Bianna will get back to you shortly to confirm your pieces<%= ", the delivery cost" if @order.country_name.present? && !@order.delivery_priced? %> and how to pay.</p>
-<%= render "summary", order: @order %>
-<p>You can see your order any time here: <a href="<%= checkout_confirmation_url(@order.number) %>"><%= checkout_confirmation_url(@order.number) %></a></p>
-<p>— Preciso</p>
+<% content_for :preheader, "Order #{@order.number} is with the studio — Bianna will be in touch shortly." %>
+<%= render "hero", eyebrow: "Order received", headline: "Thank you, #{first_name(@order)}",
+      body: safe_join([ "Your order ", order_number_tag(@order), " is with the studio. Bianna will be in touch shortly to confirm your pieces#{", the delivery cost" if @order.country_name.present? && !@order.delivery_priced?} and how to pay." ]) %>
+<%= render "items", order: @order, heading: true %>
+<%= render "panel", columns: [ (["Delivering to", address_html(@order)] if @order.address_line.present?), ["Contact", contact_html(@order)] ].compact %>
+<%= render "button", label: "View your order", url: checkout_confirmation_url(@order.number) %>

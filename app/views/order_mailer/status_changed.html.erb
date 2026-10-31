@@ -1,11 +1,32 @@
-<p>Hi <%= @order.customer_name.to_s.split(" ").first %>,</p>
-<% case @order.status %>
-<% when "preparing" %>
-  <p>Good news — Bianna has started preparing your order <strong><%= @order.number %></strong>.</p>
-<% when "fulfilled" %>
-  <p>Your order <strong><%= @order.number %></strong> is complete and on its way to you<%= " (or ready for pickup)" unless @order.address_line.present? %>. We hope you enjoy your pieces!</p>
-<% when "cancelled" %>
-  <p>Your order <strong><%= @order.number %></strong> has been cancelled.<%= " Your payment will be refunded to your card." if @order.paid? %> If you have any questions, just reply to this email.</p>
+<%
+  copy = {
+    "preparing" => [ "Your order is being prepared", "Good news, #{first_name(@order)} — Bianna has started preparing your pieces. We'll email you again as soon as they're on their way." ],
+    "fulfilled" => [ "Your pieces are on their way", "Your order is complete and has left the studio#{" — or it's ready for you to pick up" if @order.address_line.blank?}. We hope you enjoy every piece." ],
+    "cancelled" => [ "Your order was cancelled", "Your order has been cancelled.#{" Your payment will be refunded to the same card." if @order.paid?} Any questions — just reply to this email." ]
+  }
+  headline, body = copy.fetch(@order.status)
+  reached = { "preparing" => 2, "fulfilled" => 3 }[@order.status]
+%>
+<% content_for :preheader, "#{headline} (#{@order.number})." %>
+<%= render "hero", eyebrow: safe_join([ "Order ", order_number_tag(@order) ]), headline: headline, body: body %>
+<% if reached %>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td class="pad" style="padding:0 56px 30px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <% [ "Received", "Preparing", "On its way" ].each_with_index do |label, i| %>
+              <% on = i < reached %>
+              <td width="33%" align="center" style="padding:0 <%= i == 1 ? 6 : 0 %>px;">
+                <div style="height:2px;line-height:2px;font-size:0;background:<%= on ? EmailHelper::ACCENT : EmailHelper::LINE %>;">&nbsp;</div>
+                <div style="padding-top:10px;<%= label_style("letter-spacing:2px;color:#{on ? EmailHelper::INK : EmailHelper::MUTED};") %>"><%= label %></div>
+              </td>
+            <% end %>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 <% end %>
-<%= render "summary", order: @order %>
-<p>— Preciso</p>
+<%= render "items", order: @order %>
+<%= render "button", label: "View your order", url: checkout_confirmation_url(@order.number) %>

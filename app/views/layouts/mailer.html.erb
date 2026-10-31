@@ -1,17 +1,63 @@
+<%# Preciso email shell: paper background, logo, white card, footer.
+    Table-based + inline styles for Gmail / Outlook / Apple Mail. Views may set
+    content_for :preheader (inbox preview text) and @studio (internal alert). %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+      body { margin: 0; padding: 0; }
+      a { color: <%= EmailHelper::ACCENT %>; }
+      @media (max-width: 620px) {
+        .card { width: 100% !important; }
+        .pad { padding-left: 24px !important; padding-right: 24px !important; }
+        .h1 { font-size: 36px !important; }
+        .col { display: block !important; width: 100% !important; padding: 0 0 18px 0 !important; }
+      }
+    </style>
   </head>
-  <body style="margin:0;padding:0;background:#f6f3ee;">
-    <div style="max-width:560px;margin:0 auto;padding:32px 24px;font-family:Georgia,'Times New Roman',serif;color:#2b2622;font-size:15px;line-height:1.6;">
-      <div style="font-size:26px;font-style:italic;margin-bottom:24px;">Preciso</div>
-      <div style="background:#ffffff;padding:28px;border:1px solid #e8e1d7;font-family:Helvetica,Arial,sans-serif;">
-        <%= yield %>
-      </div>
-      <div style="font-size:12px;color:#9a9088;margin-top:18px;font-family:Helvetica,Arial,sans-serif;">
-        <a href="https://www.precisodesign.com" style="color:#9a9088;">precisodesign.com</a>
-      </div>
-    </div>
+  <body style="margin:0;padding:0;background:<%= EmailHelper::PAPER %>;">
+    <% if content_for?(:preheader) %>
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;"><%= yield :preheader %></div>
+    <% end %>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:<%= EmailHelper::PAPER %>;">
+      <tr>
+        <td align="center" style="padding:40px 12px 48px;">
+
+          <table role="presentation" class="card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;">
+            <tr>
+              <% if @studio %>
+                <td align="left" style="padding:0 4px 24px;">
+                  <img src="<%= image_url("preciso-logo.png") %>" alt="Preciso" width="94" height="30" style="display:block;border:0;height:30px;width:94px;">
+                </td>
+                <td align="right" style="padding:0 4px 24px;<%= label_style %>">Studio</td>
+              <% else %>
+                <td align="center" style="padding:0 0 28px;">
+                  <img src="<%= image_url("preciso-logo.png") %>" alt="Preciso" width="125" height="40" style="display:block;border:0;height:40px;width:125px;">
+                </td>
+              <% end %>
+            </tr>
+          </table>
+
+          <table role="presentation" class="card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;background:#ffffff;border:1px solid <%= EmailHelper::LINE %>;">
+            <tr><td><%= yield %></td></tr>
+          </table>
+
+          <table role="presentation" class="card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;">
+            <% if @studio %>
+              <tr><td align="center" style="padding:24px 8px 0;font-family:<%= EmailHelper::SANS %>;font-size:12px;line-height:1.7;color:<%= EmailHelper::MUTED %>;">Sent by your Preciso shop · change where these go in Admin → Emails</td></tr>
+            <% else %>
+              <tr><td align="center" style="padding:32px 8px 6px;font-family:<%= EmailHelper::SERIF %>;font-style:italic;font-size:18px;color:<%= EmailHelper::INK_SOFT %>;">With care, from the studio</td></tr>
+              <tr><td align="center" style="padding:0 8px;font-family:<%= EmailHelper::SANS %>;font-size:12px;line-height:1.7;color:<%= EmailHelper::MUTED %>;">Preciso · <a href="https://www.precisodesign.com" style="color:<%= EmailHelper::MUTED %>;">precisodesign.com</a><br>You're receiving this because you placed an order with us.</td></tr>
+            <% end %>
+          </table>
+
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

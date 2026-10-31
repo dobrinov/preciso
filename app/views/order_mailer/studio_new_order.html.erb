@@ -1,8 +1,81 @@
-<p><strong>New order <%= @order.number %></strong> — <%= @order.paid? ? "paid online by card" : "no online payment, contact the customer to arrange it" %>.</p>
-<p>
-  <%= @order.customer_name %><br>
-  <a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a> · <%= @order.customer_phone %>
-</p>
-<% if @order.note.present? %><p><em>Note:</em> <%= @order.note %></p><% end %>
-<%= render "summary", order: @order %>
-<p><a href="<%= admin_order_url(@order) %>">Open the order in admin</a></p>
+<%
+  paid = @order.paid?
+  pill_bg, pill_fg, pill = paid ? [ "#e8efe9", "#3f5646", "Paid online" ] : [ "#f3ede4", "#6e5a43", "Payment to arrange" ]
+  first = first_name(@order)
+%>
+<% content_for :preheader, "#{@order.customer_name} · #{money @order.total} · #{pill}" %>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" style="padding:40px 48px 30px;border-bottom:1px solid <%= EmailHelper::LINE %>;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="<%= label_style("font-weight:400;letter-spacing:3px;") %>">New order</td>
+          <td align="right"><span style="display:inline-block;padding:6px 12px;background:<%= pill_bg %>;color:<%= pill_fg %>;font-family:<%= EmailHelper::SANS %>;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;">&#9679;&nbsp; <%= pill %></span></td>
+        </tr>
+        <tr>
+          <td style="padding-top:14px;font-family:<%= EmailHelper::SERIF %>;font-size:40px;line-height:1.05;color:<%= EmailHelper::INK %>;"><%= @order.number %></td>
+          <td align="right" style="padding-top:14px;font-family:<%= EmailHelper::SERIF %>;font-size:40px;line-height:1.05;color:<%= EmailHelper::INK %>;"><%= money @order.total %></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding-top:12px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14.5px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;">
+            <%= paid ? "Paid by card through myPOS. Ready to prepare and ship." : "No online payment. Contact #{first} to confirm#{" the delivery cost and" if @order.country_name.present? && !@order.delivery_priced?} how to pay." %>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="pad" style="padding:6px 48px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="col" width="50%" valign="top" style="padding:22px 12px 22px 0;">
+            <div style="<%= label_style("letter-spacing:2px;") %>">Customer</div>
+            <div style="padding-top:8px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;"><%= @order.customer_name %><br><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a><br><%= @order.customer_phone %></div>
+          </td>
+          <td class="col" width="50%" valign="top" style="padding:22px 0 22px 12px;">
+            <div style="<%= label_style("letter-spacing:2px;") %>">Ship to</div>
+            <div style="padding-top:8px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;">
+              <% if @order.address_line.present? %>
+                <%= @order.address_line %><br><%= [ @order.postal_code, @order.city ].compact_blank.join(" ") %><br><%= @order.country_name %>
+              <% else %>
+                <%= @order.country_name.presence || "Not given — pickup or ask the customer" %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<%= render "items", order: @order, thumbs: false, side: 48 %>
+<% if @order.note.present? %>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td class="pad" style="padding:18px 48px 0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:<%= EmailHelper::PAPER %>;">
+          <tr><td style="padding:18px 22px;">
+            <div style="<%= label_style("letter-spacing:2px;") %>">Customer note</div>
+            <div style="padding-top:6px;font-family:<%= EmailHelper::SERIF %>;font-style:italic;font-size:18px;line-height:1.5;color:<%= EmailHelper::INK_SOFT %>;"><%= @order.note %></div>
+          </td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+<% end %>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" style="padding:30px 48px 44px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td bgcolor="<%= EmailHelper::ACCENT %>" style="background:<%= EmailHelper::ACCENT %>;">
+            <a href="<%= admin_order_url(@order) %>" style="display:inline-block;padding:15px 28px;font-family:<%= EmailHelper::SANS %>;font-size:12px;font-weight:400;letter-spacing:2.6px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Open in admin</a>
+          </td>
+          <td width="12" style="width:12px;">&nbsp;</td>
+          <td style="border:1px solid #ded8cf;">
+            <a href="mailto:<%= @order.customer_email %>?subject=<%= ERB::Util.url_encode("Your Preciso order #{@order.number}") %>" style="display:inline-block;padding:14px 26px;font-family:<%= EmailHelper::SANS %>;font-size:12px;font-weight:400;letter-spacing:2.6px;text-transform:uppercase;color:<%= EmailHelper::INK %>;text-decoration:none;">Reply to <%= first %></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

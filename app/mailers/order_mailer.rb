@@ -28,6 +28,7 @@ class OrderMailer < ApplicationMailer
   # Studio: a new order to handle (paid online, or pay-later).
   def studio_new_order(order)
     @order = order
+    @studio = true # layout: compact header/footer
     label = order.paid? ? "paid" : "payment to arrange"
     mail to: NotificationSetting.instance.studio_email, reply_to: order.customer_email,
          subject: "New order #{order.number} — #{ApplicationHelper::CURRENCY}#{order.total} (#{label})"
