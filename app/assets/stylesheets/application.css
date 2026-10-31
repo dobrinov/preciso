@@ -292,6 +292,7 @@ body.cart-open .cart-drawer{transform:translateX(0);}
 .checkout-title{font-size:50px;margin-top:16px;}
 .checkout-grid{display:grid;grid-template-columns:1fr 420px;gap:56px;margin-top:32px;align-items:start;}
 .checkout-note{padding:16px 20px;background:var(--paper);border:1px solid var(--line);font-size:13.5px;color:var(--ink-soft);margin-bottom:28px;line-height:1.6;}
+.checkout-alert{border-color:var(--clay);color:var(--clay-deep);}
 .form-stack{display:flex;flex-direction:column;gap:22px;}
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .summary{background:var(--paper);border:1px solid var(--line);padding:26px 28px;position:sticky;top:100px;}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_124303) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_120000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -161,10 +161,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_124303) do
     t.string "customer_phone"
     t.text "note"
     t.string "number", null: false
+    t.datetime "paid_at"
+    t.string "payment_details"
+    t.string "payment_reference"
+    t.string "payment_status", default: "none", null: false
     t.string "status", default: "new", null: false
     t.integer "total", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["number"], name: "index_orders_on_number", unique: true
+    t.index ["payment_status"], name: "index_orders_on_payment_status"
   end
 
   create_table "product_sets", force: :cascade do |t|

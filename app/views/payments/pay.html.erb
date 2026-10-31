@@ -1,0 +1,16 @@
+<main class="wrap fade-up confirm">
+  <div class="confirm-inner">
+    <div class="eyebrow clay">Order <%= @order.number %></div>
+    <h1 class="display confirm-title">Taking you to payment…</h1>
+    <p class="confirm-lead">
+      You're being sent to myPOS, our secure card payment page, to pay <strong><%= money @order.total %></strong>.
+    </p>
+    <%# Native (non-Turbo) POST straight to myPOS; field order is part of the signature. %>
+    <form action="<%= @action %>" method="post" data-turbo="false" data-controller="autosubmit" style="margin-top:28px">
+      <% @fields.each do |name, value| %>
+        <input type="hidden" name="<%= name %>" value="<%= value %>">
+      <% end %>
+      <button type="submit" class="btn clay">Continue to payment <%= icon :arrow, size: 16 %></button>
+    </form>
+  </div>
+</main>

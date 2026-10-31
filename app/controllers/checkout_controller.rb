@@ -17,6 +17,7 @@ class CheckoutController < ApplicationController
     Order.transaction do
       order = Order.new(
         number: Order.next_number, status: "new",
+        payment_status: Mypos.enabled? ? "pending" : "none",
         customer_name: params[:name].to_s.strip,
         customer_email: params[:email].to_s.strip,
         customer_phone: params[:phone].to_s.strip,
@@ -33,9 +34,13 @@ class CheckoutController < ApplicationController
       lines.each { |attrs| order.order_lines.create!(attrs) }
     end
 
-    Event.create!(event_type: "order", sid: analytics_sid, label: order.number,
-                  total: order.total, occurred_at: Time.current,
-                  ip: client_ip, user_agent: request.user_agent) unless admin_signed_in?
+    # With myPOS on, the cart is kept until the customer comes back from a
+    # successful payment (they may cancel and want to try again).
+    if order.awaiting_payment?
+      redirect_to checkout_pay_path(order.number) and return
+    end
+
+    record_order_event(order)
     cart.clear
 
     redirect_to checkout_confirmation_path(order.number)

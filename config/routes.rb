@@ -24,6 +24,12 @@ Rails.application.routes.draw do
   post "checkout", to: "checkout#create"
   get  "checkout/confirmation/:number", to: "checkout#confirmation", as: :checkout_confirmation
 
+  # ---- online payment (myPOS Checkout) ----
+  get   "checkout/pay/:number",          to: "payments#pay",    as: :checkout_pay
+  post  "payments/mypos/notify",         to: "payments#notify", as: :mypos_notify
+  match "payments/mypos/ok/:number",     to: "payments#ok",     as: :mypos_ok,     via: [ :get, :post ]
+  match "payments/mypos/cancel/:number", to: "payments#cancel", as: :mypos_cancel, via: [ :get, :post ]
+
   # ---- admin ----
   # Studio login lives at an unguessable top-level path. Kept named admin_login
   # so existing redirects (require_admin) and the form resolve to it.

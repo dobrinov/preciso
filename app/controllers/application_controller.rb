@@ -29,6 +29,17 @@ class ApplicationController < ActionController::Base
     session[:admin].present?
   end
 
+  # Analytics "order" event — once per order, never for admin browsing.
+  def record_order_event(order)
+    return if admin_signed_in?
+    return if Event.exists?(event_type: "order", label: order.number)
+    Event.create!(event_type: "order", sid: analytics_sid, label: order.number,
+                  total: order.total, occurred_at: Time.current,
+                  ip: client_ip, user_agent: request.user_agent)
+  rescue => e
+    Rails.logger.warn("analytics order event failed: #{e.message}")
+  end
+
   # Record a storefront pageview. Admin views and signed-in admin browsing are
   # never tracked.
   def track(page_key, label, piece: false, name: nil)

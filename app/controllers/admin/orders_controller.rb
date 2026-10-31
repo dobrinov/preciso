@@ -1,10 +1,17 @@
 module Admin
   class OrdersController < BaseController
     def index
-      @filter = params[:filter].presence_in(["all"] + Order::STATUS_ORDER) || "all"
-      @orders = @filter == "all" ? Order.all : Order.where(status: @filter)
-      @counts = { "all" => Order.count }
-      Order::STATUS_ORDER.each { |s| @counts[s] = Order.where(status: s).count }
+      # Checkouts that never got paid (myPOS) live under their own "unpaid" tab
+      # so they don't clutter the real order list.
+      @filter = params[:filter].presence_in([ "all" ] + Order::STATUS_ORDER + [ "unpaid" ]) || "all"
+      @orders =
+        case @filter
+        when "all" then Order.placed
+        when "unpaid" then Order.unpaid
+        else Order.placed.where(status: @filter)
+        end
+      @counts = { "all" => Order.placed.count, "unpaid" => Order.unpaid.count }
+      Order::STATUS_ORDER.each { |s| @counts[s] = Order.placed.where(status: s).count }
     end
 
     def show

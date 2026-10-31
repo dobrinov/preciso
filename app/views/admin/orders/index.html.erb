@@ -7,8 +7,8 @@
 </div>
 
 <div class="filter-bar">
-  <% (["all"] + Order::STATUS_ORDER).each do |s| %>
-    <% label = s == "all" ? "All" : Order::STATUSES[s][:label] %>
+  <% (["all"] + Order::STATUS_ORDER + (@counts["unpaid"] > 0 ? ["unpaid"] : [])).each do |s| %>
+    <% label = { "all" => "All", "unpaid" => "Unpaid checkouts" }[s] || Order::STATUSES[s][:label] %>
     <a href="<%= admin_orders_path(filter: s) %>" class="filter-btn <%= 'active' if @filter == s %>">
       <%= label %> <span class="ct"><%= @counts[s] %></span>
     </a>
@@ -31,7 +31,10 @@
           <div class="ord-items"><%= o.order_lines.map { |l| l.display_name + (l.qty > 1 ? " ×#{l.qty}" : "") }.join(", ") %></div>
         </div>
         <div class="ord-date"><%= time_ago o.created_at %></div>
-        <div><%= render "admin/shared/status_pill", status: o.status %></div>
+        <div>
+          <%= render "admin/shared/status_pill", status: o.status %>
+          <% if o.payment_status != "none" %><div class="ord-items"><%= o.payment_label %></div><% end %>
+        </div>
         <div class="ord-total"><%= money o.total %></div>
       </a>
     <% end %>

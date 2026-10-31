@@ -55,8 +55,31 @@
           <div class="kv"><span class="k">Note</span><span class="v"><%= @order.note %></span></div>
         <% end %>
       </div>
-      <div class="subtle-note">No payment is taken online — contact the customer to arrange payment and pickup.</div>
+      <% if @order.payment_status == "none" %>
+        <div class="subtle-note">No payment was taken online — contact the customer to arrange payment and pickup.</div>
+      <% end %>
     </div>
+
+    <% if @order.payment_status != "none" %>
+      <div class="box">
+        <div class="box-label">Payment · myPOS</div>
+        <div class="kv-list">
+          <div class="kv"><span class="k">Status</span><span class="v"><%= @order.payment_label %></span></div>
+          <% if @order.paid_at %>
+            <div class="kv"><span class="k">Paid</span><span class="v"><%= date_label @order.paid_at %> · <%= time_ago @order.paid_at %></span></div>
+          <% end %>
+          <% if @order.payment_details.present? %>
+            <div class="kv"><span class="k">Method</span><span class="v"><%= @order.payment_details %></span></div>
+          <% end %>
+          <% if @order.payment_reference.present? %>
+            <div class="kv"><span class="k">myPOS ref</span><span class="v mono"><%= @order.payment_reference %></span></div>
+          <% end %>
+        </div>
+        <% unless @order.paid? %>
+          <div class="subtle-note">The customer started checkout but no payment was confirmed. Nothing was charged.</div>
+        <% end %>
+      </div>
+    <% end %>
 
     <%= button_to admin_order_path(@order), method: :delete, class: "danger-btn",
           form: { data: { turbo_confirm: "Delete this order permanently?" } } do %>

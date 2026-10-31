@@ -3,11 +3,24 @@
     <div class="confirm-check">
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 13l4 4L19 7"/></svg>
     </div>
-    <div class="eyebrow clay" style="margin-top:24px">Order received</div>
+    <div class="eyebrow clay" style="margin-top:24px"><%= @order.paid? ? "Payment received" : "Order received" %></div>
     <h1 class="display confirm-title">Thank you, <%= @order.customer_name.to_s.split(" ").first %></h1>
     <p class="confirm-lead">
-      Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio. Bianna will email you at
-      <strong><%= @order.customer_email %></strong> to confirm the pieces and arrange payment and pickup.
+      <% case @order.payment_status %>
+      <% when "paid" %>
+        Your order <span class="mono clay-text"><%= @order.number %></span> is paid and with the studio. Bianna will email you at
+        <strong><%= @order.customer_email %></strong> to arrange pickup or delivery.
+      <% when "pending" %>
+        We're still confirming the payment for order <span class="mono clay-text"><%= @order.number %></span> — this usually takes a few seconds.
+        <a href="<%= checkout_confirmation_path(@order.number) %>" class="clay-text">Refresh</a> to check. Bianna will email you at
+        <strong><%= @order.customer_email %></strong> once it's through.
+      <% when "failed" %>
+        The payment for order <span class="mono clay-text"><%= @order.number %></span> didn't go through, and nothing was charged.
+        <a href="<%= checkout_path %>" class="clay-text">Try again</a>, or write to the studio.
+      <% else %>
+        Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio. Bianna will email you at
+        <strong><%= @order.customer_email %></strong> to confirm the pieces and arrange payment and pickup.
+      <% end %>
     </p>
   </div>
 
