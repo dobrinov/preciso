@@ -2,14 +2,20 @@ module Admin
   class SessionsController < ApplicationController
     layout "admin"
 
-    PASSWORD = "Maboardrulz9".freeze
+    # The studio password comes from the ADMIN_PASSWORD secret (GitHub Actions
+    # secret, synced to Fly). Production without it: nobody can log in.
+    # Development/test fall back to "studio".
+    def self.password
+      ENV["ADMIN_PASSWORD"].presence || ("studio" unless Rails.env.production?)
+    end
 
     def new
       redirect_to admin_dashboard_path if session[:admin]
     end
 
     def create
-      if params[:password] == PASSWORD
+      expected = self.class.password
+      if expected && ActiveSupport::SecurityUtils.secure_compare(params[:password].to_s, expected)
         session[:admin] = true
         redirect_to admin_dashboard_path
       else

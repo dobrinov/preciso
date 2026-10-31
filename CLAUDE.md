@@ -13,7 +13,7 @@ bin/setup            # install deps, prepare DB (seed catalogue + demo data), st
 bin/rails db:setup   # create, migrate, and seed only
 bin/rails db:reset   # wipe and re-seed to a fresh demo state
 bin/dev              # run the server (thin wrapper over `bin/rails server`)
-bin/rails server     # http://localhost:3000 — admin at /admin (login at a private path; see config/routes.rb)
+bin/rails server     # http://localhost:3000 — admin at /admin (login at /studio-login locally, password `studio`)
 
 bin/ci               # full CI suite (setup + rubocop + security scans)
 bin/rubocop          # lint (rubocop-rails-omakase); -a to autocorrect
@@ -28,7 +28,7 @@ There is **no automated test suite** (no `test/` directory). CI runs RuboCop + t
 
 ### Two surfaces, one codebase
 - **Storefront** controllers inherit `ApplicationController`. **Admin** controllers (`app/controllers/admin/`) inherit `Admin::BaseController`, which forces `layout "admin"` and `require_admin`.
-- **Admin auth is a single hardcoded password** in `Admin::SessionsController::PASSWORD`, gated only by a `session[:admin]` boolean. There is no user model. The login form is served from an unguessable top-level path (see `config/routes.rb`, route name `admin_login`), not `/admin/login`; an exact password match is required (no blank-password bypass).
+- **Admin auth is a single shared password** from the `ADMIN_PASSWORD` env var (`Admin::SessionsController.password`), gated only by a `session[:admin]` boolean. There is no user model. The login form is served from the top-level path in `ADMIN_LOGIN_PATH` (route name `admin_login`), not `/admin/login`. Both are GitHub Actions secrets synced to Fly by the "Sync secrets to Fly" workflow; production without them fails closed (no password → no login; random path). Locally they default to `studio` and `/studio-login`. Never commit real values — the repo is public.
 
 ### Products and Sets are duck-typed, not a shared base class
 `Product` and `ProductSet` are independent models that both expose `kind` (`"product"` / `"set"`), `tone`, and `price`, so views, cart, and orders treat them polymorphically. A `ProductSet` bundles products via `SetItem` (`has_many :products, through: :set_items`) and computes `separate_total` (price if bought individually) vs. its own `price`. Anywhere an item is referenced by `(kind, id)` — cart lines, order lines — that pair is how you resolve back to the right model.

@@ -38,10 +38,14 @@ Rails.application.routes.draw do
   match "payments/mypos/cancel/:number", to: "payments#cancel", as: :mypos_cancel, via: [ :get, :post ]
 
   # ---- admin ----
-  # Studio login lives at an unguessable top-level path. Kept named admin_login
-  # so existing redirects (require_admin) and the form resolve to it.
-  get  "samobibipipatuk", to: "admin/sessions#new", as: :admin_login
-  post "samobibipipatuk", to: "admin/sessions#create"
+  # Studio login lives at an unguessable top-level path taken from the
+  # ADMIN_LOGIN_PATH secret (GitHub Actions secret, synced to Fly). Production
+  # without it gets a random path nobody knows; development uses /studio-login.
+  # Kept named admin_login so the form resolves to it.
+  admin_login_path = ENV["ADMIN_LOGIN_PATH"].to_s.delete_prefix("/").presence ||
+                     (Rails.env.production? ? SecureRandom.hex(24) : "studio-login")
+  get  admin_login_path, to: "admin/sessions#new", as: :admin_login
+  post admin_login_path, to: "admin/sessions#create"
 
   namespace :admin do
     delete "logout", to: "sessions#destroy"

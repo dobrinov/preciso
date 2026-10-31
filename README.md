@@ -15,7 +15,7 @@ database.
 - Cart drawer → simple checkout (name, email, phone + optional note — no payment) → order confirmation with an order number
 - About page with the studio story
 
-**Admin** (`/admin`, password: `studio`)
+**Admin** (`/admin`; locally log in at `/studio-login` with password `studio`)
 - **Dashboard** — revenue, order counts, recent orders, best sellers
 - **Analytics** — on-device-style web analytics (visitors, page views, add-to-carts, orders, a traffic chart, top pages/pieces, an activity feed)
 - **Orders** — filter by status, open an order to see contact details, move it New → Preparing → Fulfilled → Cancelled
@@ -40,7 +40,7 @@ bin/rails db:setup   # create, migrate, and seed the catalogue + demo data
 bin/rails server
 ```
 
-Then open http://localhost:3000 — and the admin at http://localhost:3000/admin (password `studio`, also reachable via the storefront footer "Studio login").
+Then open http://localhost:3000 — and log in to the admin at http://localhost:3000/studio-login (password `studio`). In production the password and login path come from the `ADMIN_PASSWORD` / `ADMIN_LOGIN_PATH` secrets.
 
 To reset to a fresh seeded state at any time:
 
