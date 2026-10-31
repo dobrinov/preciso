@@ -12,6 +12,7 @@
            when "about" then "about"
            when "home_page" then "home"
            when "vacation" then "vacation"
+           when "payment_settings" then "payments"
            end
   nav = [
     ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
@@ -26,6 +27,7 @@
     ["about",       "About page",  :doc,    edit_admin_about_path],
     ["home",        "Home page",   :doc,    edit_admin_home_page_path],
     ["vacation",    "Vacation",    :doc,    edit_admin_vacation_path],
+    ["payments",    "Payments",    :card,   edit_admin_payments_path],
   ]
 %>
 <aside class="admin-aside">

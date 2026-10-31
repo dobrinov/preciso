@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_180000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -172,6 +172,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_120000) do
     t.index ["payment_status"], name: "index_orders_on_payment_status"
   end
 
+  create_table "payment_settings", force: :cascade do |t|
+    t.boolean "card_payments", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "product_sets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "long_desc"
@@ -248,7 +254,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_120000) do
     t.index ["product_id"], name: "index_variants_on_product_id"
   end
 
-  add_foreign_key "campaign_items", "campaigns"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
   add_foreign_key "order_lines", "orders"

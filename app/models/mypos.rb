@@ -27,8 +27,10 @@ require "json"
 #   MYPOS_CURRENCY        default EUR (must be enabled on the myPOS account)
 #   MYPOS_LANGUAGE        payment page language, default EN
 #
-# When nothing is configured, online payment is off and checkout behaves as
-# before (order placed, studio arranges payment by hand).
+# Card payments are taken only when myPOS is configured AND the studio has
+# switched them on in admin (PaymentSetting). Otherwise checkout behaves as
+# before (order placed, studio arranges payment by hand). Callbacks for
+# payments already in flight keep working either way.
 module Mypos
   PRODUCTION_URL = "https://www.mypos.com/vmp/checkout".freeze
   SANDBOX_URL    = "https://www.mypos.com/vmp/checkout-test".freeze
@@ -40,7 +42,9 @@ module Mypos
 
   module_function
 
-  def enabled? = config.present?
+  def configured? = config.present?
+
+  def enabled? = configured? && PaymentSetting.instance.card_payments
 
   def sandbox? = ActiveModel::Type::Boolean.new.cast(ENV["MYPOS_SANDBOX"]) || false
 

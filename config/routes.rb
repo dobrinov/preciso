@@ -57,5 +57,6 @@ Rails.application.routes.draw do
     resource :about, only: [ :edit, :update ], controller: "about"
     resource :home_page, only: [ :edit, :update ], controller: "home_page"
     resource :vacation, only: [ :edit, :update ], controller: "vacation"
+    resource :payments, only: [ :edit, :update ], controller: "payment_settings"
   end
 end

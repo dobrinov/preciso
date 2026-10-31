@@ -1,0 +1,40 @@
+<% content_for :title, "Preciso — Payments" %>
+<%= form_with url: admin_payments_path, method: :patch, data: { turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">Payments</h1>
+      <p class="pagehead-sub">Take card payments online with myPOS, or let customers order and arrange payment with you.</p>
+    </div>
+    <div class="pagehead-actions">
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad" style="max-width:640px">
+    <div class="card-pad">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> Saved</div>
+      <% end %>
+
+      <label class="field" style="flex-direction:row;align-items:center;gap:10px">
+        <%= check_box_tag :card_payments, "1", @setting.card_payments, disabled: !Mypos.configured? %>
+        <div class="field-label" style="margin:0">On — customers pay by card (myPOS) at checkout</div>
+      </label>
+
+      <div class="field-hint">
+        <% if !Mypos.configured? %>
+          myPOS isn't set up on the server yet, so card payments can't be switched on.
+        <% elsif @setting.card_payments %>
+          Card payments are <strong>on</strong>. Customers are sent to the myPOS payment page when they check out<%= " (myPOS test mode — no real money)" if Mypos.sandbox? %>.
+        <% else %>
+          Card payments are <strong>off</strong>. Customers place their order without paying, and you contact them to arrange payment and pickup — the original way.
+        <% end %>
+      </div>
+      <div class="field-hint">Payments already in progress still complete normally when you switch this off.</div>
+
+      <div>
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+  </div>
+<% end %>
