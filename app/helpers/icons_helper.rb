@@ -22,6 +22,7 @@ module IconsHelper
     chart: %(<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>),
     card:  %(<rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3 10h18M7 15h4"/>),
     truck: %(<path d="M2 6h12v10H2V6ZM14 10h4l3 3v3h-7v-6Z"/><circle cx="6" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>),
+    mail:  %(<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6l8.5 7 8.5-7"/>),
     tag:   %(<path d="M3 11l8-8 10 10-8 8-10-10ZM3 11V4h7"/><circle cx="8.5" cy="8.5" r="1.2"/>),
     instagram: %(<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/>),
     facebook:  %(<path d="M14 8h2V5h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2.2l.4-3H14v-1.6c0-.5.2-.4.6-.4Z"/>)

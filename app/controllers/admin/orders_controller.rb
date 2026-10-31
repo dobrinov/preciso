@@ -20,7 +20,10 @@ module Admin
 
     def update
       @order = Order.find_by!(number: params[:number])
-      @order.update(status: params[:status]) if Order::STATUS_ORDER.include?(params[:status])
+      if Order::STATUS_ORDER.include?(params[:status]) && params[:status] != @order.status
+        @order.update(status: params[:status])
+        Notifier.status_changed(@order)
+      end
       redirect_to admin_order_path(@order)
     end
 

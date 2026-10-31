@@ -1,0 +1,8 @@
+<p><strong>New order <%= @order.number %></strong> — <%= @order.paid? ? "paid online by card" : "no online payment, contact the customer to arrange it" %>.</p>
+<p>
+  <%= @order.customer_name %><br>
+  <a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a> · <%= @order.customer_phone %>
+</p>
+<% if @order.note.present? %><p><em>Note:</em> <%= @order.note %></p><% end %>
+<%= render "summary", order: @order %>
+<p><a href="<%= admin_order_url(@order) %>">Open the order in admin</a></p>

@@ -14,6 +14,7 @@
            when "vacation" then "vacation"
            when "payment_settings" then "payments"
            when "delivery_rates" then "delivery"
+           when "notification_settings" then "emails"
            end
   nav = [
     ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
@@ -30,6 +31,7 @@
     ["vacation",    "Vacation",    :doc,    edit_admin_vacation_path],
     ["payments",    "Payments",    :card,   edit_admin_payments_path],
     ["delivery",    "Delivery",    :truck,  admin_delivery_rates_path],
+    ["emails",      "Emails",      :mail,   edit_admin_emails_path],
   ]
 %>
 <aside class="admin-aside">

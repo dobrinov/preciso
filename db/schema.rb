@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_200000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -148,6 +148,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_190000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "notification_settings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "studio_email"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "order_lines", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "item_id"
@@ -163,6 +169,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_190000) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.string "address_line"
+    t.string "city"
     t.string "country_code"
     t.string "country_name"
     t.datetime "created_at", null: false
@@ -176,6 +184,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_190000) do
     t.string "payment_details"
     t.string "payment_reference"
     t.string "payment_status", default: "none", null: false
+    t.string "postal_code"
     t.string "status", default: "new", null: false
     t.integer "total", default: 0, null: false
     t.datetime "updated_at", null: false

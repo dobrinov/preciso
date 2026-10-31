@@ -60,7 +60,9 @@
       <div class="kv-list">
         <div class="kv"><span class="k">Name</span><span class="v"><%= @order.customer_name %></span></div>
         <div class="kv"><span class="k">Email</span><span class="v"><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a></span></div>
-        <% if @order.country_name.present? %>
+        <% if @order.address_line.present? %>
+          <div class="kv"><span class="k">Address</span><span class="v"><%= @order.address_line %><br><%= [@order.postal_code, @order.city].compact_blank.join(" ") %><br><%= @order.country_name %></span></div>
+        <% elsif @order.country_name.present? %>
           <div class="kv"><span class="k">Country</span><span class="v"><%= @order.country_name %></span></div>
         <% end %>
         <div class="kv"><span class="k">Phone</span><span class="v"><a href="tel:<%= @order.customer_phone %>"><%= @order.customer_phone %></a></span></div>

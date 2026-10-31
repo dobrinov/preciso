@@ -23,6 +23,13 @@ class CheckoutController < ApplicationController
     end
     online = Mypos.enabled? && rate.present?
 
+    # Anything delivered needs an address.
+    delivering = rate.present? || params[:country] == "other"
+    address = params.values_at(:address_line, :city, :postal_code).map { |v| v.to_s.strip }
+    if delivering && address.any?(&:blank?)
+      redirect_to checkout_path, alert: "Please fill in your delivery address." and return
+    end
+
     order = nil
     Order.transaction do
       order = Order.new(
@@ -31,6 +38,9 @@ class CheckoutController < ApplicationController
         country_code: rate&.country_code,
         country_name: rate&.name || params[:country_other].to_s.strip.presence,
         delivery_cost: rate&.cost,
+        address_line: (address[0] if delivering),
+        city: (address[1] if delivering),
+        postal_code: (address[2] if delivering),
         customer_name: params[:name].to_s.strip,
         customer_email: params[:email].to_s.strip,
         customer_phone: params[:phone].to_s.strip,
@@ -54,6 +64,7 @@ class CheckoutController < ApplicationController
     end
 
     record_order_event(order)
+    Notifier.order_placed(order)
     cart.clear
 
     redirect_to checkout_confirmation_path(order.number)

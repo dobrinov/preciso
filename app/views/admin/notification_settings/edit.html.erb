@@ -1,0 +1,48 @@
+<% content_for :title, "Preciso — Emails" %>
+<%= form_with url: admin_emails_path, method: :patch, data: { turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">Emails</h1>
+      <p class="pagehead-sub">Order emails to customers, and new-order alerts to you.</p>
+    </div>
+    <div class="pagehead-actions">
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad" style="max-width:640px">
+    <div class="card-pad">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> <%= flash[:notice] %></div>
+      <% elsif flash[:alert] %>
+        <div class="flash-saved fade-up" style="color:#a14a3a"><%= flash[:alert] %></div>
+      <% end %>
+
+      <div class="field-hint">
+        <% if Notifier.configured? %>
+          Email sending is <strong>set up</strong>.
+        <% else %>
+          Email sending is <strong>not set up on the server yet</strong> — no emails go out until it is.
+        <% end %>
+      </div>
+
+      <label class="field"><div class="field-label">Your email for order alerts</div>
+        <%= email_field_tag :studio_email, @setting.studio_email, class: "input", placeholder: "you@precisodesign.com" %>
+        <div class="field-hint">You get an email here for every new order. Customers' replies to their order emails also come here.</div>
+      </label>
+
+      <div class="field-hint" style="line-height:1.7">
+        <strong>Customers are emailed when:</strong> they place an order (pay later) · their card payment goes through ·
+        you set their order to Preparing, Fulfilled or Cancelled.<br>
+        <strong>You are emailed when:</strong> a new order is placed or paid.
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="admin-pad" style="max-width:640px;padding-top:0">
+  <%= button_to "Send a test email", test_admin_emails_path, method: :post, class: "btn ghost", form: { data: { turbo: false } } %>
+</div>

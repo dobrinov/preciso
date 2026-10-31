@@ -10,6 +10,7 @@ import { Controller } from "@hotwired/stimulus"
 //   processing before the order is submitted.
 export default class extends Controller {
   static targets = ["name", "email", "phone", "country", "countryOther", "otherField",
+                    "addressFields", "address",
                     "delivery", "total", "submit", "form", "modal"]
   static values = { subtotal: Number, online: Boolean, currency: String }
 
@@ -27,6 +28,9 @@ export default class extends Controller {
       if (choice && !other) cost = Number(this.countryTarget.selectedOptions[0].dataset.cost)
       if (!choice) valid = false
       if (other && !this.countryOtherTarget.value.trim()) valid = false
+      // Any chosen country means delivery, so the address is required.
+      this.addressFieldsTarget.hidden = !choice
+      if (choice && this.addressTargets.some(i => !i.value.trim())) valid = false
 
       this.deliveryTarget.textContent =
         cost !== null ? this.money(cost) : other ? "Quoted by email" : "Choose country"

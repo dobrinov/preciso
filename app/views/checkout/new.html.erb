@@ -56,6 +56,25 @@
                        data-checkout-target="countryOther" data-action="input->checkout#validate">
                 <div class="field-hint">We don't have a set delivery price for your country yet — place your order and Bianna will email you the delivery cost and how to pay.</div>
               </label>
+              <div class="form-stack" data-checkout-target="addressFields" hidden>
+                <label class="field">
+                  <div class="field-label">Street address</div>
+                  <input class="input" type="text" name="address_line" placeholder="Street, number, apartment"
+                         autocomplete="street-address" data-checkout-target="address" data-action="input->checkout#validate">
+                </label>
+                <div class="contact-grid">
+                  <label class="field">
+                    <div class="field-label">City</div>
+                    <input class="input" type="text" name="city" autocomplete="address-level2"
+                           data-checkout-target="address" data-action="input->checkout#validate">
+                  </label>
+                  <label class="field">
+                    <div class="field-label">Postcode</div>
+                    <input class="input" type="text" name="postal_code" autocomplete="postal-code"
+                           data-checkout-target="address" data-action="input->checkout#validate">
+                  </label>
+                </div>
+              </div>
             <% end %>
             <label class="field">
               <div class="field-label">Note for the studio</div>

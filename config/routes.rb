@@ -59,5 +59,8 @@ Rails.application.routes.draw do
     resource :vacation, only: [ :edit, :update ], controller: "vacation"
     resource :payments, only: [ :edit, :update ], controller: "payment_settings"
     resources :delivery_rates, path: "delivery", only: [ :index, :create, :update, :destroy ]
+    resource :emails, only: [ :edit, :update ], controller: "notification_settings" do
+      post :test
+    end
   end
 end

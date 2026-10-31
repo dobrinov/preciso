@@ -1,0 +1,9 @@
+Hi <%= @order.customer_name.to_s.split(" ").first %>,
+
+We've received your payment of <%= money @order.total %> for order <%= @order.number %> — thank you! Bianna will let you know when your pieces are on their way.
+
+<%= render "summary", order: @order %>
+
+Your order: <%= checkout_confirmation_url(@order.number) %>
+
+— Preciso

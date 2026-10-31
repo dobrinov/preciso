@@ -41,11 +41,13 @@ class PaymentsController < ApplicationController
         Rails.logger.error("myPOS notify: amount/currency mismatch for #{order.number}: #{data['Amount']} #{data['Currency']}")
         return head(:unprocessable_entity)
       end
+      newly_paid = !order.paid?
       order.update!(
         payment_status: "paid", paid_at: Time.current,
         payment_reference: data["IPC_Trnref"],
         payment_details: [ data["PaymentMethod"], data["CardBrand"], data["PAN"] ].compact_blank.join(" · ").presence
       )
+      Notifier.order_paid(order) if newly_paid
     when "IPCPurchaseRollback"
       # myPOS reversed a payment (e.g. our notify answer didn't reach it).
       order.update!(payment_status: "failed", paid_at: nil)
