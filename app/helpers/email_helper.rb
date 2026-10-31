@@ -51,6 +51,18 @@ module EmailHelper
     [ pan ? "#{brand} ending #{pan}" : brand, "via myPOS" ].join(" · ")
   end
 
+  # "On its way" email body, by delivery type.
+  def fulfilled_body(order)
+    if order.office_delivery?
+      "Your order has left the studio and is on its way #{order.delivery_phrase}#{" (#{order.delivery_office})" if order.delivery_office.present?}. " \
+        "The courier will let you know when it's ready to collect. We hope you enjoy every piece."
+    elsif order.delivery_destination?
+      "Your order has left the studio and is on its way #{order.delivery_phrase}. We hope you enjoy every piece."
+    else
+      "Your order is complete and has left the studio. We hope you enjoy every piece."
+    end
+  end
+
   def label_style(extra = "")
     "font-family:#{SANS};font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:#{MUTED};#{extra}"
   end

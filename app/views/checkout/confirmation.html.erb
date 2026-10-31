@@ -9,7 +9,7 @@
       <% case @order.payment_status %>
       <% when "paid" %>
         Your order <span class="mono clay-text"><%= @order.number %></span> is paid and with the studio. Bianna will email you at
-        <strong><%= @order.customer_email %></strong> to arrange pickup or delivery.
+        <strong><%= @order.customer_email %></strong> as soon as it's on its way <%= @order.delivery_phrase %>.
       <% when "pending" %>
         We're still confirming the payment for order <span class="mono clay-text"><%= @order.number %></span> — this usually takes a few seconds.
         <a href="<%= checkout_confirmation_path(@order.number) %>" class="clay-text">Refresh</a> to check. Bianna will email you at
@@ -19,7 +19,7 @@
         <a href="<%= checkout_path %>" class="clay-text">Try again</a>, or write to the studio.
       <% else %>
         Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio. Bianna will email you at
-        <strong><%= @order.customer_email %></strong> to confirm the pieces<%= ", the delivery cost" if @order.country_name.present? && !@order.delivery_priced? %> and arrange payment and pickup.
+        <strong><%= @order.customer_email %></strong> to confirm the pieces<%= ", the delivery cost to #{@order.country_name}" if @order.delivery_to_quote? %> and how to pay<%= " — then it's sent #{@order.delivery_phrase}" if @order.delivery_priced? %>.
       <% end %>
     </p>
   </div>

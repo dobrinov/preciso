@@ -38,7 +38,7 @@
               <% if @order.delivery_destination? %>
                 <%= safe_join(@order.delivery_lines, tag.br) %>
               <% else %>
-                <%= @order.country_name.presence || "Not given — pickup or ask the customer" %>
+                <%= @order.country_name.presence || "Not given — ask the customer" %>
               <% end %>
             </div>
           </td>

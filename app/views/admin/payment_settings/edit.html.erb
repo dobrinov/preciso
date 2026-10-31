@@ -27,7 +27,7 @@
         <% elsif @setting.card_payments %>
           Card payments are <strong>on</strong>. Customers are sent to the myPOS payment page when they check out<%= " (myPOS test mode — no real money)" if Mypos.sandbox? %>.
         <% else %>
-          Card payments are <strong>off</strong>. Customers place their order without paying, and you contact them to arrange payment and pickup — the original way.
+          Card payments are <strong>off</strong>. Customers place their order without paying, and you contact them to arrange payment — the original way.
         <% end %>
       </div>
       <div class="field-hint">Payments already in progress still complete normally when you switch this off.</div>

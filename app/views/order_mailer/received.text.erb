@@ -1,6 +1,6 @@
 Hi <%= @order.customer_name.to_s.split(" ").first %>,
 
-Thank you for your order <%= @order.number %>. Bianna will get back to you shortly to confirm your pieces<%= ", the delivery cost" if @order.country_name.present? && !@order.delivery_priced? %> and how to pay.
+Thank you for your order <%= @order.number %>. Bianna will be in touch shortly to confirm your pieces<%= ", the delivery cost to #{@order.country_name}" if @order.delivery_to_quote? %> and how to pay<%= " — then it's sent #{@order.delivery_phrase}" if @order.delivery_priced? %>.
 
 <%= render "summary", order: @order %>
 

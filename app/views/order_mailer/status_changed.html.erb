@@ -1,7 +1,7 @@
 <%
   copy = {
     "preparing" => [ "Your order is being prepared", "Good news, #{first_name(@order)} — Bianna has started preparing your pieces. We'll email you again as soon as they're on their way." ],
-    "fulfilled" => [ "Your pieces are on their way", "Your order is complete and has left the studio#{" — or it's ready for you to pick up" unless @order.delivery_destination?}. We hope you enjoy every piece." ],
+    "fulfilled" => [ "Your pieces are on their way", fulfilled_body(@order) ],
     "cancelled" => [ "Your order was cancelled", "Your order has been cancelled.#{" Your payment will be refunded to the same card." if @order.paid?} Any questions — just reply to this email." ]
   }
   headline, body = copy.fetch(@order.status)

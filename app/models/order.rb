@@ -52,6 +52,18 @@ class Order < ApplicationRecord
   end
 
   def delivery_destination? = address_line.present? || delivery_office.present?
+
+  # Delivery in a few words, for customer-facing copy:
+  # "to the Speedy office you chose" / "to your address" / "to you".
+  def delivery_phrase
+    if office_delivery? then "to the #{delivery_option_name.presence || "courier office"} you chose"
+    elsif address_line.present? then "to your address"
+    else "to you"
+    end
+  end
+
+  # Delivery to a country without a set price — the studio quotes it.
+  def delivery_to_quote? = country_name.present? && !delivery_priced?
   def paid? = payment_status == "paid"
   def awaiting_payment? = payment_status == "pending"
 

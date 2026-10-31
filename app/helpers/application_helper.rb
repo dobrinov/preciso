@@ -7,6 +7,21 @@ module ApplicationHelper
     "#{CURRENCY}#{n.to_i}"
   end
 
+  # Short delivery line for product pages and the cart, e.g.
+  # "Delivery across Bulgaria from €4 · pay by card". Reflects the delivery
+  # options and whether card payments are on.
+  def delivery_note
+    @_delivery_note ||= build_delivery_note
+  end
+
+  def build_delivery_note
+    from = DeliveryOption.minimum(:cost)
+    countries = DeliveryOption.distinct.count(:country_code)
+    where = countries == 1 ? "across #{DeliveryOption.first.country_name}" : "to #{countries} countries"
+    return "Delivery & payment arranged after you order" unless from
+    "Delivery #{where} from #{money from} · #{Mypos.enabled? ? "pay by card" : "payment arranged after you order"}"
+  end
+
   # Canonical absolute URL for a path (defaults to the current request path).
   def canonical_url(path = nil)
     "#{CANONICAL_HOST}#{path || request.path}"

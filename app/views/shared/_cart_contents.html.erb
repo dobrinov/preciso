@@ -48,7 +48,7 @@
       <span class="cart-total-label">Total</span>
       <span class="cart-total"><%= money cart.total %></span>
     </div>
-    <div class="cart-foot-note">Payment &amp; pickup arranged after you order.</div>
+    <div class="cart-foot-note"><%= delivery_note %>.</div>
     <a href="<%= checkout_path %>" class="btn clay block" data-action="storefront#closeCart">Checkout <%= icon :arrow, size: 16 %></a>
   </div>
 <% end %>
