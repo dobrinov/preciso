@@ -31,9 +31,27 @@ class Order < ApplicationRecord
   def item_count = order_lines.sum(:qty)
   def payment_label = PAYMENT_STATUSES[payment_status]
   def items_total = order_lines.sum(&:subtotal)
-  # A fixed delivery price applied (country has a DeliveryRate). nil = the
+  # A fixed delivery price applied (a DeliveryOption was chosen). nil = the
   # studio quotes delivery by hand.
   def delivery_priced? = !delivery_cost.nil?
+
+  # "Bulgaria · Econt office" — for summaries and the myPOS cart row.
+  def delivery_label
+    [ country_name, delivery_option_name ].compact_blank.join(" · ")
+  end
+
+  def office_delivery? = delivery_kind == "office"
+
+  # Where it goes, line by line (without the customer's name).
+  def delivery_lines
+    if office_delivery?
+      [ "#{delivery_option_name.presence || "Courier office"}: #{delivery_office}", city, country_name ]
+    else
+      [ address_line, [ postal_code, city ].compact_blank.join(" "), country_name ]
+    end.compact_blank
+  end
+
+  def delivery_destination? = address_line.present? || delivery_office.present?
   def paid? = payment_status == "paid"
   def awaiting_payment? = payment_status == "pending"
 

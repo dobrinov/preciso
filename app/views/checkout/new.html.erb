@@ -20,7 +20,7 @@
             <div class="checkout-note checkout-alert"><%= flash[:alert] %></div>
           <% end %>
           <div class="checkout-note" data-show="online" hidden>Leave your details, then you'll pay securely by card on the myPOS payment page. Bianna will be in touch about delivery once your payment is through.</div>
-          <div class="checkout-note" data-show="offline">No payment is taken here. Leave your details and Bianna will be in touch to confirm your pieces, the total<%= " and delivery cost" if @rates.any? %>, and pickup or delivery.</div>
+          <div class="checkout-note" data-show="offline">No payment is taken here. Leave your details and Bianna will be in touch to confirm your pieces, the total<%= " and delivery cost" if @delivery.any? %>, and pickup or delivery.</div>
           <div class="form-stack">
             <label class="field">
               <div class="field-label">Full name</div>
@@ -39,41 +39,76 @@
                        data-checkout-target="phone" data-action="input->checkout#validate">
               </label>
             </div>
-            <% if @rates.any? %>
+            <% if @delivery.any? %>
               <label class="field">
                 <div class="field-label">Delivery country</div>
-                <select class="input" name="country" data-checkout-target="country" data-action="change->checkout#validate">
+                <select class="input" name="country" data-checkout-target="country" data-action="change->checkout#chooseCountry">
                   <option value="">Choose your country…</option>
-                  <% @rates.each do |r| %>
-                    <option value="<%= r.country_code %>" data-cost="<%= r.cost %>"><%= r.name %></option>
+                  <% @delivery.each do |code, options| %>
+                    <option value="<%= code %>"><%= options.first.country_name %></option>
                   <% end %>
                   <option value="other">My country isn't listed</option>
                 </select>
               </label>
+
+              <% @delivery.each do |code, options| %>
+                <fieldset class="field delivery-choices" data-checkout-target="optionGroup" data-country="<%= code %>" hidden>
+                  <legend class="field-label">Delivery</legend>
+                  <% options.each do |o| %>
+                    <label class="delivery-choice">
+                      <input type="radio" name="delivery_option_id" value="<%= o.id %>" disabled
+                             data-cost="<%= o.cost %>" data-kind="<%= o.kind %>" data-action="change->checkout#validate">
+                      <span class="delivery-choice-main">
+                        <span class="delivery-choice-name"><%= o.name %></span>
+                        <% if o.note.present? %><span class="delivery-choice-note"><%= o.note %></span><% end %>
+                      </span>
+                      <span class="delivery-choice-price"><%= money o.cost %></span>
+                    </label>
+                  <% end %>
+                </fieldset>
+              <% end %>
+
               <label class="field" data-checkout-target="otherField" hidden>
                 <div class="field-label">Your country</div>
                 <input class="input" type="text" name="country_other" placeholder="Where should we deliver?"
                        data-checkout-target="countryOther" data-action="input->checkout#validate">
                 <div class="field-hint">We don't have a set delivery price for your country yet — place your order and Bianna will email you the delivery cost and how to pay.</div>
               </label>
-              <div class="form-stack" data-checkout-target="addressFields" hidden>
+
+              <div class="form-stack" data-checkout-target="addressFields" data-kind="address" hidden>
                 <label class="field">
                   <div class="field-label">Street address</div>
-                  <input class="input" type="text" name="address_line" placeholder="Street, number, apartment"
-                         autocomplete="street-address" data-checkout-target="address" data-action="input->checkout#validate">
+                  <input class="input" type="text" name="address_line" placeholder="Street, number, apartment" disabled
+                         autocomplete="street-address" data-action="input->checkout#validate">
                 </label>
                 <div class="contact-grid">
                   <label class="field">
                     <div class="field-label">City</div>
-                    <input class="input" type="text" name="city" autocomplete="address-level2"
-                           data-checkout-target="address" data-action="input->checkout#validate">
+                    <input class="input" type="text" name="city" autocomplete="address-level2" disabled
+                           data-action="input->checkout#validate">
                   </label>
                   <label class="field">
                     <div class="field-label">Postcode</div>
-                    <input class="input" type="text" name="postal_code" autocomplete="postal-code"
-                           data-checkout-target="address" data-action="input->checkout#validate">
+                    <input class="input" type="text" name="postal_code" autocomplete="postal-code" disabled
+                           data-action="input->checkout#validate">
                   </label>
                 </div>
+              </div>
+
+              <div class="form-stack" data-checkout-target="addressFields" data-kind="office" hidden>
+                <div class="contact-grid">
+                  <label class="field">
+                    <div class="field-label">City</div>
+                    <input class="input" type="text" name="office_city" autocomplete="address-level2" disabled
+                           data-action="input->checkout#validate">
+                  </label>
+                  <label class="field">
+                    <div class="field-label">Courier office</div>
+                    <input class="input" type="text" name="office" placeholder="Office name or address" disabled
+                           data-action="input->checkout#validate">
+                  </label>
+                </div>
+                <div class="field-hint" style="margin-top:-6px">Which office should we send it to? The office name or its address is enough.</div>
               </div>
             <% end %>
             <label class="field">
@@ -101,7 +136,7 @@
               </div>
             <% end %>
           </div>
-          <% if @rates.any? %>
+          <% if @delivery.any? %>
             <div class="summary-sub-row" style="margin-top:18px"><span>Items</span><span><%= money @total %></span></div>
             <div class="summary-sub-row"><span>Delivery</span><span data-checkout-target="delivery">Choose country</span></div>
           <% end %>

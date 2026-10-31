@@ -35,9 +35,7 @@ module EmailHelper
 
   # "Ana Petrova<br>ul. Vitosha 1<br>1000 Sofia<br>Bulgaria", escaped.
   def address_html(order)
-    lines = [ order.customer_name, order.address_line,
-              [ order.postal_code, order.city ].compact_blank.join(" "), order.country_name ]
-    safe_join(lines.compact_blank, tag.br)
+    safe_join([ order.customer_name, *order.delivery_lines ].compact_blank, tag.br)
   end
 
   def contact_html(order)

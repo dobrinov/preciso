@@ -13,7 +13,7 @@
            when "home_page" then "home"
            when "vacation" then "vacation"
            when "payment_settings" then "payments"
-           when "delivery_rates" then "delivery"
+           when "delivery_options" then "delivery"
            when "notification_settings" then "emails"
            end
   nav = [
@@ -30,7 +30,7 @@
     ["home",        "Home page",   :doc,    edit_admin_home_page_path],
     ["vacation",    "Vacation",    :doc,    edit_admin_vacation_path],
     ["payments",    "Payments",    :card,   edit_admin_payments_path],
-    ["delivery",    "Delivery",    :truck,  admin_delivery_rates_path],
+    ["delivery",    "Delivery",    :truck,  admin_delivery_options_path],
     ["emails",      "Emails",      :mail,   edit_admin_emails_path],
   ]
 %>

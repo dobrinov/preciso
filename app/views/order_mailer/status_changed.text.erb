@@ -4,7 +4,7 @@ Hi <%= @order.customer_name.to_s.split(" ").first %>,
 <% when "preparing" %>
 Good news — Bianna has started preparing your order <%= @order.number %>.
 <% when "fulfilled" %>
-Your order <%= @order.number %> is complete and on its way to you<%= " (or ready for pickup)" unless @order.address_line.present? %>. We hope you enjoy your pieces!
+Your order <%= @order.number %> is complete and on its way to you<%= " (or ready for pickup)" unless @order.delivery_destination? %>. We hope you enjoy your pieces!
 <% when "cancelled" %>
 Your order <%= @order.number %> has been cancelled.<%= " Your payment will be refunded to your card." if @order.paid? %> If you have any questions, just reply to this email.
 <% end %>

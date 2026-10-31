@@ -2,5 +2,5 @@
 <%= render "hero", eyebrow: "Order received", headline: "Thank you, #{first_name(@order)}",
       body: safe_join([ "Your order ", order_number_tag(@order), " is with the studio. Bianna will be in touch shortly to confirm your pieces#{", the delivery cost" if @order.country_name.present? && !@order.delivery_priced?} and how to pay." ]) %>
 <%= render "items", order: @order, heading: true %>
-<%= render "panel", columns: [ (["Delivering to", address_html(@order)] if @order.address_line.present?), ["Contact", contact_html(@order)] ].compact %>
+<%= render "panel", columns: [ ([(@order.office_delivery? ? "Deliver to office" : "Delivering to"), address_html(@order)] if @order.delivery_destination?), ["Contact", contact_html(@order)] ].compact %>
 <%= render "button", label: "View your order", url: checkout_confirmation_url(@order.number) %>

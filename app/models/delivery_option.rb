@@ -1,7 +1,14 @@
-# A fixed delivery price (whole €) for one country. Countries without a rate
-# fall back to the original flow: order placed without online payment, and the
-# studio quotes delivery by hand.
-class DeliveryRate < ApplicationRecord
+# A way of delivering to one country, with a fixed price (whole €):
+# e.g. Bulgaria — "Econt office" (office, €4). A country can have several;
+# the customer picks one at checkout. Countries without options fall back to
+# the original flow: order placed without online payment, delivery quoted by
+# hand.
+class DeliveryOption < ApplicationRecord
+  KINDS = {
+    "address" => "To an address",
+    "office"  => "To a courier office"
+  }.freeze
+
   COUNTRIES = {
     "AL" => "Albania", "AD" => "Andorra", "AT" => "Austria", "BY" => "Belarus", "BE" => "Belgium",
     "BA" => "Bosnia and Herzegovina", "BG" => "Bulgaria", "HR" => "Croatia", "CY" => "Cyprus",
@@ -18,10 +25,16 @@ class DeliveryRate < ApplicationRecord
     "ZA" => "South Africa", "KR" => "South Korea", "AE" => "United Arab Emirates", "US" => "United States"
   }.sort_by { |_, name| name }.to_h.freeze
 
-  validates :country_code, inclusion: { in: COUNTRIES.keys }, uniqueness: true
+  validates :country_code, inclusion: { in: COUNTRIES.keys }
+  validates :name, presence: true
+  validates :kind, inclusion: { in: KINDS.keys }
   validates :cost, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  def self.sorted = all.sort_by(&:name)
+  # { "BG" => [options…], … } ordered by country name, then position.
+  def self.by_country
+    all.sort_by { |o| [ o.country_name, o.position, o.id ] }.group_by(&:country_code)
+  end
 
-  def name = COUNTRIES[country_code]
+  def country_name = COUNTRIES[country_code]
+  def office? = kind == "office"
 end

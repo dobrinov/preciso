@@ -84,7 +84,7 @@ module Mypos
     }
     # Delivery goes in as its own cart row so the rows add up to Amount.
     rows = order.order_lines.map { |l| [ l.display_name.to_s, l.qty, l.price ] }
-    rows << [ "Delivery — #{order.country_name}", 1, order.delivery_cost ] if order.delivery_cost.to_i.positive?
+    rows << [ "Delivery — #{order.delivery_label}", 1, order.delivery_cost ] if order.delivery_cost.to_i.positive?
     params["CartItems"] = rows.size.to_s
     rows.each.with_index(1) do |(name, qty, price), i|
       params["Article_#{i}"]  = name

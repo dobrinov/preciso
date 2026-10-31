@@ -33,10 +33,10 @@
             <div style="padding-top:8px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;"><%= @order.customer_name %><br><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a><br><%= @order.customer_phone %></div>
           </td>
           <td class="col" width="50%" valign="top" style="padding:22px 0 22px 12px;">
-            <div style="<%= label_style("letter-spacing:2px;") %>">Ship to</div>
+            <div style="<%= label_style("letter-spacing:2px;") %>"><%= @order.office_delivery? ? "Ship to office" : "Ship to" %></div>
             <div style="padding-top:8px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;">
-              <% if @order.address_line.present? %>
-                <%= @order.address_line %><br><%= [ @order.postal_code, @order.city ].compact_blank.join(" ") %><br><%= @order.country_name %>
+              <% if @order.delivery_destination? %>
+                <%= safe_join(@order.delivery_lines, tag.br) %>
               <% else %>
                 <%= @order.country_name.presence || "Not given — pickup or ask the customer" %>
               <% end %>

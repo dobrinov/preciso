@@ -2,5 +2,5 @@
 <%= render "hero", seal: true, eyebrow: "Payment received", headline: "Thank you, #{first_name(@order)}",
       body: safe_join([ "We've received your payment of ", tag.strong(money(@order.total), style: "font-weight:500;"), " for order ", order_number_tag(@order), ". Bianna will let you know as soon as your pieces are on their way." ]) %>
 <%= render "items", order: @order, heading: true, total_label: "Paid", paid_with: paid_with(@order) %>
-<%= render "panel", columns: [ (["Delivering to", address_html(@order)] if @order.address_line.present?), ["What happens next", "Bianna prepares your pieces next. We'll email you when they ship."] ].compact %>
+<%= render "panel", columns: [ ([(@order.office_delivery? ? "Deliver to office" : "Delivering to"), address_html(@order)] if @order.delivery_destination?), ["What happens next", "Bianna prepares your pieces next. We'll email you when they ship."] ].compact %>
 <%= render "button", label: "View your order", url: checkout_confirmation_url(@order.number) %>

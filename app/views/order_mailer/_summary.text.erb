@@ -2,14 +2,14 @@
 - <%= l.display_name %> x <%= l.qty %>: <%= money l.subtotal %>
 <% end %>
 <% if order.country_name.present? %>
-- Delivery (<%= order.country_name %>): <%= order.delivery_priced? ? money(order.delivery_cost) : "to be confirmed" %>
+- Delivery (<%= order.delivery_label %>): <%= order.delivery_priced? ? money(order.delivery_cost) : "to be confirmed" %>
 <% end %>
 Total: <%= money order.total %><%= " + delivery" if order.country_name.present? && !order.delivery_priced? %>
-<% if order.address_line.present? %>
+<% if order.delivery_destination? %>
 
 Delivery address:
 <%= order.customer_name %>
-<%= order.address_line %>
-<%= [order.postal_code, order.city].compact_blank.join(" ") %>
-<%= order.country_name %>
+<% order.delivery_lines.each do |line| %>
+<%= line %>
+<% end %>
 <% end %>

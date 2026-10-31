@@ -27,7 +27,7 @@
       <div class="item">
         <div class="order-thumb" style="display:grid;place-items:center;color:var(--muted)"><%= icon :truck %></div>
         <div style="flex:1">
-          <div class="order-line-name">Delivery — <%= @order.country_name %></div>
+          <div class="order-line-name">Delivery — <%= @order.delivery_label %></div>
           <div class="order-line-meta"><%= @order.delivery_priced? ? "Fixed rate" : "No set rate for this country — quote delivery to the customer" %></div>
         </div>
         <div class="order-line-total"><%= @order.delivery_priced? ? money(@order.delivery_cost) : "—" %></div>
@@ -60,8 +60,8 @@
       <div class="kv-list">
         <div class="kv"><span class="k">Name</span><span class="v"><%= @order.customer_name %></span></div>
         <div class="kv"><span class="k">Email</span><span class="v"><a href="mailto:<%= @order.customer_email %>"><%= @order.customer_email %></a></span></div>
-        <% if @order.address_line.present? %>
-          <div class="kv"><span class="k">Address</span><span class="v"><%= @order.address_line %><br><%= [@order.postal_code, @order.city].compact_blank.join(" ") %><br><%= @order.country_name %></span></div>
+        <% if @order.delivery_destination? %>
+          <div class="kv"><span class="k"><%= @order.office_delivery? ? "Deliver to office" : "Address" %></span><span class="v"><%= safe_join(@order.delivery_lines, tag.br) %></span></div>
         <% elsif @order.country_name.present? %>
           <div class="kv"><span class="k">Country</span><span class="v"><%= @order.country_name %></span></div>
         <% end %>

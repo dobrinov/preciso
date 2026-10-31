@@ -590,13 +590,25 @@ a.cat-row:hover{background:var(--paper);}
 .variant-unavailable { margin-top: 10px; color: var(--clay-deep); font-size: 14px; }
 
 /* ============================================================ Delivery (admin + checkout) */
-.delivery-row{display:grid;grid-template-columns:1fr auto 56px;gap:16px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);}
-.delivery-head{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
-.delivery-add{background:var(--paper);border-bottom:0;}
-.delivery-cost-form{display:flex;gap:8px;align-items:center;}
-.summary-sub-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--ink-soft);margin-top:10px;}
+.delivery-country{font-family:var(--serif);font-size:22px;padding:16px 20px 4px;}
+.delivery-opt{display:flex;gap:10px;align-items:flex-end;padding:12px 20px 16px;border-bottom:1px solid var(--line);}
+.delivery-opt:last-child{border-bottom:0;}
+.delivery-opt-form{display:grid;grid-template-columns:1.3fr 1.3fr 90px 2fr auto;gap:10px;align-items:end;flex:1;min-width:0;}
+.delivery-opt > .delivery-opt-form{padding:0;}
+form.delivery-opt{display:grid;}
+.delivery-opt-form .field{margin:0;}
+.delivery-opt-remove{margin:0;}
+@media(max-width:820px){.delivery-opt-form{grid-template-columns:1fr 1fr;}.delivery-note{grid-column:1 / -1;}}
+.summary-sub-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--ink-soft);margin-top:10px;gap:12px;}
 .summary-sub-row + .summary-total-row{margin-top:12px;}
-@media(max-width:520px){.delivery-row{grid-template-columns:1fr;gap:8px;}}
+.delivery-choices{display:flex;flex-direction:column;gap:8px;border:0;padding:0;margin:0;}
+.delivery-choice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line-2);cursor:pointer;}
+.delivery-choice:has(input:checked){border-color:var(--clay);background:var(--paper);}
+.delivery-choice input{margin-top:4px;accent-color:var(--clay-deep);}
+.delivery-choice-main{flex:1;display:flex;flex-direction:column;gap:2px;}
+.delivery-choice-name{font-weight:400;}
+.delivery-choice-note{font-size:12.5px;color:#6f6961;}
+.delivery-choice-price{font-family:var(--serif);font-size:18px;}
 
 /* The hidden attribute always wins over component display rules. */
 [hidden]{display:none !important;}

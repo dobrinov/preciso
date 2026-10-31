@@ -36,12 +36,12 @@
     <% end %>
     <% if @order.delivery_priced? %>
       <div class="confirm-line">
-        <span>Delivery <span style="color:var(--muted)">· <%= @order.country_name %></span></span>
+        <span>Delivery <span style="color:var(--muted)">· <%= @order.delivery_label %></span></span>
         <span class="serif" style="font-size:16px"><%= money @order.delivery_cost %></span>
       </div>
     <% elsif @order.country_name.present? %>
       <div class="confirm-line">
-        <span>Delivery <span style="color:var(--muted)">· <%= @order.country_name %></span></span>
+        <span>Delivery <span style="color:var(--muted)">· <%= @order.delivery_label %></span></span>
         <span style="color:var(--muted)">quoted by email</span>
       </div>
     <% end %>

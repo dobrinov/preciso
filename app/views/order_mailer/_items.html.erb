@@ -36,7 +36,7 @@
         <% end %>
         <% if order.country_name.present? %>
           <tr>
-            <td style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;color:<%= EmailHelper::INK_SOFT %>;">Delivery · <%= order.country_name %></td>
+            <td style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;color:<%= EmailHelper::INK_SOFT %>;">Delivery · <%= order.delivery_label %></td>
             <% if order.delivery_priced? %>
               <td align="right" style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;font-family:<%= EmailHelper::SERIF %>;font-size:19px;color:<%= EmailHelper::INK %>;"><%= money order.delivery_cost %></td>
             <% else %>

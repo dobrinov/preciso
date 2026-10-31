@@ -1,0 +1,59 @@
+<% content_for :title, "Preciso — Delivery" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Delivery</h1>
+    <p class="pagehead-sub">Delivery options and prices per country. Customers pick one at checkout and can pay online. Countries not listed here order without paying, and you quote delivery by hand.</p>
+  </div>
+</div>
+
+<div class="admin-pad" style="max-width:920px">
+  <% if flash[:notice] %>
+    <div class="flash-saved fade-up" style="margin-bottom:14px"><%= icon :check, size: 16 %> <%= flash[:notice] %></div>
+  <% elsif flash[:alert] %>
+    <div class="flash-saved fade-up" style="margin-bottom:14px;color:#a14a3a"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @by_country.empty? %>
+    <div class="panel"><div class="empty-state">No delivery options yet — every order uses the pay-later flow until you add one below.</div></div>
+  <% end %>
+
+  <% @by_country.each do |code, options| %>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="delivery-country"><%= DeliveryOption::COUNTRIES[code] %></div>
+      <% options.each do |o| %>
+        <div class="delivery-opt">
+          <%= form_with url: admin_delivery_option_path(o), method: :patch, data: { turbo: false }, class: "delivery-opt-form" do %>
+            <label class="field"><div class="field-label">Name</div>
+              <%= text_field_tag :name, o.name, class: "input", required: true %></label>
+            <label class="field"><div class="field-label">Type</div>
+              <%= select_tag :kind, options_for_select(DeliveryOption::KINDS.invert, o.kind), class: "input" %></label>
+            <label class="field"><div class="field-label">Price (€)</div>
+              <%= number_field_tag :cost, o.cost, min: 0, step: 1, class: "input", required: true %></label>
+            <label class="field delivery-note"><div class="field-label">Note for customers <span style="text-transform:none;letter-spacing:0">(optional)</span></div>
+              <%= text_field_tag :note, o.note, class: "input", placeholder: "e.g. Collect from the Econt office of your choice" %></label>
+            <div class="delivery-opt-actions"><button type="submit" class="btn ghost sm">Save</button></div>
+          <% end %>
+          <%= button_to admin_delivery_option_path(o), method: :delete, class: "btn ghost sm", "aria-label": "Remove #{o.name}",
+                form: { class: "delivery-opt-remove", data: { turbo_confirm: "Remove #{o.name} for #{o.country_name}?" } } do %><%= icon :trash, size: 15 %><% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="panel" style="background:var(--paper)">
+    <div class="delivery-country">Add a delivery option</div>
+    <%= form_with url: admin_delivery_options_path, method: :post, data: { turbo: false }, class: "delivery-opt delivery-opt-form" do %>
+      <label class="field"><div class="field-label">Country</div>
+        <%= select_tag :country_code, options_for_select(DeliveryOption::COUNTRIES.invert), prompt: "Choose…", class: "input", required: true %></label>
+      <label class="field"><div class="field-label">Name</div>
+        <%= text_field_tag :name, nil, class: "input", required: true, placeholder: "e.g. Econt office" %></label>
+      <label class="field"><div class="field-label">Type</div>
+        <%= select_tag :kind, options_for_select(DeliveryOption::KINDS.invert), class: "input" %></label>
+      <label class="field"><div class="field-label">Price (€)</div>
+        <%= number_field_tag :cost, nil, min: 0, step: 1, class: "input", required: true %></label>
+      <label class="field delivery-note"><div class="field-label">Note for customers <span style="text-transform:none;letter-spacing:0">(optional)</span></div>
+        <%= text_field_tag :note, nil, class: "input", placeholder: "Shown under this option at checkout" %></label>
+      <div class="delivery-opt-actions"><button type="submit" class="btn clay sm"><%= icon :plus, size: 15 %> Add</button></div>
+    <% end %>
+  </div>
+</div>
