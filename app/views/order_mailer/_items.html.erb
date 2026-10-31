@@ -18,7 +18,7 @@
                   <% if thumbs %>
                     <td width="56" valign="middle" style="width:56px;padding-right:16px;">
                       <% if (src = line_image_url(l)) %>
-                        <img src="<%= src %>" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border:0;">
+                        <img src="<%= src %>" alt="<%= l.name %>" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border:0;">
                       <% else %>
                         <div style="width:56px;height:56px;background:<%= line_tone(l) %>;"></div>
                       <% end %>
