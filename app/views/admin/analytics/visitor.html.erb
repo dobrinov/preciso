@@ -1,0 +1,93 @@
+<% j = @journey %>
+<% content_for :title, "Preciso — Visitor #{j.label}" %>
+<div class="pagehead">
+  <div>
+    <div class="an-title-row">
+      <h1 class="display pagehead-title">Visitor <%= j.label %></h1>
+      <%= render "outcome", journey: j %>
+      <% unless j.human? %><span class="an-badge an-badge--hidden">Hidden · not counted</span><% end %>
+    </div>
+    <p class="pagehead-sub">
+      <%= device_label(j.device) %> · <%= browser_label(j.user_agent) %> · first seen <%= j.first_at.strftime("%b %-d, %H:%M") %> from <%= j.source %>
+    </p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_analytics_visitors_path(range: @range) %>" class="btn ghost sm"><%= icon :back, size: 16 %> All visitors</a>
+    <% j.order_numbers.each do |num| %>
+      <% if @orders[num] %><a href="<%= admin_order_path(@orders[num]) %>" class="btn sm">Order <%= num %></a><% end %>
+    <% end %>
+  </div>
+</div>
+
+<div class="admin-pad an-detail">
+  <aside class="an-side">
+    <div class="an-mini-stats">
+      <% [["Visits", j.visits.size], ["Pages", j.pageviews.size], ["Time on site", duration_label(j.seconds_on_site)], ["Orders", j.order_numbers.size]].each do |l, v| %>
+        <div><div class="stat-label"><%= l %></div><div class="v"><%= v %></div></div>
+      <% end %>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head"><span>Profile</span></div>
+      <dl class="an-dl">
+        <dt>Device</dt><dd><%= device_label(j.device) %></dd>
+        <dt>Browser</dt><dd><%= browser_label(j.user_agent) %></dd>
+        <% if j.ip %><dt>IP</dt><dd><%= link_to j.ip, "https://tools.keycdn.com/geo?host=#{j.ip}", target: "_blank", rel: "noopener" %></dd><% end %>
+        <dt>Came from</dt><dd><%= j.source %></dd>
+        <% if j.campaign %><dt>Campaign</dt><dd><%= j.campaign %></dd><% end %>
+        <% if (ref = j.events.find(&:referrer)&.referrer) %><dt>Referrer</dt><dd class="an-break"><%= ref %></dd><% end %>
+        <dt>Landed on</dt><dd><%= j.landing&.label || "—" %></dd>
+        <dt>Last page</dt><dd><%= j.exit_page&.label || "—" %></dd>
+        <dt>Session</dt><dd class="mono an-break"><%= j.sid %></dd>
+      </dl>
+    </section>
+
+    <% pieces = j.pieces_viewed %>
+    <% if pieces.any? %>
+      <section class="panel">
+        <div class="panel-head"><span>Pieces they looked at</span></div>
+        <% pieces.each do |p| %>
+          <a href="/<%= p[:key] %>" class="dash-row an-piece">
+            <span class="an-piece-name"><%= p[:name] %></span>
+            <span class="mono muted"><%= pluralize p[:views], "view" %></span>
+            <% if p[:carted] %><span class="an-badge an-badge--cart">Carted</span><% end %>
+          </a>
+        <% end %>
+      </section>
+    <% end %>
+
+    <section class="panel panel-pad">
+      <div class="stat-label" style="margin-bottom:6px">Counted as a person?</div>
+      <p class="an-note" style="margin:0"><strong><%= j.human? ? "Yes" : "No" %>.</strong> <%= j.verdict %></p>
+    </section>
+  </aside>
+
+  <section class="an-visits">
+    <div class="an-visits-head"><h2 class="an-h">Visits, newest first</h2><span class="an-note">Time on page in brackets</span></div>
+    <% j.visits.reverse.each_with_index do |v, i| %>
+      <details class="panel an-visit" <%= "open" if i < 2 %>>
+        <summary>
+          <span class="an-visit-day"><%= visit_day(v.first.occurred_at) %></span>
+          <span class="an-visit-meta">
+            <%= v.first.occurred_at.strftime("%H:%M") %>–<%= v.last.occurred_at.strftime("%H:%M") %>
+            · <%= pluralize v.count { |e| e.event_type == "pageview" }, "page" %>
+            <% src = v.find(&:source)&.source %><% if src %> · from <%= src %><% end %>
+          </span>
+        </summary>
+        <ol class="an-timeline">
+          <% v.each_with_index do |e, k| %>
+            <li class="an-ev an-ev--<%= timeline_kind(e) %>">
+              <span class="t mono"><%= e.occurred_at.strftime("%H:%M:%S") %></span>
+              <span class="dot" aria-hidden="true"></span>
+              <span class="x">
+                <span class="main"><%= timeline_text(e, k.zero?) %></span>
+                <% if k.zero? && (e.referrer || e.campaign) %><span class="sub"><%= [e.referrer, (e.campaign && "campaign: #{e.campaign}")].compact.join(" · ") %></span><% end %>
+              </span>
+              <span class="d mono"><%= duration_label(e.duration_ms / 1000) if e.duration_ms %></span>
+            </li>
+          <% end %>
+        </ol>
+      </details>
+    <% end %>
+  </section>
+</div>

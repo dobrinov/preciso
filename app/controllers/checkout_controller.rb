@@ -64,6 +64,8 @@ class CheckoutController < ApplicationController
       order.save!
       lines.each { |attrs| order.order_lines.create!(attrs) }
     end
+    record_event("checkout_submit", label: order.number, total: order.total,
+                 name: [ order.delivery_option_name, (online ? "card" : "pay later") ].compact.join(" · "))
 
     # With myPOS on, the cart is kept until the customer comes back from a
     # successful payment (they may cancel and want to try again).

@@ -1,33 +1,46 @@
 module AnalyticsHelper
-  def chart_day_label(ts, days)
-    return ts.day.to_s if days > 14
-    "#{ts.strftime('%a')[0, 2]} #{ts.day}"
+  def pct(v)
+    v = v.to_f
+    return "0%" if v.zero?
+    v < 1 ? "#{v.round(2)}%" : (v < 10 ? "#{v.round(1)}%" : "#{v.round}%")
   end
 
-  def event_icon(type)
-    case type
-    when "order" then icon(:bag, size: 16)
-    when "add_cart" then icon(:cart, size: 16)
-    else tag.span(style: "width:6px;height:6px;border-radius:6px;background:var(--line-2);display:inline-block")
-    end
+  def share(part, whole) = whole.to_i.positive? ? part.to_f * 100 / whole : 0
+
+  def device_label(device) = { "phone" => "Phone", "tablet" => "Tablet", "desktop" => "Desktop" }[device] || "Unknown device"
+
+  def duration_label(seconds)
+    s = seconds.to_i
+    return "#{s}s" if s < 60
+    return "#{s / 60}m #{format('%02d', s % 60)}s" if s < 3600
+    "#{s / 3600}h #{(s % 3600) / 60}m"
   end
 
-  def event_color(type)
-    case type
-    when "order" then "var(--clay-deep)"
-    when "add_cart" then "var(--ink-soft)"
-    else "var(--faint)"
-    end
+  def visit_day(ts)
+    return "Today" if ts.to_date == Date.current
+    return "Yesterday" if ts.to_date == Date.yesterday
+    ts.strftime(ts.year == Date.current.year ? "%b %-d" : "%b %-d, %Y")
   end
 
-  def event_text(e)
+  def timeline_kind(e)
     case e.event_type
-    when "order"
-      safe_join([ tag.strong("Order placed", style: "font-weight:400"), " — #{e.label} · #{money(e.total)}" ])
-    when "add_cart"
-      safe_join([ tag.strong("Added to cart", style: "font-weight:400"), " — #{e.label}" ])
-    else
-      safe_join([ "Viewed ", tag.strong(e.label, style: "font-weight:400") ])
+    when "pageview" then "page"
+    when "add_cart", "remove_cart" then "cart"
+    when "order" then "order"
+    else "step"
+    end
+  end
+
+  def timeline_text(e, first)
+    case e.event_type
+    when "pageview" then first ? "Landed on #{e.label}" : e.label
+    when "add_cart" then "Added to cart · #{e.label}#{" ×#{e.qty}" if e.qty.to_i > 1}"
+    when "remove_cart" then "Removed from cart · #{e.label}#{" ×#{e.qty}" if e.qty.to_i > 1}"
+    when "checkout_submit" then "Sent checkout form · #{e.label}#{" · #{e.name}" if e.name.present?}"
+    when "payment_start" then "Went to card payment · #{e.label}"
+    when "payment_cancel" then "Cancelled payment · #{e.label}"
+    when "order" then "Order #{e.label} placed · #{money(e.total)}"
+    else e.event_type.humanize
     end
   end
 
@@ -36,6 +49,8 @@ module AnalyticsHelper
   def browser_label(ua)
     return "Unknown" if ua.blank?
     browser = case ua
+    when /Instagram/ then "Instagram app"
+    when /FBAN|FBAV/ then "Facebook app"
     when /Edg/ then "Edge"
     when /OPR|Opera/ then "Opera"
     when /Chrome|CriOS/ then "Chrome"
@@ -51,14 +66,5 @@ module AnalyticsHelper
     when /Linux/ then "Linux"
     end
     os ? "#{browser} · #{os}" : browser
-  end
-
-  # The event's IP as a link to a geolocation lookup, plus the browser label.
-  def event_origin(e)
-    return if e.ip.blank? && e.user_agent.blank?
-    parts = []
-    parts << link_to(e.ip, "https://tools.keycdn.com/geo?host=#{e.ip}", target: "_blank", rel: "noopener") if e.ip.present?
-    parts << browser_label(e.user_agent) if e.user_agent.present?
-    safe_join(parts, " · ")
   end
 end

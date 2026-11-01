@@ -1,0 +1,21 @@
+<%# Page header shared by the analytics screens: title, tabs, range toggle. %>
+<div class="pagehead an-head">
+  <div>
+    <h1 class="display pagehead-title">Analytics</h1>
+    <p class="pagehead-sub"><%= sub %></p>
+    <nav class="an-tabs" aria-label="Analytics sections">
+      <% [["Overview", admin_analytics_path(range: @range), :overview],
+          ["Visitors", admin_analytics_visitors_path(range: @range), :visitors],
+          ["Funnels", admin_analytics_funnels_path(range: @range), :funnels]].each do |label, href, key| %>
+        <a href="<%= href %>" class="<%= 'active' if tab == key %>" <%= 'aria-current="page"'.html_safe if tab == key %>><%= label %></a>
+      <% end %>
+    </nav>
+  </div>
+  <div class="pagehead-actions">
+    <div class="range-toggle" role="group" aria-label="Date range">
+      <% Admin::AnalyticsController::RANGES.each do |k, lbl| %>
+        <a href="<%= url_for(request.query_parameters.merge(range: k, page: nil)) %>" class="range-opt <%= 'active' if @range == k %>"><%= lbl %></a>
+      <% end %>
+    </div>
+  </div>
+</div>

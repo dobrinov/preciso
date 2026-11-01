@@ -10,6 +10,7 @@ class PaymentsController < ApplicationController
   def pay
     @order = Order.find_by!(number: params[:number])
     return redirect_to(checkout_confirmation_path(@order.number)) unless @order.awaiting_payment?
+    record_event("payment_start", label: @order.number, total: @order.total)
 
     @action = Mypos.endpoint
     @fields = Mypos.purchase_params(
@@ -77,6 +78,7 @@ class PaymentsController < ApplicationController
 
     order = Order.find_by!(number: params[:number])
     order.update!(payment_status: "failed") if order.awaiting_payment?
+    record_event("payment_cancel", label: order.number, total: order.total)
     redirect_to checkout_path, alert: "Payment was cancelled — nothing was charged. Your cart is still here."
   end
 end

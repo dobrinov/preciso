@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -133,20 +133,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
   end
 
   create_table "events", force: :cascade do |t|
+    t.boolean "bot", default: false, null: false
+    t.string "campaign"
     t.datetime "created_at", null: false
+    t.string "device"
+    t.integer "duration_ms"
     t.string "event_type", null: false
     t.string "ip"
     t.string "label"
+    t.boolean "legacy", default: false, null: false
     t.string "name"
     t.datetime "occurred_at", null: false
     t.string "page_key"
     t.boolean "piece", default: false
+    t.integer "qty"
+    t.string "referrer"
     t.string "sid"
+    t.string "source"
     t.integer "total"
     t.datetime "updated_at", null: false
     t.string "user_agent"
+    t.datetime "verified_at"
+    t.index ["event_type", "occurred_at"], name: "index_events_on_event_type_and_occurred_at"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["occurred_at"], name: "index_events_on_occurred_at"
+    t.index ["sid"], name: "index_events_on_sid"
   end
 
   create_table "home_pages", force: :cascade do |t|
@@ -293,6 +304,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
     t.index ["product_id"], name: "index_variants_on_product_id"
   end
 
+  add_foreign_key "campaign_items", "campaigns"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
   add_foreign_key "email_logs", "orders"

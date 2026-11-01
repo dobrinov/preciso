@@ -1,0 +1,61 @@
+<% content_for :title, "Preciso — Visitors" %>
+<%= render "head", tab: :visitors, sub: "Every visitor, what they looked at and how far they got." %>
+
+<div class="admin-pad an-stack">
+  <%= form_with url: admin_analytics_visitors_path, method: :get, class: "an-filters", data: { controller: "filterform" } do %>
+    <%= hidden_field_tag :range, @range %>
+    <%= hidden_field_tag :outcome, @outcome %>
+    <%= hidden_field_tag :hidden, "1" if @show_hidden %>
+    <label class="an-search">
+      <span class="visually-hidden">Search visitors</span>
+      <%= search_field_tag :q, @q, placeholder: "Visitor ID, page, piece or order number" %>
+    </label>
+    <label class="an-select">Source
+      <%= select_tag :source, options_for_select([["All sources", ""]] + @report.sources, @source), data: { action: "change->filterform#submit" } %>
+    </label>
+    <label class="an-select">Device
+      <%= select_tag :device, options_for_select([["Any device", ""]] + @report.devices.map { |d| [d.capitalize, d] }, @device), data: { action: "change->filterform#submit" } %>
+    </label>
+    <button type="submit" class="btn ghost sm">Search</button>
+  <% end %>
+
+  <div class="filter-bar an-chips" role="group" aria-label="Filter by how far they got">
+    <% keep = { range: @range, source: @source, device: @device, q: @q.presence, hidden: (@show_hidden ? "1" : nil) } %>
+    <a href="<%= admin_analytics_visitors_path(keep) %>" class="filter-btn <%= 'active' unless @outcome %>">Everyone <span class="ct"><%= number_with_delimiter @counts.values.sum %></span></a>
+    <% Analytics::Journey::STEPS.reverse.each do |k| %>
+      <a href="<%= admin_analytics_visitors_path(keep.merge(outcome: k)) %>" class="filter-btn <%= 'active' if @outcome == k.to_s %>"><%= Analytics::Journey::OUTCOMES[k] %> <span class="ct"><%= number_with_delimiter @counts[k] %></span></a>
+    <% end %>
+  </div>
+
+  <section class="panel">
+    <div class="an-table-wrap">
+      <div class="an-vlist">
+        <div class="an-vrow an-vhead">
+          <span>Visitor</span><span>Device</span><span>Came from</span><span>Journey</span><span class="num">Pages</span><span>Got to</span><span class="num">Last seen</span>
+        </div>
+        <% if @visitors.empty? %><div class="empty-state">No visitors match.</div><% end %>
+        <% @visitors.each do |j| %>
+          <%= render "visitor_row", j: j %>
+        <% end %>
+      </div>
+    </div>
+    <div class="an-pager">
+      <span>
+        <%= number_with_delimiter @total %> <%= @show_hidden ? "hidden journeys" : "visitors" %>
+        · <% if @show_hidden %>
+          <a href="<%= admin_analytics_visitors_path(range: @range) %>" class="an-link">Back to real visitors</a>
+        <% else %>
+          <a href="<%= admin_analytics_visitors_path(range: @range, hidden: 1) %>" class="an-link"><%= number_with_delimiter @report.hidden.size %> bots and unverified hidden — inspect</a>
+        <% end %>
+      </span>
+      <% if @pages > 1 %>
+        <span class="an-pager-btns">
+          <% base = request.query_parameters %>
+          <% if @page > 1 %><a class="btn ghost sm" href="<%= url_for(base.merge(page: @page - 1)) %>">Previous</a><% end %>
+          <span class="mono">Page <%= @page %> / <%= @pages %></span>
+          <% if @page < @pages %><a class="btn ghost sm" href="<%= url_for(base.merge(page: @page + 1)) %>">Next</a><% end %>
+        </span>
+      <% end %>
+    </div>
+  </section>
+</div>

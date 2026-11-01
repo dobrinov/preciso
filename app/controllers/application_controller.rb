@@ -31,25 +31,35 @@ class ApplicationController < ActionController::Base
 
   # Analytics "order" event — once per order, never for admin browsing.
   def record_order_event(order)
-    return if admin_signed_in?
     return if Event.exists?(event_type: "order", label: order.number)
-    Event.create!(event_type: "order", sid: analytics_sid, label: order.number,
-                  total: order.total, occurred_at: Time.current,
-                  ip: client_ip, user_agent: request.user_agent)
-  rescue => e
-    Rails.logger.warn("analytics order event failed: #{e.message}")
+    record_event("order", label: order.number, total: order.total)
   end
 
   # Record a storefront pageview. Admin views and signed-in admin browsing are
-  # never tracked.
+  # never tracked. The page carries a signed token so the beacon script can
+  # confirm a real browser rendered it (see pv_controller.js).
   def track(page_key, label, piece: false, name: nil)
+    referrer = request.referer.to_s.first(500).presence
+    event = record_event("pageview", page_key:, label:, piece:, name:,
+      referrer: (referrer unless internal_referrer?(referrer)),
+      source: Event.source_for(referrer:, utm_source: params[:utm_source], user_agent: request.user_agent, own_host: request.host),
+      campaign: params[:utm_campaign].to_s.first(100).presence)
+    @pv_token = Rails.application.message_verifier(:pv).generate(event.id, expires_in: 2.days) if event && !event.bot
+  end
+
+  # Shared writer for every analytics event. Failures are logged, never raised:
+  # analytics must not break the shop.
+  def record_event(type, **attrs)
     return if admin_signed_in?
-    Event.create!(
-      event_type: "pageview", sid: analytics_sid, page_key: page_key,
-      label: label, piece: piece, name: name, occurred_at: Time.current,
-      ip: client_ip, user_agent: request.user_agent
-    )
+    ua = request.user_agent.to_s.first(500)
+    Event.create!(event_type: type, sid: analytics_sid, occurred_at: Time.current,
+                  ip: client_ip, user_agent: ua, bot: Event.bot_agent?(ua), device: Event.device_for(ua), **attrs)
   rescue => e
-    Rails.logger.warn("analytics track failed: #{e.message}")
+    Rails.logger.warn("analytics #{type} failed: #{e.message}")
+    nil
+  end
+
+  def internal_referrer?(ref)
+    ref.present? && (URI.parse(ref).host == request.host rescue false)
   end
 end

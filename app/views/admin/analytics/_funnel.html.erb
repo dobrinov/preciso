@@ -1,0 +1,27 @@
+<%# A funnel as rows: step, bar (share of the first step), conversion, drop-off. %>
+<ol class="an-funnel">
+  <% steps.each_with_index do |s, i| %>
+    <li>
+      <div class="an-funnel-name">
+        <span class="n"><%= format("%02d", i + 1) %></span>
+        <span><span class="t"><%= s[:name] %></span><span class="r"><%= s[:rule] %></span></span>
+      </div>
+      <div class="an-funnel-bar">
+        <div class="track"><div class="fill <%= 'last' if i == steps.size - 1 %>" style="width:<%= [s[:pct_top], s[:count].positive? ? 0.6 : 0].max.round(1) %>%"></div></div>
+        <span class="ct"><%= number_with_delimiter s[:count] %></span>
+      </div>
+      <div class="an-funnel-conv">
+        <% if i.zero? %>
+          <span>Starting point</span>
+        <% else %>
+          <span class="<%= 'weak' if s[:pct_prev] < 30 %>"><%= pct s[:pct_prev] %> continued</span>
+        <% end %>
+        <% if s[:dropped].to_i.positive? && local_assigns[:drop_link] %>
+          <a href="<%= admin_analytics_visitors_path(range: @range, outcome: (s[:key] == :visit ? "visit" : s[:key])) %>">See <%= number_with_delimiter s[:dropped] %> who stopped here →</a>
+        <% elsif s[:dropped].to_i.positive? %>
+          <span class="drop"><%= number_with_delimiter s[:dropped] %> stopped here</span>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ol>

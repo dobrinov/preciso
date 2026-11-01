@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   patch  "cart/items",   to: "cart#update", as: :cart_update
   delete "cart/items",   to: "cart#remove", as: :cart_remove
 
+  # ---- analytics beacon (page shown / time on page) ----
+  post "a/pv", to: "beacons#create", as: :beacon
+
   # ---- checkout ----
   get  "checkout", to: "checkout#new",    as: :checkout
   post "checkout", to: "checkout#create"
@@ -54,6 +57,9 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index"
 
     get "analytics", to: "analytics#index"
+    get "analytics/visitors", to: "analytics#visitors", as: :analytics_visitors
+    get "analytics/visitors/:sid", to: "analytics#visitor", as: :analytics_visitor
+    get "analytics/funnels", to: "analytics#funnels", as: :analytics_funnels
     delete "analytics", to: "analytics#reset", as: :reset_analytics
 
     resources :orders, only: [ :index, :show, :update, :destroy ], param: :number do

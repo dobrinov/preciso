@@ -1,0 +1,88 @@
+<% content_for :title, "Preciso — Funnels" %>
+<%= render "head", tab: :funnels, sub: "Where people drop off on the way to an order." %>
+
+<div class="admin-pad an-stack">
+  <div class="an-funnel-tabs" role="tablist" aria-label="Funnels">
+    <% src_name = @by_source.first&.dig(:name) %>
+    <% src_funnel = src_name ? @report.source_funnel(@kind == "source" ? @source : src_name) : nil %>
+    <% [["purchase", "Purchase", "Visit → order", @purchase],
+        ["checkout", "Checkout completion", "Checkout → order", @checkout],
+        (["source", "From one source", "#{@kind == 'source' ? @source : src_name} → order", src_funnel] if src_funnel)].compact.each do |key, name, desc, steps| %>
+      <a href="<%= admin_analytics_funnels_path(range: @range, funnel: key, source: (@source if key == 'source')) %>" role="tab" aria-selected="<%= @kind == key %>" class="an-ftab <%= 'active' if @kind == key %>">
+        <span class="nm"><%= name %></span><span class="ds"><%= desc %></span>
+        <span class="rt"><%= pct share(steps.last[:count], steps.first[:count]) %></span>
+      </a>
+    <% end %>
+  </div>
+
+  <section class="panel">
+    <div class="an-fhead">
+      <div>
+        <h2 class="display an-ftitle"><%= { "purchase" => "Purchase", "checkout" => "Checkout completion", "source" => "From #{@source}" }[@kind] %></h2>
+        <p class="an-note" style="margin:0">
+          <%= { "purchase" => "Every visitor in the range, and the furthest step they reached.",
+                "checkout" => "Visitors who opened checkout, and how far into it they got.",
+                "source" => "Only visitors who arrived from #{@source}." }[@kind] %>
+        </p>
+        <% if @kind == "source" %>
+          <%= form_with url: admin_analytics_funnels_path, method: :get, class: "an-inline-form", data: { controller: "filterform" } do %>
+            <%= hidden_field_tag :range, @range %><%= hidden_field_tag :funnel, "source" %>
+            <label class="an-select">Source <%= select_tag :source, options_for_select(@by_source.map { |r| r[:name] }, @source), data: { action: "change->filterform#submit" } %></label>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="an-fstats">
+        <div><span class="stat-label">Converted</span><span class="v accent"><%= pct share(@steps.last[:count], @steps.first[:count]) %></span></div>
+        <div><span class="stat-label">Started</span><span class="v"><%= number_with_delimiter @steps.first[:count] %></span></div>
+        <div><span class="stat-label">Finished</span><span class="v"><%= number_with_delimiter @steps.last[:count] %></span></div>
+      </div>
+    </div>
+    <%= render "funnel", steps: @steps, drop_link: @kind == "purchase" %>
+    <% leak = @steps.each_cons(2).select { |a, _| a[:count].positive? }.min_by { |_, b| b[:pct_prev] } %>
+    <% if leak %>
+      <div class="an-leak">
+        <span class="tag">Biggest leak</span>
+        <span><%= leak[0][:name] %> → <%= leak[1][:name].downcase %>: <%= number_with_delimiter leak[0][:count] - leak[1][:count] %> of <%= number_with_delimiter leak[0][:count] %> stopped (only <%= pct leak[1][:pct_prev] %> continued).</span>
+      </div>
+    <% end %>
+  </section>
+
+  <div class="two-col an-two">
+    <section class="panel">
+      <div class="panel-head"><span>Purchase funnel by source</span></div>
+      <div class="an-table-wrap">
+        <table class="an-table">
+          <thead><tr><th>Source</th><th class="num">Visitors</th><th class="num">Saw piece</th><th class="num">Cart</th><th class="num">Order</th></tr></thead>
+          <tbody>
+            <% @by_source.each do |r| %>
+              <tr>
+                <td><a href="<%= admin_analytics_funnels_path(range: @range, funnel: 'source', source: r[:name]) %>"><%= r[:name] %></a></td>
+                <td class="num"><%= number_with_delimiter r[:visitors] %></td>
+                <td class="num"><%= r[:piece] %></td>
+                <td class="num"><%= r[:cart] %></td>
+                <td class="num accent"><%= r[:orders] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><span>By device</span></div>
+      <div class="panel-pad an-devices">
+        <% @by_device.each do |d| %>
+          <div>
+            <div class="an-dev-top"><span><%= d[:name] %></span><span class="mono muted"><%= number_with_delimiter d[:visitors] %> visitors · <%= pluralize d[:orders], "order" %></span></div>
+            <div class="an-heat">
+              <% d[:shares].each do |k, v| %>
+                <div class="an-sw--<%= k %>"><span><%= Analytics::Report::STEP_LABELS[k].split.last.capitalize %></span><b><%= pct v %></b></div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        <p class="an-note" style="margin:0">Share of each device's visitors who reached the step.</p>
+      </div>
+    </section>
+  </div>
+</div>

@@ -6,6 +6,9 @@
   </div>
   <div class="pagehead-actions">
     <a href="<%= admin_orders_path %>" class="btn ghost sm"><%= icon :back, size: 16 %> All orders</a>
+    <% if (journey_sid = Event.where(label: @order.number).where.not(sid: nil).pick(:sid)) %>
+      <a href="<%= admin_analytics_visitor_path(journey_sid, range: "all") %>" class="btn ghost sm">Visitor journey</a>
+    <% end %>
   </div>
 </div>
 

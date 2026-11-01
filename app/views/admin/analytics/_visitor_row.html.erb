@@ -1,0 +1,9 @@
+<a href="<%= admin_analytics_visitor_path(j.sid, range: @range) %>" class="an-vrow">
+  <span class="an-vid"><span class="mono"><%= j.label %></span><span class="sub"><%= pluralize j.visits.size, "visit" %></span></span>
+  <span class="an-vmeta"><%= device_label(j.device) %> · <%= browser_label(j.user_agent) %></span>
+  <span class="an-vsrc"><%= j.source %></span>
+  <span class="an-vpath"><%= j.path_summary %></span>
+  <span class="an-vpages mono"><%= j.pageviews.size %></span>
+  <span><%= render "outcome", journey: j %></span>
+  <span class="an-vwhen"><%= time_ago j.last_at %></span>
+</a>
