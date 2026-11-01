@@ -49,6 +49,7 @@ class PaymentsController < ApplicationController
         payment_details: [ data["PaymentMethod"], data["CardBrand"], data["PAN"] ].compact_blank.join(" · ").presence
       )
       Notifier.order_paid(order) if newly_paid
+      CartReminderSweep.converted!(order: order)
     when "IPCPurchaseRollback"
       # myPOS reversed a payment (e.g. our notify answer didn't reach it).
       order.update!(payment_status: "failed", paid_at: nil)
@@ -67,6 +68,8 @@ class PaymentsController < ApplicationController
 
     order = Order.find_by!(number: params[:number])
     current_cart.clear
+    CartReminderSweep.converted!(sid: analytics_sid, order: order) if order.paid?
+    session.delete(:reminder_token)
     record_order_event(order)
     redirect_to checkout_confirmation_path(order.number)
   end

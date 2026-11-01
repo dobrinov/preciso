@@ -29,6 +29,11 @@ Rails.application.routes.draw do
   # ---- analytics beacon (page shown / time on page) ----
   post "a/pv", to: "beacons#create", as: :beacon
 
+  # ---- cart reminders (abandoned checkout emails) ----
+  post "checkout/reminder", to: "cart_reminders#capture", as: :cart_reminder_capture
+  get  "cart/back/:token", to: "cart_reminders#back", as: :cart_reminder_return
+  match "cart/stop/:token", to: "cart_reminders#unsubscribe", as: :cart_reminder_unsubscribe, via: [ :get, :post ]
+
   # ---- checkout ----
   get  "checkout", to: "checkout#new",    as: :checkout
   post "checkout", to: "checkout#create"
@@ -60,6 +65,11 @@ Rails.application.routes.draw do
     get "analytics/visitors", to: "analytics#visitors", as: :analytics_visitors
     get "analytics/visitors/:sid", to: "analytics#visitor", as: :analytics_visitor
     get "analytics/funnels", to: "analytics#funnels", as: :analytics_funnels
+
+    get "cart-reminders", to: "cart_reminders#index", as: :cart_reminders
+    patch "cart-reminders", to: "cart_reminders#update"
+    post "cart-reminders/send-due", to: "cart_reminders#send_due", as: :send_due_cart_reminders
+    post "cart-reminders/preview", to: "cart_reminders#preview", as: :preview_cart_reminder
     delete "analytics", to: "analytics#reset", as: :reset_analytics
 
     resources :orders, only: [ :index, :show, :update, :destroy ], param: :number do

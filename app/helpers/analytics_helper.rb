@@ -40,6 +40,7 @@ module AnalyticsHelper
     when "payment_start" then "Went to card payment · #{e.label}"
     when "payment_cancel" then "Cancelled payment · #{e.label}"
     when "order" then "Order #{e.label} placed · #{money(e.total)}"
+    when "reminder_open" then "Came back from the cart reminder email · #{e.label}"
     else e.event_type.humanize
     end
   end

@@ -3,8 +3,20 @@
 class Cart
   # A resolved line: record is the live Product/ProductSet, variant the live
   # Variant (or nil). current_price ignores a nil variant.
-  Line = Struct.new(:kind, :id, :qty, :record, :variant, keyword_init: true) do
-    def unit_price = record.current_price(variant: variant)
+  #
+  # reminder_pct: a cart-reminder email's discount for this line (see
+  # CartReminder). It never stacks with a campaign: the line gets whichever
+  # price is lower.
+  Line = Struct.new(:kind, :id, :qty, :record, :variant, :reminder_pct, keyword_init: true) do
+    def regular_price = record.current_price(variant: variant)
+
+    def unit_price
+      price = regular_price
+      return price unless reminder_pct.to_i.positive?
+      [ price, (record.base_price(variant: variant) * (100 - reminder_pct) / 100.0).round ].min
+    end
+
+    def reminder_discounted? = unit_price < regular_price
     def subtotal = unit_price * qty
   end
 
@@ -53,8 +65,24 @@ class Cart
       else
         variant = nil
       end
-      Line.new(kind: l["kind"], id: l["id"], qty: l["qty"].to_i, record: rec, variant: variant)
+      pct = reminder.discount_percent if reminder&.eligible?(l["kind"], l["id"])
+      Line.new(kind: l["kind"], id: l["id"], qty: l["qty"].to_i, record: rec, variant: variant, reminder_pct: pct)
     end
+  end
+
+  # The reminder offer this shopper arrived with (via the email link), while it
+  # is still valid.
+  def reminder
+    return @reminder if defined?(@reminder)
+    token = @session[:reminder_token]
+    @reminder = token && CartReminder.find_by(token: token)&.then { |r| r if r.offer_active? }
+  end
+
+  # Plain snapshot of the lines, for storing on a CartReminder.
+  def snapshot = raw.map { |l| l.slice("kind", "id", "variant_id", "qty") }
+
+  def replace(lines)
+    raw.replace(lines.map { |l| l.slice("kind", "id", "variant_id", "qty") })
   end
 
   def count = raw.sum { |l| l["qty"].to_i }

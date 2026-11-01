@@ -29,6 +29,17 @@ module EmailHelper
     nil
   end
 
+  # Cover image for a cart line (Cart::Line: live record + variant).
+  def reminder_image_url(line)
+    attachment = line.variant&.primary_image || cover_attachment(line.record)
+    rails_blob_url(attachment) if attachment
+  rescue StandardError
+    nil
+  end
+
+  # Admin-written text: escaped, line breaks kept.
+  def simple_format_inline(text) = safe_join(text.to_s.split("\n"), tag.br)
+
   def line_tone(line)
     line.record.respond_to?(:tone) && line.record.tone.presence || "#f3efe9"
   end

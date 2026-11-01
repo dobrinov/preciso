@@ -12,10 +12,24 @@ import { Controller } from "@hotwired/stimulus"
 // Hidden groups have their inputs disabled so they are never submitted.
 export default class extends Controller {
   static targets = ["name", "email", "phone", "country", "countryOther", "otherField",
-                    "optionGroup", "addressFields", "delivery", "total", "submit", "form", "modal"]
-  static values = { subtotal: Number, online: Boolean, currency: String }
+                    "optionGroup", "addressFields", "delivery", "total", "submit", "form", "modal", "consent"]
+  static values = { subtotal: Number, online: Boolean, currency: String, rememberUrl: String }
 
   connect() { this.validate() }
+
+  // Cart reminder opt-in: tell the server the email + choice as soon as they
+  // change, so a reminder can go out even if the form is never submitted.
+  // Unticking the box withdraws it.
+  remember() {
+    if (!this.hasConsentTarget || !this.rememberUrlValue) return
+    const body = new FormData()
+    body.append("email", this.emailTarget.value)
+    body.append("name", this.nameTarget.value)
+    body.append("consent", this.consentTarget.checked ? "1" : "0")
+    const token = document.querySelector("meta[name=csrf-token]")?.content
+    fetch(this.rememberUrlValue, { method: "POST", body, headers: token ? { "X-CSRF-Token": token } : {}, keepalive: true })
+      .catch(() => {})
+  }
 
   // Show only the chosen country's delivery options; preselect a lone option.
   chooseCountry() {

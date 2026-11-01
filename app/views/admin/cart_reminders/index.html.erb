@@ -1,0 +1,141 @@
+<% content_for :title, "Preciso — Cart reminders" %>
+<% s = @setting %>
+<%= form_with url: admin_cart_reminders_path, method: :patch, scope: :setting, data: { turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">Cart reminders</h1>
+      <p class="pagehead-sub">One email, with an optional offer, to shoppers who left checkout without ordering.</p>
+    </div>
+    <div class="pagehead-actions">
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad rm-grid">
+    <div class="card-pad rm-settings">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> <%= flash[:notice] %></div>
+      <% elsif flash[:alert] %>
+        <div class="flash-saved fade-up" style="color:#a14a3a"><%= flash[:alert] %></div>
+      <% end %>
+
+      <label class="field" style="flex-direction:row;align-items:center;gap:10px">
+        <%= check_box_tag "setting[enabled]", "1", s.enabled %>
+        <div class="field-label" style="margin:0">On — offer reminders at checkout and send them</div>
+      </label>
+      <div class="field-hint">
+        Checkout gets an unticked “Email me a reminder” box. Only shoppers who tick it and type their email are reminded —
+        whether they never press “Place order”, or start a card payment and don't finish it.
+        Anyone who orders in the meantime is skipped, and each address gets at most one reminder a month.
+        <% unless Notifier.configured? %><br><strong>Email sending isn't set up on the server yet — nothing will go out.</strong><% end %>
+      </div>
+
+      <div class="rm-row2">
+        <label class="field"><div class="field-label">Send after</div>
+          <div class="rm-input-unit"><%= number_field_tag "setting[delay_hours]", s.delay_hours, min: 1, max: 720, class: "input" %><span>hours</span></div>
+        </label>
+        <label class="field"><div class="field-label">Discount</div>
+          <div class="rm-input-unit"><%= number_field_tag "setting[discount_percent]", s.discount_percent, min: 0, max: 90, class: "input" %><span>% off · 0 = no offer</span></div>
+        </label>
+        <label class="field"><div class="field-label">Offer valid for</div>
+          <div class="rm-input-unit"><%= number_field_tag "setting[valid_days]", s.valid_days, min: 1, max: 90, class: "input" %><span>days after sending</span></div>
+        </label>
+        <label class="field"><div class="field-label">Minimum cart</div>
+          <div class="rm-input-unit"><%= number_field_tag "setting[min_cart_total]", s.min_cart_total, min: 0, class: "input" %><span><%= ApplicationHelper::CURRENCY %> · 0 = any</span></div>
+        </label>
+      </div>
+      <div class="field-hint">The discount never stacks with a campaign — each piece gets whichever price is lower. It applies only through the email's link, until the offer expires or an order is placed.</div>
+
+      <div class="field">
+        <div class="field-label">Discount applies to</div>
+        <% CartReminderSetting::APPLIES_TO.each do |k, label| %>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin:4px 0;cursor:pointer">
+            <%= radio_button_tag "setting[applies_to]", k, s.applies_to == k %> <%= label %>
+          </label>
+        <% end %>
+        <details class="rm-picker" <%= "open" if s.applies_to == "selected" %>>
+          <summary class="field-hint" style="cursor:pointer">Pick pieces and sets (<%= Array(s.item_keys).size %> selected)</summary>
+          <% selected = Array(s.item_keys) %>
+          <div class="piece-picker" style="margin-top:10px">
+            <% @products.each do |p| %>
+              <label class="piece-btn" style="cursor:pointer">
+                <%= check_box_tag "setting[item_keys][]", "product/#{p.id}", selected.include?("product/#{p.id}"), id: "item_product_#{p.id}", style: "margin-right:8px" %>
+                <div class="thumb"><%= media_for(p, kind: "product", cover: true) %></div>
+                <div style="min-width:0"><div class="pname"><%= p.name %></div><div class="pprice"><%= money p.price %></div></div>
+              </label>
+            <% end %>
+            <% @sets.each do |set| %>
+              <label class="piece-btn" style="cursor:pointer">
+                <%= check_box_tag "setting[item_keys][]", "set/#{set.id}", selected.include?("set/#{set.id}"), id: "item_set_#{set.id}", style: "margin-right:8px" %>
+                <div class="thumb"><%= media_for(set, kind: "set", cover: true) %></div>
+                <div style="min-width:0"><div class="pname"><%= set.name %></div><div class="pprice">Set · <%= money set.price %></div></div>
+              </label>
+            <% end %>
+          </div>
+          <%= hidden_field_tag "setting[item_keys][]", "", id: nil %>
+        </details>
+      </div>
+
+      <label class="field"><div class="field-label">Email subject</div>
+        <%= text_field_tag "setting[subject]", s.subject, class: "input", placeholder: CartReminderSetting::DEFAULT_SUBJECT %>
+      </label>
+      <label class="field"><div class="field-label">Message</div>
+        <%= text_area_tag "setting[message]", s.message, rows: 3, class: "input", placeholder: CartReminderSetting::DEFAULT_MESSAGE %>
+        <div class="field-hint">Shown under the greeting, above their pieces. The offer, the “Return to your cart” button and an unsubscribe link are added for you.</div>
+      </label>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+
+    <div class="rm-side">
+      <div class="an-mini-stats">
+        <% [["Opted in", @stats[:captured]], ["Sent", @stats[:sent]], ["Opened link", @stats[:opened]], ["Ordered after", @stats[:ordered]]].each do |l, v| %>
+          <div><div class="stat-label"><%= l %></div><div class="v"><%= v %></div></div>
+        <% end %>
+      </div>
+      <div class="field-hint" style="margin-top:-8px">Last 30 days.<% if @stats[:revenue].positive? %> <%= money @stats[:revenue] %> in orders placed through a reminder link.<% end %></div>
+    </div>
+  </div>
+<% end %>
+
+<div class="admin-pad" style="padding-top:0;display:flex;gap:10px;flex-wrap:wrap">
+  <%= button_to "Send a sample to me", admin_preview_cart_reminder_path, method: :post, class: "btn ghost", form: { data: { turbo: false } } %>
+  <%= button_to "Send due reminders now", admin_send_due_cart_reminders_path, method: :post, class: "btn ghost", form: { data: { turbo: false } } %>
+</div>
+
+<div class="filter-bar">
+  <a href="<%= admin_cart_reminders_path %>" class="filter-btn <%= 'active' unless @filter %>">All <span class="ct"><%= @counts.values.sum %></span></a>
+  <% CartReminder::STATUSES.each do |k, label| %>
+    <% next unless @counts[k].to_i.positive? %>
+    <a href="<%= admin_cart_reminders_path(status: k) %>" class="filter-btn <%= 'active' if @filter == k %>"><%= label %> <span class="ct"><%= @counts[k] %></span></a>
+  <% end %>
+</div>
+
+<div class="admin-pad">
+  <section class="panel">
+    <div class="an-table-wrap">
+      <div class="rm-list">
+        <div class="rm-row rm-head"><span>Shopper</span><span>Cart</span><span>Status</span><span>When</span><span class="text-right">Visitor</span></div>
+        <% if @reminders.empty? %><div class="empty-state">No reminders yet. They appear here once a shopper opts in at checkout.</div><% end %>
+        <% @reminders.each do |r| %>
+          <div class="rm-row">
+            <span><%= r.name.presence || "—" %><span class="sub"><%= r.email %></span></span>
+            <span><%= r.lines.map { |l| l.record.name + (l.qty > 1 ? " ×#{l.qty}" : "") }.join(", ").presence || "—" %>
+              <span class="sub"><%= money r.cart_total %><% if r.order %> · unpaid <%= link_to r.order.number, admin_order_path(r.order) %><% end %></span></span>
+            <span><span class="rm-status rm-status--<%= r.status %>"><%= r.status_label %></span>
+              <% if r.detail.present? %><span class="sub"><%= r.detail %></span><% end %>
+              <% if r.opened_at %><span class="sub">Link opened <%= time_ago r.opened_at %></span><% end %></span>
+            <span class="sub" style="font-size:12px">
+              <% if r.sent_at %>Sent <%= time_ago r.sent_at %>
+              <% elsif r.status == "pending" %>Due <%= r.send_at.future? ? "in #{distance_of_time_in_words(Time.current, r.send_at)}" : "now" %>
+              <% else %>Opted in <%= time_ago r.created_at %><% end %>
+            </span>
+            <span class="text-right"><% if r.sid %><a href="<%= admin_analytics_visitor_path(r.sid, range: "all") %>" class="an-link">Journey →</a><% end %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>

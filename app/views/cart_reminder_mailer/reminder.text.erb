@@ -1,0 +1,18 @@
+<% first = @reminder.name.to_s.split(" ").first %>
+<%= first.present? ? "Hi #{first}," : "Hello," %>
+
+<%= @setting.message_text %>
+
+<% @lines.each do |l| %>
+- <%= l.record.name %><%= " (#{l.variant.label})" if l.variant %> × <%= l.qty %>
+<% end %>
+<% if @offer %>
+
+<%= @reminder.discount_percent %>% off <%= @offer_names.size == @lines.size ? "everything in your cart" : @offer_names.to_sentence %> until <%= @reminder.expires_at.strftime("%-d %B") %> — applied automatically from this link:
+<% end %>
+
+Return to your cart: <%= @return_url %>
+
+— Preciso
+
+You're getting this because you asked for a reminder at checkout. Stop reminders: <%= @unsubscribe_url %>

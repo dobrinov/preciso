@@ -1,0 +1,68 @@
+<% first = @reminder.name.to_s.split(" ").first %>
+<% content_for :preheader, @offer ? "#{@reminder.discount_percent}% off your pieces until #{@reminder.expires_at.strftime('%-d %B')}." : "Your pieces are still waiting for you." %>
+<%= render "order_mailer/hero", eyebrow: (@offer ? "#{@reminder.discount_percent}% off, just for you" : "Still thinking it over?"),
+      headline: (first.present? ? "#{first}, your pieces are waiting" : "Your pieces are waiting"),
+      body: simple_format_inline(@setting.message_text) %>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" style="padding:0 56px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <% @lines.each do |l| %>
+          <% discounted = @offer && @reminder.eligible?(l.kind, l.id) %>
+          <% now = discounted ? [l.regular_price, (l.record.base_price(variant: l.variant) * (100 - @reminder.discount_percent) / 100.0).round].min : l.regular_price %>
+          <tr>
+            <td style="padding:14px 0;border-top:1px solid <%= EmailHelper::LINE %>;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="56" valign="middle" style="width:56px;padding-right:16px;">
+                    <% if (src = reminder_image_url(l)) %>
+                      <img src="<%= src %>" alt="<%= l.record.name %>" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border:0;">
+                    <% else %>
+                      <div style="width:56px;height:56px;background:<%= l.record.try(:tone).presence || EmailHelper::PAPER %>;"></div>
+                    <% end %>
+                  </td>
+                  <td valign="middle" style="font-family:<%= EmailHelper::SANS %>;">
+                    <div style="font-size:15px;font-weight:400;color:<%= EmailHelper::INK %>;"><%= l.record.name %></div>
+                    <div style="font-size:13px;font-weight:300;color:<%= EmailHelper::MUTED %>;padding-top:2px;"><%= [l.variant&.label, "× #{l.qty}"].compact.join(" · ") %></div>
+                  </td>
+                  <td align="right" valign="middle" style="font-family:<%= EmailHelper::SERIF %>;font-size:18px;color:<%= EmailHelper::INK %>;white-space:nowrap;">
+                    <% if now < l.regular_price %>
+                      <span style="font-family:<%= EmailHelper::SANS %>;font-size:13px;color:<%= EmailHelper::MUTED %>;text-decoration:line-through;"><%= money l.regular_price * l.qty %></span>&nbsp;
+                    <% end %>
+                    <%= money now * l.qty %>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<% if @offer %>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td class="pad" style="padding:24px 56px 0;">
+        <div style="background:<%= EmailHelper::PAPER %>;padding:18px 22px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;">
+          <strong style="font-weight:500;color:<%= EmailHelper::INK %>;"><%= @reminder.discount_percent %>% off</strong>
+          <%= @offer_names.size == @lines.size ? "everything in your cart" : @offer_names.to_sentence %>,
+          applied automatically when you use the button below. Valid until <%= @reminder.expires_at.strftime("%-d %B") %>.
+        </div>
+      </td>
+    </tr>
+  </table>
+<% end %>
+
+<%= render "order_mailer/button", label: "Return to your cart", url: @return_url %>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="pad" align="center" style="padding:0 56px 30px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:12px;color:<%= EmailHelper::MUTED %>;">
+      You're getting this because you asked for a reminder at checkout.
+      <a href="<%= @unsubscribe_url %>" style="color:<%= EmailHelper::MUTED %>;">Don't send me reminders</a>.
+    </td>
+  </tr>
+</table>

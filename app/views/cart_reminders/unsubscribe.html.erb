@@ -1,0 +1,12 @@
+<% content_for :title, "Reminder emails · Preciso" %>
+<main class="wrap" style="padding:120px 0;text-align:center;max-width:560px">
+  <% if @done %>
+    <h1 class="display" style="font-size:40px">You won't get reminders</h1>
+    <p style="color:var(--muted);margin-top:12px">We've stopped cart reminder emails to <%= @email %>. Order emails still arrive as usual.</p>
+    <a href="<%= root_path %>" class="btn clay" style="margin-top:26px">Back to the shop</a>
+  <% else %>
+    <h1 class="display" style="font-size:40px">Stop reminder emails?</h1>
+    <p style="color:var(--muted);margin-top:12px">We'll stop sending cart reminders to <%= @email %>.</p>
+    <%= button_to "Stop reminders", cart_reminder_unsubscribe_path(params[:token]), method: :post, class: "btn clay", form: { style: "margin-top:26px", data: { turbo: false } } %>
+  <% end %>
+</main>

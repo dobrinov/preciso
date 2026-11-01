@@ -67,12 +67,20 @@ class CheckoutController < ApplicationController
     record_event("checkout_submit", label: order.number, total: order.total,
                  name: [ order.delivery_option_name, (online ? "card" : "pay later") ].compact.join(" · "))
 
+    # An order placed through a reminder email's link counts for that reminder.
+    if (token = session[:reminder_token])
+      CartReminder.where(token: token).update_all(used_order_id: order.id, updated_at: Time.current)
+    end
+
     # With myPOS on, the cart is kept until the customer comes back from a
     # successful payment (they may cancel and want to try again).
     if order.awaiting_payment?
+      remember_unpaid_order(order, cart)
       redirect_to checkout_pay_path(order.number) and return
     end
 
+    CartReminderSweep.converted!(sid: analytics_sid, order: order)
+    session.delete(:reminder_token)
     record_order_event(order)
     Notifier.order_placed(order)
     cart.clear
@@ -82,5 +90,24 @@ class CheckoutController < ApplicationController
 
   def confirmation
     @order = Order.find_by!(number: params[:number])
+  end
+
+  private
+
+  # A card order that may never be paid: keep (or start) this shopper's cart
+  # reminder, tied to the order, if they opted in. A reminder offer they used
+  # stays usable until the order is actually paid (they may retry).
+  def remember_unpaid_order(order, cart)
+    pending = CartReminder.where(sid: analytics_sid, status: "pending")
+    unless params[:reminder_consent] == "1" && CartReminderSetting.enabled? && !admin_signed_in? &&
+           !CartReminder.unsubscribed?(order.customer_email)
+      pending.where(order_id: nil).destroy_all
+      return
+    end
+    reminder = pending.first || CartReminder.new(sid: analytics_sid, send_at: CartReminderSetting.instance.delay_hours.hours.from_now)
+    reminder.update!(email: order.customer_email.downcase, name: order.customer_name, items: cart.snapshot,
+                     cart_total: order.total, order: order)
+  rescue => e
+    Rails.logger.warn("cart reminder not saved: #{e.message}")
   end
 end

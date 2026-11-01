@@ -10,7 +10,8 @@
   <main class="wrap fade-up page-top" data-controller="checkout"
         data-checkout-subtotal-value="<%= @total %>"
         data-checkout-online-value="<%= Mypos.enabled? %>"
-        data-checkout-currency-value="<%= ApplicationHelper::CURRENCY %>">
+        data-checkout-currency-value="<%= ApplicationHelper::CURRENCY %>"
+        data-checkout-remember-url-value="<%= cart_reminder_capture_path %>">
     <%= render "shared/breadcrumb", trail: [["Checkout", nil]] %>
     <h1 class="display checkout-title">Checkout</h1>
     <%= form_with url: checkout_path, method: :post, data: { turbo: false, checkout_target: "form", action: "submit->checkout#guard" } do %>
@@ -19,19 +20,22 @@
           <% if flash[:alert] %>
             <div class="checkout-note checkout-alert"><%= flash[:alert] %></div>
           <% end %>
+          <% if flash[:notice] %>
+            <div class="checkout-note reminder-welcome"><%= flash[:notice] %></div>
+          <% end %>
           <div class="checkout-note" data-show="online" hidden>Leave your details, then you'll pay securely by card on the myPOS payment page. We'll email you as soon as your order is on its way.</div>
           <div class="checkout-note" data-show="offline">No payment is taken here. Leave your details and Bianna will be in touch to confirm your pieces, the total and how to pay.</div>
           <div class="form-stack">
             <label class="field">
               <div class="field-label">Full name</div>
               <input class="input" type="text" name="name" placeholder="Your name" autofocus
-                     data-checkout-target="name" data-action="input->checkout#validate">
+                     data-checkout-target="name" data-action="input->checkout#validate change->checkout#remember">
             </label>
             <div class="contact-grid">
               <label class="field">
                 <div class="field-label">Email</div>
                 <input class="input" type="email" name="email" placeholder="you@email.com"
-                       data-checkout-target="email" data-action="input->checkout#validate">
+                       data-checkout-target="email" data-action="input->checkout#validate change->checkout#remember">
               </label>
               <label class="field">
                 <div class="field-label">Phone</div>
@@ -39,6 +43,13 @@
                        data-checkout-target="phone" data-action="input->checkout#validate">
               </label>
             </div>
+            <% if CartReminderSetting.enabled? %>
+              <label class="field reminder-optin">
+                <input type="checkbox" name="reminder_consent" value="1"
+                       data-checkout-target="consent" data-action="change->checkout#remember">
+                <span>Email me a reminder<%= " with a small thank-you offer" if CartReminderSetting.instance.discount_percent.positive? %> if I don't finish my order. Just one email — you can stop it anytime.</span>
+              </label>
+            <% end %>
             <% if @delivery.any? %>
               <label class="field">
                 <div class="field-label">Delivery country</div>
@@ -121,6 +132,9 @@
 
         <div class="summary">
           <div class="summary-head">Your order</div>
+          <% if (offer = current_cart.reminder) %>
+            <div class="reminder-offer"><%= offer.discount_percent %>% reminder offer applied<%= " to marked pieces" if @lines.any? { |l| !l.reminder_discounted? } %> · until <%= offer.expires_at.strftime("%-d %B") %></div>
+          <% end %>
           <div class="summary-lines scroll-thin">
             <% @lines.each do |l| %>
               <div class="summary-line">
@@ -130,7 +144,7 @@
                 </div>
                 <div style="flex:1;min-width:0">
                   <div class="summary-name"><%= l.record.name %><% if l.variant %> <span style="color:var(--muted)">· <%= l.variant.label %></span><% end %></div>
-                  <div style="font-size:12px;color:var(--muted)"><%= money l.unit_price %><%= " × #{l.qty}" if l.qty > 1 %></div>
+                  <div style="font-size:12px;color:var(--muted)"><% if l.reminder_discounted? %><s><%= money l.regular_price %></s> <% end %><%= money l.unit_price %><%= " × #{l.qty}" if l.qty > 1 %></div>
                 </div>
                 <div class="serif" style="font-size:16px"><%= money l.subtotal %></div>
               </div>

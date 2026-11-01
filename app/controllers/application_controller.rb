@@ -45,6 +45,9 @@ class ApplicationController < ActionController::Base
       source: Event.source_for(referrer:, utm_source: params[:utm_source], user_agent: request.user_agent, own_host: request.host),
       campaign: params[:utm_campaign].to_s.first(100).presence)
     @pv_token = Rails.application.message_verifier(:pv).generate(event.id, expires_in: 2.days) if event && !event.bot
+    CartReminderSweep.kick
+  rescue => e
+    Rails.logger.warn("cart reminder kick failed: #{e.message}")
   end
 
   # Shared writer for every analytics event. Failures are logged, never raised:

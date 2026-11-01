@@ -2,7 +2,7 @@
 # or an order. Rows sharing a `sid` (the browser session) form a visitor's
 # journey; Analytics::Report turns them into visitors, visits and funnels.
 class Event < ApplicationRecord
-  TYPES = %w[pageview add_cart remove_cart checkout_submit payment_start payment_cancel order].freeze
+  TYPES = %w[pageview add_cart remove_cart checkout_submit payment_start payment_cancel reminder_open order].freeze
 
   # Crawlers, link previews, SEO tools, AI fetchers and scripts. Matched against
   # the user agent; anything listed here never counts as a visitor.

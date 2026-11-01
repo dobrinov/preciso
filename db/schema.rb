@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -74,6 +74,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_campaigns_on_active"
     t.index ["slug"], name: "index_campaigns_on_slug", unique: true
+  end
+
+  create_table "cart_reminder_settings", force: :cascade do |t|
+    t.string "applies_to", default: "all", null: false
+    t.datetime "created_at", null: false
+    t.integer "delay_hours", default: 24, null: false
+    t.integer "discount_percent", default: 10, null: false
+    t.boolean "enabled", default: false, null: false
+    t.text "item_keys"
+    t.text "message"
+    t.integer "min_cart_total", default: 0, null: false
+    t.string "subject"
+    t.datetime "updated_at", null: false
+    t.integer "valid_days", default: 7, null: false
+  end
+
+  create_table "cart_reminders", force: :cascade do |t|
+    t.integer "cart_total", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "detail"
+    t.integer "discount_percent"
+    t.text "eligible_keys"
+    t.string "email", null: false
+    t.datetime "expires_at"
+    t.text "items"
+    t.string "name"
+    t.datetime "opened_at"
+    t.integer "order_id"
+    t.datetime "send_at", null: false
+    t.datetime "sent_at"
+    t.string "sid"
+    t.string "status", default: "pending", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.integer "used_order_id"
+    t.index ["email"], name: "index_cart_reminders_on_email"
+    t.index ["order_id"], name: "index_cart_reminders_on_order_id"
+    t.index ["sid"], name: "index_cart_reminders_on_sid"
+    t.index ["status", "send_at"], name: "index_cart_reminders_on_status_and_send_at"
+    t.index ["token"], name: "index_cart_reminders_on_token", unique: true
   end
 
   create_table "categories", force: :cascade do |t|
@@ -305,6 +345,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
   end
 
   add_foreign_key "campaign_items", "campaigns"
+  add_foreign_key "cart_reminders", "orders", on_delete: :nullify
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
   add_foreign_key "email_logs", "orders"
