@@ -612,3 +612,17 @@ form.delivery-opt{display:grid;}
 
 /* The hidden attribute always wins over component display rules. */
 [hidden]{display:none !important;}
+
+/* ============================================================ Admin: order emails log */
+.email-log{display:flex;flex-direction:column;}
+.email-log-row{padding:9px 0;border-bottom:1px solid var(--line);}
+.email-log-row:last-child{border-bottom:0;}
+.email-log-title{font-size:13.5px;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.email-log-meta{font-size:12px;color:#6f6961;margin-top:2px;overflow-wrap:anywhere;}
+.email-log-status{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;}
+.email-log-sent{background:#e8efe9;color:#3f5646;}
+.email-log-queued{background:#f3efe9;color:#6e5a43;}
+.email-log-failed{background:#f6e6e2;color:#8a3a2a;}
+.email-log-skipped{background:#efece8;color:#5f5952;}
+.email-log-resend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.email-log-resend form{margin:0;}

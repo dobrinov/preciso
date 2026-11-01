@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -118,6 +118,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["country_code"], name: "index_delivery_options_on_country_code"
+  end
+
+  create_table "email_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "detail"
+    t.string "kind", null: false
+    t.integer "order_id"
+    t.string "recipient"
+    t.string "status", null: false
+    t.string "subject"
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_email_logs_on_order_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -283,6 +295,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_210000) do
 
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "products"
+  add_foreign_key "email_logs", "orders"
   add_foreign_key "order_lines", "orders"
   add_foreign_key "products", "categories"
   add_foreign_key "set_items", "product_sets"

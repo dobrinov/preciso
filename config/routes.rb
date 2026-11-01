@@ -56,7 +56,9 @@ Rails.application.routes.draw do
     get "analytics", to: "analytics#index"
     delete "analytics", to: "analytics#reset", as: :reset_analytics
 
-    resources :orders, only: [ :index, :show, :update, :destroy ], param: :number
+    resources :orders, only: [ :index, :show, :update, :destroy ], param: :number do
+      post :resend_email, on: :member
+    end
     resources :categories
     resources :products do
       resources :variants, only: [ :new, :create, :edit, :update, :destroy ]

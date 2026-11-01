@@ -27,6 +27,15 @@ module Admin
       redirect_to admin_order_path(@order)
     end
 
+    # Send one of the order's emails again (e.g. the customer can't find it).
+    def resend_email
+      order = Order.find_by!(number: params[:number])
+      kind = params[:kind].presence_in(EmailLog::KINDS.keys)
+      log = kind && Notifier.deliver(order, kind)
+      notice = log&.status == "queued" ? "#{log.label} email is being sent again" : "Not sent: #{log&.detail || "unknown email"}"
+      redirect_to admin_order_path(order), notice: notice
+    end
+
     def destroy
       Order.find_by!(number: params[:number]).destroy
       redirect_to admin_orders_path

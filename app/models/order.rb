@@ -1,5 +1,6 @@
 class Order < ApplicationRecord
   has_many :order_lines, dependent: :destroy
+  has_many :email_logs, dependent: :destroy
 
   STATUSES = {
     "new"       => { label: "New",       color: "#9c8264", bg: "#f3ede4" },

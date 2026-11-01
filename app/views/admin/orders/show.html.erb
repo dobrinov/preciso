@@ -75,6 +75,33 @@
       <% end %>
     </div>
 
+    <div class="box">
+      <div class="box-label">Emails</div>
+      <% if flash[:notice] %><div class="subtle-note" style="margin:0 0 10px"><%= flash[:notice] %></div><% end %>
+      <% logs = @order.email_logs.to_a %>
+      <% if logs.empty? %>
+        <div class="subtle-note" style="margin-top:0">No emails recorded for this order (orders before 1 Nov 2026 weren't tracked).</div>
+      <% else %>
+        <div class="email-log">
+          <% logs.each do |l| %>
+            <div class="email-log-row">
+              <div style="min-width:0">
+                <div class="email-log-title"><%= l.label %> <span class="email-log-status email-log-<%= l.status %>"><%= l.status %></span></div>
+                <div class="email-log-meta"><%= l.recipient.presence || "—" %> · <%= l.created_at.strftime("%-d %b, %H:%M") %><% if l.detail.present? %> · <%= l.detail %><% end %></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="email-log-resend">
+        <% resendable = [ (@order.paid? ? "paid" : "received"), ("status_changed" if OrderMailer::STATUS_EMAILS.include?(@order.status)), "studio_new_order" ].compact %>
+        <% resendable.each do |kind| %>
+          <%= button_to "Resend: #{EmailLog::KINDS[kind]}", resend_email_admin_order_path(@order, kind: kind), method: :post, class: "btn ghost sm",
+                form: { data: { turbo_confirm: "Send the “#{EmailLog::KINDS[kind]}” email again?" } } %>
+        <% end %>
+      </div>
+    </div>
+
     <% if @order.payment_status != "none" %>
       <div class="box">
         <div class="box-label">Payment · myPOS</div>
