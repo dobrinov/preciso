@@ -19,6 +19,9 @@
         <div class="eyebrow">Studio</div>
         <div class="foot-col-list">
           <a href="<%= about_path %>" class="foot-link">About Bianna</a>
+          <% LegalInfo::PAGES.each do |key, page| %>
+            <a href="<%= send("legal_#{key}_path") %>" class="foot-link"><%= page[:title] %></a>
+          <% end %>
         </div>
       </div>
       <div>
@@ -35,6 +38,11 @@
         </div>
       </div>
     </div>
+    <% if legal_info.company? %>
+      <div class="foot-legal">
+        <%= legal_info.company_name %><% if legal_info.company_id.present? %> · UIC <%= legal_info.company_id %><% end %><% if legal_info.vat_number.present? %> · VAT <%= legal_info.vat_number %><% end %><% if legal_info.address.present? %> · <%= legal_info.address %><% end %>
+      </div>
+    <% end %>
     <div class="foot-base">
       <span>© <%= Date.current.year %> Preciso · Studio by appointment</span>
       <span class="mono" style="font-size:10px">Made one piece at a time</span>

@@ -38,6 +38,11 @@ module ApplicationHelper
     @_vacation ||= Vacation.instance
   end
 
+  # The seller's legal details + policy texts (memoized per request).
+  def legal_info
+    @_legal_info ||= LegalInfo.instance
+  end
+
   # Make an asset/blob path absolute against the canonical host (og:image, JSON-LD).
   def absolute_url(path)
     path.to_s.start_with?("http") ? path : "#{CANONICAL_HOST}#{path}"

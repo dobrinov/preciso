@@ -4,6 +4,9 @@
   <url><loc><%= canonical_url(about_path) %></loc></url>
   <url><loc><%= canonical_url(sets_path) %></loc></url>
   <url><loc><%= canonical_url(collections_path) %></loc></url>
+<% LegalInfo::PAGES.each_key do |key| %>
+  <url><loc><%= canonical_url(send("legal_#{key}_path")) %></loc></url>
+<% end %>
 <% @categories.each do |c| %>
   <url><loc><%= canonical_url(shop_category_path(c.slug)) %></loc><lastmod><%= c.updated_at.iso8601 %></lastmod></url>
 <% end %>

@@ -13,6 +13,9 @@ class CheckoutController < ApplicationController
     if cart.empty?
       redirect_to checkout_path, alert: "Your cart is empty." and return
     end
+    unless params[:terms] == "1"
+      redirect_to checkout_path, alert: "Please agree to the Terms & Conditions and policies to place your order." and return
+    end
 
     # Delivery: a country's delivery option adds its price (and can pay
     # online); "other" (or no options configured at all) is the pay-later flow

@@ -1,0 +1,62 @@
+<% content_for :title, "Preciso — Legal & policies" %>
+<%= form_with url: admin_legal_path, method: :patch, data: { turbo: false } do %>
+  <div class="pagehead">
+    <div>
+      <h1 class="display pagehead-title">Legal &amp; policies</h1>
+      <p class="pagehead-sub">The seller's details and the policy pages linked from the footer and checkout.</p>
+    </div>
+    <div class="pagehead-actions">
+      <button type="submit" class="btn clay sm"><%= icon :check, size: 16 %> Save</button>
+    </div>
+  </div>
+
+  <div class="admin-pad" style="max-width:820px">
+    <div class="card-pad">
+      <% if flash[:notice] %>
+        <div class="flash-saved fade-up"><%= icon :check, size: 16 %> Saved</div>
+      <% end %>
+      <% unless @legal.company? && @legal.address.present? %>
+        <div class="checkout-note checkout-alert" style="margin-bottom:0">Fill in the company's full name and address — card payment providers require them to be shown on the website.</div>
+      <% end %>
+
+      <div class="field-label" style="margin-bottom:0">Company details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <label class="field"><div class="field-label">Full company name</div>
+          <%= text_field_tag :company_name, @legal.company_name, class: "input", placeholder: "e.g. Preciso EOOD" %>
+        </label>
+        <label class="field"><div class="field-label">UIC (ЕИК)</div>
+          <%= text_field_tag :company_id, @legal.company_id, class: "input" %>
+        </label>
+        <label class="field"><div class="field-label">VAT number</div>
+          <%= text_field_tag :vat_number, @legal.vat_number, class: "input" %>
+          <div class="field-hint">Leave empty if not VAT-registered.</div>
+        </label>
+        <label class="field"><div class="field-label">Registered address</div>
+          <%= text_field_tag :address, @legal.address, class: "input", placeholder: "Street, number, city, postcode, Bulgaria" %>
+        </label>
+        <label class="field"><div class="field-label">Contact email</div>
+          <%= email_field_tag :email, @legal.email, class: "input" %>
+        </label>
+        <label class="field"><div class="field-label">Contact phone</div>
+          <%= text_field_tag :phone, @legal.phone, class: "input" %>
+        </label>
+      </div>
+
+      <div class="field-hint">In the texts below, a blank line starts a new paragraph, <code>## </code> starts a heading and lines starting with <code>- </code> make a list. <code>{{company}}</code>, <code>{{company_id}}</code>, <code>{{vat}}</code>, <code>{{address}}</code>, <code>{{email}}</code>, <code>{{phone}}</code> and <code>{{seller}}</code> are replaced with the details above.</div>
+
+      <% LegalInfo::PAGES.each do |key, page| %>
+        <label class="field">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div class="field-label"><%= page[:title] %></div>
+            <a href="<%= send("legal_#{key}_path") %>" target="_blank" class="link-underline" style="font-size:11px">View page</a>
+          </div>
+          <%= text_area_tag page[:column], @legal[page[:column]], rows: 14, class: "input", style: "font-size:13px;line-height:1.55" %>
+        </label>
+      <% end %>
+
+      <div>
+        <button type="submit" class="btn clay"><%= icon :check, size: 16 %> Save changes</button>
+      </div>
+    </div>
+  </div>
+<% end %>
