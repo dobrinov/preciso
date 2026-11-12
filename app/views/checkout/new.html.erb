@@ -174,6 +174,10 @@
             <span class="cart-total-label">Total</span>
             <span class="serif" style="font-size:30px" data-checkout-target="total"><%= money @total %></span>
           </div>
+          <label class="terms-agree">
+            <input type="checkbox" name="terms" value="1" data-checkout-target="terms" data-action="change->checkout#validate">
+            <span>I have read and agree to the <a href="<%= legal_terms_path %>" target="_blank">Terms &amp; Conditions</a>, <a href="<%= legal_delivery_path %>" target="_blank">Delivery Terms</a>, <a href="<%= legal_cancellation_path %>" target="_blank">Cancellation</a>, <a href="<%= legal_returns_path %>" target="_blank">Return</a> and <a href="<%= legal_refunds_path %>" target="_blank">Refund</a> policies.</span>
+          </label>
           <button type="submit" class="btn clay block" style="margin-top:20px" data-checkout-target="submit" disabled>
             <span data-show="online" hidden>Continue to payment</span><span data-show="offline">Place order</span> <%= icon :arrow, size: 16 %>
           </button>

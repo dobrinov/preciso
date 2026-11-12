@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Checkout form:
-// - enables the submit button only when name, email, phone and — when delivery
+// - enables the submit button only when the terms box is ticked and name,
+//   email, phone and — when delivery
 //   options exist — a country, a delivery option and its destination fields
 //   (street address, or city + courier office) are filled in;
 // - shows the chosen option's price and updates the total;
@@ -12,7 +13,7 @@ import { Controller } from "@hotwired/stimulus"
 // Hidden groups have their inputs disabled so they are never submitted.
 export default class extends Controller {
   static targets = ["name", "email", "phone", "country", "countryOther", "otherField",
-                    "optionGroup", "addressFields", "delivery", "total", "submit", "form", "modal", "consent"]
+                    "optionGroup", "addressFields", "delivery", "total", "submit", "form", "modal", "consent", "terms"]
   static values = { subtotal: Number, online: Boolean, currency: String, rememberUrl: String }
 
   connect() { this.validate() }
@@ -74,6 +75,8 @@ export default class extends Controller {
           : choice ? "Choose an option" : "Choose country"
       this.totalTarget.textContent = this.money(this.subtotalValue + (cost || 0))
     }
+
+    if (this.hasTermsTarget && !this.termsTarget.checked) valid = false
 
     this.mode(this.onlineValue && cost !== null ? "online" : "offline")
     this.submitTarget.disabled = !valid

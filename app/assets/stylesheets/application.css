@@ -124,6 +124,8 @@ main{flex:1;}
 .foot-col-list{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
 .foot-link{color:var(--ink-soft);font-size:14px;transition:color .2s;}
 .foot-link:hover{color:var(--clay-deep);}
+.foot-legal{margin-top:48px;color:var(--muted);font-size:12.5px;line-height:1.6;}
+.foot-legal + .foot-base{margin-top:16px;}
 .foot-base{display:flex;justify-content:space-between;margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--faint);font-size:12px;}
 @media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;}.foot-grid>div:first-child{grid-column:1/-1;}}
 
@@ -824,3 +826,23 @@ form.delivery-opt{display:grid;}
 .nl-row{display:grid;grid-template-columns:minmax(0,2fr) 100px 150px 130px;gap:14px;align-items:center;padding:13px 24px;border-top:1px solid var(--line);font-size:13px;}
 .nl-row .sub{display:block;font-size:11.5px;color:var(--muted);}
 .nl-list{min-width:560px;}
+
+/* ============================================================ Legal pages */
+.legal{max-width:720px;margin:0 auto;}
+.legal-title{font-size:48px;margin-top:18px;}
+.legal-updated{color:var(--faint);font-size:12.5px;margin-top:10px;}
+.legal-seller{margin-top:28px;padding:18px 22px;background:var(--paper);border:1px solid var(--line);font-size:14px;color:var(--ink-soft);line-height:1.7;}
+.legal-seller-name{font-weight:500;color:var(--ink);}
+.legal-seller a{text-decoration:underline;text-underline-offset:3px;}
+.legal-body{margin-top:36px;}
+.legal-body h2{font-family:var(--serif);font-size:26px;font-weight:500;margin:36px 0 12px;}
+.legal-body h2:first-child{margin-top:0;}
+.legal-body p,.legal-body li{font-size:16px;color:var(--ink-soft);line-height:1.75;}
+.legal-body p + p,.legal-body ul + p,.legal-body p + ul{margin-top:14px;}
+.legal-body ul{padding-left:22px;list-style:disc;display:flex;flex-direction:column;gap:6px;}
+.legal-nav{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:56px;padding-top:22px;border-top:1px solid var(--line);}
+.legal-nav-current{font-size:14px;color:var(--ink);font-weight:500;}
+@media(max-width:600px){.legal-title{font-size:36px;}}
+.terms-agree{display:flex;align-items:flex-start;gap:10px;margin-top:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.55;cursor:pointer;}
+.terms-agree input{margin-top:3px;width:16px;height:16px;flex:none;accent-color:var(--ink);}
+.terms-agree a{text-decoration:underline;text-underline-offset:2px;}

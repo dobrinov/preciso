@@ -21,6 +21,11 @@ Rails.application.routes.draw do
   get "product/:id", to: "products#show", as: :product
   get "about", to: "pages#about", as: :about
 
+  # ---- legal (Terms, Refund / Return / Cancellation policies, Delivery Terms) ----
+  LegalInfo::PAGES.each do |key, page|
+    get page[:path], to: "pages#legal", defaults: { page: key }, as: :"legal_#{key}"
+  end
+
   # ---- cart ----
   post   "cart/items",   to: "cart#add",    as: :cart_add
   patch  "cart/items",   to: "cart#update", as: :cart_update
@@ -95,6 +100,7 @@ Rails.application.routes.draw do
     resources :campaigns
     resources :variant_attributes, path: "attributes"
     resource :about, only: [ :edit, :update ], controller: "about"
+    resource :legal, only: [ :edit, :update ], controller: "legal"
     resource :home_page, only: [ :edit, :update ], controller: "home_page"
     resource :vacation, only: [ :edit, :update ], controller: "vacation"
     resource :lead_times, only: [ :edit, :update ], controller: "lead_times"

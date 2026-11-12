@@ -1,0 +1,41 @@
+<main class="fade-up page-top">
+  <section class="wrap">
+    <%= render "shared/breadcrumb", trail: [[@page[:title], nil]] %>
+    <div class="legal">
+      <h1 class="display legal-title"><%= @page[:title] %></h1>
+      <div class="legal-updated">Last updated <%= @legal.updated_at.strftime("%-d %B %Y") %></div>
+
+      <% if @legal.company? || @legal.email.present? || @legal.phone.present? %>
+      <div class="legal-seller">
+        <% if @legal.company? %>
+          <div class="legal-seller-name"><%= @legal.company_name %></div>
+          <% if @legal.company_id.present? %><div>UIC (ЕИК): <%= @legal.company_id %></div><% end %>
+          <% if @legal.vat_number.present? %><div>VAT number: <%= @legal.vat_number %></div><% end %>
+          <% if @legal.address.present? %><div>Registered address: <%= @legal.address %></div><% end %>
+        <% end %>
+        <% if @legal.email.present? %><div>Email: <a href="mailto:<%= @legal.email %>"><%= @legal.email %></a></div><% end %>
+        <% if @legal.phone.present? %><div>Phone: <a href="tel:<%= @legal.phone.delete(" ") %>"><%= @legal.phone %></a></div><% end %>
+      </div>
+      <% end %>
+
+      <div class="legal-body">
+        <% @legal.blocks_for(@key).each do |type, content| %>
+          <% if type == :h %><h2><%= content %></h2>
+          <% elsif type == :ul %><ul><% content.each do |item| %><li><%= item %></li><% end %></ul>
+          <% else %><p><%= content %></p>
+          <% end %>
+        <% end %>
+      </div>
+
+      <nav class="legal-nav" aria-label="Policies">
+        <% LegalInfo::PAGES.each do |key, page| %>
+          <% if key == @key %>
+            <span class="legal-nav-current"><%= page[:title] %></span>
+          <% else %>
+            <a href="<%= send("legal_#{key}_path") %>" class="foot-link"><%= page[:title] %></a>
+          <% end %>
+        <% end %>
+      </nav>
+    </div>
+  </section>
+</main>
