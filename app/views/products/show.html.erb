@@ -2,6 +2,7 @@
   <%= render "shared/breadcrumb", trail: [[@category&.name || "Shop", @category ? shop_category_path(@category.slug) : nil], [@product.name, nil]] %>
   <%
     has_variants = @product.has_variants?
+    ready = @product.ready_to_ship?(variant: (@variants.first if has_variants))
     # Initial gallery: the first variation that has photos, else the product's
     # own photos. The variant switcher (JS) swaps these to the selected
     # variation's photos on the client, falling back to the product's.
@@ -32,7 +33,8 @@
           variantId:  v.id,
           pricePlain: money(cur),
           priceLabel: (cur < base ? "<span class='price-now'>#{money cur}</span> <span class='price-was'>#{money base}</span>" : money(cur)),
-          images:     urls
+          images:     urls,
+          ready:      v.in_stock?
         }
       end
     end
@@ -65,6 +67,9 @@
       <div class="detail-price" data-variants-target="price">
         <% if has_variants %><%= price_tag(@product, variant: @variants.first) %><% else %><%= price_tag(@product) %><% end %>
       </div>
+      <%# Both states are rendered; the variant switcher shows the one that fits. %>
+      <%= availability_tag(true, hidden: !ready, data: { variants_target: "ready" }) %>
+      <%= availability_tag(false, hidden: ready, data: { variants_target: "made" }) %>
       <% if has_variants %>
         <div class="variant-unavailable" data-variants-target="unavailable" hidden>This combination isn't available.</div>
       <% end %>
@@ -94,12 +99,11 @@
             <input type="hidden" name="variant_id" value="<%= @variants.first&.id %>" data-variants-target="variantId">
           <% end %>
           <button type="submit" class="btn clay" style="width:100%;padding:17px 30px" data-variants-target="addButton">
-            <%= icon :cart %> <span data-variants-target="addLabel">Add — <%= money(has_variants ? @variants.first&.current_price_via_product : @product.current_price) %></span>
+            <%= icon :cart %> <span data-variants-target="addLabel"><%= order_verb(ready) %> — <%= money(has_variants ? @variants.first&.current_price_via_product : @product.current_price) %></span>
           </button>
         <% end %>
       </div>
       <div class="detail-notes">
-        <span>· Made to order in small batches</span>
         <span>· <%= delivery_note %></span>
       </div>
     </div>

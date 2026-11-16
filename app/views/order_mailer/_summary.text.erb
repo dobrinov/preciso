@@ -1,5 +1,5 @@
 <% order.order_lines.each do |l| %>
-- <%= l.display_name %> x <%= l.qty %>: <%= money l.subtotal %>
+- <%= l.display_name %> x <%= l.qty %>: <%= money l.subtotal %> (<%= l.from_stock ? "ready to ship" : "made to order" %>)
 <% end %>
 <% if order.country_name.present? %>
 - Delivery (<%= order.delivery_label %>): <%= order.delivery_priced? ? money(order.delivery_cost) : "to be confirmed" %>

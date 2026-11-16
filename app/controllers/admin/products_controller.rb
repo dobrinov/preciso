@@ -45,7 +45,7 @@ module Admin
     end
 
     def product_params
-      params.require(:product).permit(:name, :category_id, :price, :short, :long_desc)
+      params.require(:product).permit(:name, :category_id, :price, :stock, :short, :long_desc)
     end
 
     def apply_product_images

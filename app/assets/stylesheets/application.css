@@ -781,3 +781,20 @@ form.delivery-opt{display:grid;}
 .rm-status--converted{background:var(--ink);border-color:var(--ink);color:#fff;}
 .rm-status--pending{background:var(--paper-2);border-color:var(--paper-2);color:var(--ink-soft);}
 .rm-status--failed{border-color:#b4543f;color:#9a4434;}
+
+/* ============================================================ Stock: ready to ship vs made to order */
+.availability{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-top:16px;font-size:14px;color:var(--muted);}
+.availability[hidden]{display:none;}
+.availability-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;align-self:center;background:var(--clay);}
+.availability.is-ready .availability-dot{background:#5a7060;}
+.availability-label{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--clay-deep);}
+.availability.is-ready .availability-label{color:#5a7060;}
+.card-ready-tag{position:absolute;top:14px;right:14px;background:#fff;color:#5a7060;font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;padding:6px 11px;}
+.line-ready{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;margin-top:3px;color:var(--clay-deep);}
+.line-ready.is-ready{color:#5a7060;}
+.made-note{color:var(--ink-soft);line-height:1.5;}
+.made-note strong{font-weight:500;}
+.summary-made-note{font-size:12.5px;background:var(--paper);border:1px solid var(--line);padding:10px 12px;margin-top:18px;}
+.confirm-timing{font-size:15px;margin-top:10px;color:var(--muted);}
+.admin-card-stock{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.admin-card-stock.is-ready{color:#5a7060;}

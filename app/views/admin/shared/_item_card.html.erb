@@ -9,5 +9,6 @@
       <div class="admin-card-price"><%= money record.price %></div>
     </div>
     <div class="admin-card-sub"><%= local_assigns[:sub] || record.short %></div>
+    <div class="admin-card-stock <%= "is-ready" if record.any_ready_to_ship? %>"><%= stock_label(record) %></div>
   </div>
 </a>

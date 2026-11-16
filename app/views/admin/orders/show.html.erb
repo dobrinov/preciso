@@ -20,7 +20,7 @@
         <div class="order-thumb"><%= media_for(l.record, kind: l.kind, cover: true) if l.record %></div>
         <div style="flex:1">
           <div class="order-line-name"><%= l.display_name %></div>
-          <div class="order-line-meta"><%= l.kind == "set" ? "Set" : "Piece" %> · <%= money l.price %> each</div>
+          <div class="order-line-meta"><%= l.kind == "set" ? "Set" : "Piece" %> · <%= money l.price %> each · <%= line_ready_tag(l.from_stock) %></div>
         </div>
         <div class="order-line-qty">×<%= l.qty %></div>
         <div class="order-line-total"><%= money l.subtotal %></div>
@@ -58,6 +58,42 @@
       </div>
     </div>
 
+    <% if @order.payment_link_possible? %>
+      <div class="box">
+        <div class="box-label">Confirm & send payment link</div>
+        <% if flash[:link_notice] %><div class="subtle-note" style="margin:0 0 10px"><%= flash[:link_notice] %></div><% end %>
+        <% if @order.payment_link_sent? %>
+          <div class="subtle-note" style="margin:0 0 12px">
+            Link sent <%= time_ago @order.payment_link_sent_at %> — waiting for <%= @order.customer_name.to_s.split(" ").first %> to pay <%= money @order.total %>.
+            Link: <a href="<%= checkout_pay_url(@order.number) %>" class="mono" style="word-break:break-all"><%= checkout_pay_url(@order.number) %></a>
+          </div>
+        <% elsif @order.delivery_to_quote? %>
+          <div class="subtle-note" style="margin:0 0 12px">No set delivery rate for <strong><%= @order.country_name %></strong>. Check that you can deliver there, then enter the cost — the customer gets an email with the total and a link to pay by card. If you can't deliver, set the order to Cancelled.</div>
+        <% else %>
+          <div class="subtle-note" style="margin:0 0 12px">No payment was taken for this order. Confirm the delivery cost to email the customer a link to pay by card.</div>
+        <% end %>
+        <% if Mypos.enabled? %>
+          <%= form_with url: send_payment_link_admin_order_path(@order), method: :post,
+                data: { turbo_confirm: "Email #{@order.customer_email} a link to pay?" } do %>
+            <div class="form-stack" style="gap:12px">
+              <label class="field">
+                <div class="field-label">Delivery cost (€)</div>
+                <%= number_field_tag :delivery_cost, @order.delivery_cost, min: 0, step: 1, required: true, class: "input", placeholder: "e.g. 18" %>
+                <div class="field-hint">Pieces <%= money @order.items_total %> + delivery = the amount they pay.</div>
+              </label>
+              <label class="field">
+                <div class="field-label">Message to the customer</div>
+                <%= text_area_tag :quote_note, @order.quote_note, rows: 2, class: "input", placeholder: "Optional — e.g. Sent with DHL, arrives in 5–7 days." %>
+              </label>
+              <button type="submit" class="btn clay sm"><%= icon :mail, size: 16 %> <%= @order.payment_link_sent? ? "Update & resend link" : "Confirm & email payment link" %></button>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="subtle-note" style="margin:0">Turn on card payments in <a href="<%= edit_admin_payments_path %>">Payments</a> to send payment links.</div>
+        <% end %>
+      </div>
+    <% end %>
+
     <div class="box">
       <div class="box-label">Customer</div>
       <div class="kv-list">
@@ -73,7 +109,7 @@
           <div class="kv"><span class="k">Note</span><span class="v"><%= @order.note %></span></div>
         <% end %>
       </div>
-      <% if @order.payment_status == "none" %>
+      <% if @order.payment_status == "none" && !@order.payment_link_possible? %>
         <div class="subtle-note">No payment was taken online — contact the customer to arrange payment.</div>
       <% end %>
     </div>
@@ -97,7 +133,7 @@
         </div>
       <% end %>
       <div class="email-log-resend">
-        <% resendable = [ (@order.paid? ? "paid" : "received"), ("status_changed" if OrderMailer::STATUS_EMAILS.include?(@order.status)), "studio_new_order" ].compact %>
+        <% resendable = [ (@order.paid? ? "paid" : "received"), ("payment_link" if @order.payment_link_sent?), ("status_changed" if OrderMailer::STATUS_EMAILS.include?(@order.status)), "studio_new_order" ].compact %>
         <% resendable.each do |kind| %>
           <%= button_to "Resend: #{EmailLog::KINDS[kind]}", resend_email_admin_order_path(@order, kind: kind), method: :post, class: "btn ghost sm",
                 form: { data: { turbo_confirm: "Send the “#{EmailLog::KINDS[kind]}” email again?" } } %>
@@ -105,7 +141,7 @@
       </div>
     </div>
 
-    <% if @order.payment_status != "none" %>
+    <% if @order.payment_status.in?(%w[pending paid failed]) %>
       <div class="box">
         <div class="box-label">Payment · myPOS</div>
         <div class="kv-list">

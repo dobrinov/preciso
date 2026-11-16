@@ -1,4 +1,4 @@
-New order <%= @order.number %> — <%= @order.paid? ? "paid online by card" : "no online payment, contact the customer to arrange it" %>.
+New order <%= @order.number %> — <%= @order.paid? ? "paid online by card" : @order.awaiting_quote? ? "delivery to #{@order.country_name} needs a price: confirm it in admin to email the customer a payment link" : "no online payment, contact the customer to arrange it" %>.
 
 <%= @order.customer_name %>
 <%= @order.customer_email %> · <%= @order.customer_phone %>

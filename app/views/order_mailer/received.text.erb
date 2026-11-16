@@ -1,6 +1,12 @@
 Hi <%= @order.customer_name.to_s.split(" ").first %>,
 
+<% if @order.awaiting_quote? %>
+Thank you for your order <%= @order.number %>. Nothing has been charged yet: Bianna will check delivery to <%= @order.country_name %> and email you the delivery cost with a link to pay by card.
+<% else %>
 Thank you for your order <%= @order.number %>. Bianna will be in touch shortly to confirm your pieces<%= ", the delivery cost to #{@order.country_name}" if @order.delivery_to_quote? %> and how to pay<%= " — then it's sent #{@order.delivery_phrase}" if @order.delivery_priced? %>.
+<% end %>
+
+<%= order_timing(@order) %>
 
 <%= render "summary", order: @order %>
 

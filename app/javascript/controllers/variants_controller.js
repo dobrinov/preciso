@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 // variant via a server-provided map keyed by the variant's sorted value-ids.
 // Unknown combinations hide the price and disable ordering.
 export default class extends Controller {
-  static targets = ["attrSelect", "price", "variantId", "addLabel", "addButton", "unavailable", "mainImage", "thumbs"]
+  static targets = ["attrSelect", "price", "variantId", "addLabel", "addButton", "unavailable", "mainImage", "thumbs", "ready", "made"]
 
   connect() {
     this.map = JSON.parse(this.element.dataset.variantsMap || "{}")
@@ -39,7 +39,10 @@ export default class extends Controller {
     }
     if (this.hasUnavailableTarget) this.unavailableTarget.hidden = true
     if (this.hasVariantIdTarget) this.variantIdTarget.value = variant.variantId
-    if (this.hasAddLabelTarget) this.addLabelTarget.textContent = `Add — ${variant.pricePlain}`
+    // In stock → "Buy"; otherwise it's made to order → "Request".
+    if (this.hasAddLabelTarget) this.addLabelTarget.textContent = `${variant.ready ? "Buy" : "Request"} — ${variant.pricePlain}`
+    if (this.hasReadyTarget) this.readyTarget.hidden = !variant.ready
+    if (this.hasMadeTarget) this.madeTarget.hidden = variant.ready
     if (this.hasAddButtonTarget) this.addButtonTarget.disabled = false
 
     const images = variant.images || []
@@ -58,6 +61,8 @@ export default class extends Controller {
     if (this.hasUnavailableTarget) this.unavailableTarget.hidden = false
     if (this.hasVariantIdTarget) this.variantIdTarget.value = ""
     if (this.hasAddLabelTarget) this.addLabelTarget.textContent = "Unavailable"
+    if (this.hasReadyTarget) this.readyTarget.hidden = true
+    if (this.hasMadeTarget) this.madeTarget.hidden = true
     if (this.hasAddButtonTarget) this.addButtonTarget.disabled = true
   }
 }

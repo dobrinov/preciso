@@ -10,6 +10,7 @@ class ProductsController < ApplicationController
     @meta_image = @product.primary_image
     @meta_type = "product"
     @meta_price = @product.current_price
+    @meta_ready = @product.any_ready_to_ship?
     @meta_description = [ "€#{@product.current_price}", @product.short.presence || @product.long_desc ].compact.join(" — ").squish.truncate(200)
     track("product/#{@product.id}", @product.name, piece: true, name: @product.name)
   end

@@ -1,0 +1,9 @@
+<% content_for :preheader, "Bianna can send your order #{@order.number} — pay #{money @order.total} by card to go ahead." %>
+<%= render "hero", eyebrow: "Order confirmed", headline: "Ready when you are, #{first_name(@order)}",
+      body: safe_join([ "Bianna has checked delivery #{@order.country_name.present? ? "to #{@order.country_name}" : "for your order"} and can send your order ", order_number_tag(@order), ". The total with delivery is ", tag.strong(money(@order.total), style: "font-weight:500;"), " — pay securely by card with the button below and she'll get going. ", order_timing(@order) ]) %>
+<% if @order.quote_note.present? %>
+  <%= render "panel", columns: [ [ "A note from Bianna", simple_format_inline(@order.quote_note) ] ] %>
+<% end %>
+<%= render "button", label: "Pay #{money @order.total}", url: checkout_pay_url(@order.number) %>
+<%= render "items", order: @order, heading: true %>
+<%= render "panel", columns: [ ([(@order.office_delivery? ? "Deliver to office" : "Delivering to"), address_html(@order)] if @order.delivery_destination?), ["Contact", contact_html(@order)] ].compact %>

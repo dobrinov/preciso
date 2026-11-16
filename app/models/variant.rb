@@ -1,5 +1,6 @@
 class Variant < ApplicationRecord
   include ImageOrdering
+  include Stocked
 
   belongs_to :product
   has_many_attached :images

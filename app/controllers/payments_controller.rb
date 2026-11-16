@@ -9,7 +9,7 @@ class PaymentsController < ApplicationController
   # Auto-submitting form that sends the customer to the myPOS payment page.
   def pay
     @order = Order.find_by!(number: params[:number])
-    return redirect_to(checkout_confirmation_path(@order.number)) unless @order.awaiting_payment?
+    return redirect_to(checkout_confirmation_path(@order.number)) unless @order.payable_online? && Mypos.enabled?
     record_event("payment_start", label: @order.number, total: @order.total)
 
     @action = Mypos.endpoint
@@ -48,11 +48,20 @@ class PaymentsController < ApplicationController
         payment_reference: data["IPC_Trnref"],
         payment_details: [ data["PaymentMethod"], data["CardBrand"], data["PAN"] ].compact_blank.join(" · ").presence
       )
-      Notifier.order_paid(order) if newly_paid
+      if newly_paid
+        order.take_stock!
+        Notifier.order_paid(order)
+      end
       CartReminderSweep.converted!(order: order)
     when "IPCPurchaseRollback"
       # myPOS reversed a payment (e.g. our notify answer didn't reach it).
-      order.update!(payment_status: "failed", paid_at: nil)
+      if order.payment_link_sent_at
+        # Still a confirmed order — they can pay from the link again.
+        order.update!(payment_status: "requested", paid_at: nil)
+      else
+        order.update!(payment_status: "failed", paid_at: nil)
+        order.return_stock!
+      end
     else
       Rails.logger.info("myPOS notify: ignoring #{data['IPCmethod']} for #{order.number}")
     end
@@ -67,6 +76,10 @@ class PaymentsController < ApplicationController
     return redirect_to(mypos_ok_path(params[:number]), status: :see_other) if request.post?
 
     order = Order.find_by!(number: params[:number])
+    # Paid from an emailed payment link: the order was placed (and counted)
+    # long ago, and whatever is in their cart now is a new visit.
+    return redirect_to(checkout_confirmation_path(order.number)) if order.payment_link_sent_at
+
     current_cart.clear
     CartReminderSweep.converted!(sid: analytics_sid, order: order) if order.paid?
     session.delete(:reminder_token)
@@ -80,8 +93,12 @@ class PaymentsController < ApplicationController
     return redirect_to(mypos_cancel_path(params[:number]), status: :see_other) if request.post?
 
     order = Order.find_by!(number: params[:number])
-    order.update!(payment_status: "failed") if order.awaiting_payment?
     record_event("payment_cancel", label: order.number, total: order.total)
+    # A payment-link order stays confirmed: they can pay from the link again.
+    if order.payment_link_sent?
+      return redirect_to(checkout_confirmation_path(order.number), alert: "Payment was cancelled — nothing was charged. You can pay whenever you're ready.")
+    end
+    order.update!(payment_status: "failed") if order.awaiting_payment?
     redirect_to checkout_path, alert: "Payment was cancelled — nothing was charged. Your cart is still here."
   end
 end

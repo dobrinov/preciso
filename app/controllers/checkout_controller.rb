@@ -58,7 +58,7 @@ class CheckoutController < ApplicationController
       lines = cart.detailed.map do |l|
         total += l.subtotal
         { kind: l.kind, item_id: l.id, name: l.record.name, price: l.unit_price, qty: l.qty,
-          variant_id: l.variant&.id, variant_label: l.variant&.label }
+          variant_id: l.variant&.id, variant_label: l.variant&.label, from_stock: l.ready? }
       end
       order.total = total + option&.cost.to_i
       order.save!
@@ -79,6 +79,7 @@ class CheckoutController < ApplicationController
       redirect_to checkout_pay_path(order.number) and return
     end
 
+    order.take_stock!
     CartReminderSweep.converted!(sid: analytics_sid, order: order)
     session.delete(:reminder_token)
     record_order_event(order)

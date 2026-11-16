@@ -9,7 +9,7 @@ module Admin
     end
 
     def create
-      @variant = @product.variants.new(price: variant_price, name: variant_name)
+      @variant = @product.variants.new(price: variant_price, name: variant_name, stock: variant_stock)
       return render_duplicate(:new) if duplicate_variation?
       if @variant.save
         apply_values(@variant)
@@ -24,7 +24,7 @@ module Admin
 
     def update
       return render_duplicate(:edit) if duplicate_variation?(except: @variant)
-      if @variant.update(price: variant_price, name: variant_name)
+      if @variant.update(price: variant_price, name: variant_name, stock: variant_stock)
         apply_values(@variant)
         apply_variant_images(@variant)
         redirect_to edit_admin_product_path(@product)
@@ -50,6 +50,10 @@ module Admin
 
     def variant_price
       params.dig(:variant, :price).to_i
+    end
+
+    def variant_stock
+      params.dig(:variant, :stock).presence&.to_i
     end
 
     def variant_name

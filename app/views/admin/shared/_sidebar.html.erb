@@ -12,6 +12,7 @@
            when "about" then "about"
            when "home_page" then "home"
            when "vacation" then "vacation"
+           when "lead_times" then "lead_times"
            when "payment_settings" then "payments"
            when "delivery_options" then "delivery"
            when "notification_settings" then "emails"
@@ -29,6 +30,7 @@
     ["campaigns",   "Campaigns",   :tag,    admin_campaigns_path],
     ["about",       "About page",  :doc,    edit_admin_about_path],
     ["home",        "Home page",   :doc,    edit_admin_home_page_path],
+    ["lead_times",  "Lead times",  :truck,  edit_admin_lead_times_path],
     ["vacation",    "Vacation",    :doc,    edit_admin_vacation_path],
     ["payments",    "Payments",    :card,   edit_admin_payments_path],
     ["delivery",    "Delivery",    :truck,  admin_delivery_options_path],

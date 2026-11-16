@@ -9,6 +9,7 @@ class EmailLog < ApplicationRecord
   KINDS = {
     "received" => "Order received",
     "paid" => "Payment received",
+    "payment_link" => "Payment link",
     "status_changed" => "Status update",
     "studio_new_order" => "New order (to you)"
   }.freeze

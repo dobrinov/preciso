@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   include ImageOrdering
+  include Stocked
 
   belongs_to :category, optional: true
   has_many_attached :images
@@ -18,6 +19,13 @@ class Product < ApplicationRecord
   def kind = "product"
 
   def has_variants? = variants.exists?
+
+  # Whether `qty` of this piece (or of the chosen variation) is ready to ship.
+  # Pieces with variations keep stock per variation.
+  def ready_to_ship?(variant: nil, qty: 1) = (variant || self).in_stock?(qty)
+
+  # For cards: is any option of this piece ready to ship?
+  def any_ready_to_ship? = has_variants? ? variants.any? { |v| v.in_stock? } : in_stock?
 
   # Minimum current variant price, for "from €X" display.
   def price_from

@@ -68,6 +68,10 @@
           <%= f.number_field :price, min: 0, class: "input", placeholder: "0", data: { setbuilder_target: "price", action: "input->setbuilder#validate" } %>
           <div class="field-hint" data-setbuilder-target="hint">Often a little under the separate total.</div>
         </label>
+        <label class="field"><div class="field-label">Sets in stock</div>
+          <%= f.number_field :stock, min: 0, class: "input", placeholder: "Made to order" %>
+          <div class="field-hint">Complete sets ready on the shelf (separate from the pieces' own stock). Only you see this number. Above 0 = "Ready to ship" with a Buy button; blank or 0 = "Made to order" with a Request button. It goes down by itself as orders come in.</div>
+        </label>
       </div>
 
       <div class="box" data-controller="imageupload">

@@ -10,6 +10,8 @@
       <div class="eyebrow clay">Set · <%= piece_count %> pieces</div>
       <h1 class="display detail-title"><%= @set.name %></h1>
       <div class="detail-price"><%= price_tag(@set) %></div>
+      <% ready = @set.ready_to_ship? %>
+      <%= availability_tag(ready) %>
       <p class="detail-long"><%= @set.long_desc %></p>
 
       <div class="set-contents">
@@ -33,11 +35,10 @@
       <div class="detail-actions">
         <%= button_to cart_add_path, params: { kind: "set", id: @set.id, name: @set.name },
               form: { data: { turbo_stream: true } }, class: "btn clay", style: "width:100%;padding:17px 30px" do %>
-          <%= icon :cart %> Add to cart — <%= money @set.current_price %>
+          <%= icon :cart %> <%= order_verb(ready) %> — <%= money @set.current_price %>
         <% end %>
       </div>
       <div class="detail-notes">
-        <span>· Made to order in small batches</span>
         <span>· <%= delivery_note %></span>
       </div>
     </div>

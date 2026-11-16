@@ -2,6 +2,8 @@ Hi <%= @order.customer_name.to_s.split(" ").first %>,
 
 We've received your payment of <%= money @order.total %> for order <%= @order.number %> — thank you! We'll email you as soon as your pieces are on their way <%= @order.delivery_phrase %>.
 
+<%= order_timing(@order) %>
+
 <%= render "summary", order: @order %>
 
 Your order: <%= checkout_confirmation_url(@order.number) %>

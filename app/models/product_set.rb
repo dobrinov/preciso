@@ -1,4 +1,6 @@
 class ProductSet < ApplicationRecord
+  include Stocked
+
   has_one_attached :image
   has_many :set_items, -> { order(:position) }, dependent: :destroy
   has_many :products, through: :set_items
@@ -8,6 +10,10 @@ class ProductSet < ApplicationRecord
 
   def tone = Category::TONES["set"]
   def kind = "set"
+
+  # A set keeps its own stock count (assembled sets on the shelf).
+  def ready_to_ship?(variant: nil, qty: 1) = in_stock?(qty)
+  def any_ready_to_ship? = in_stock?
 
   # Flatten set_items into a grouped list of { product:, qty: } preserving order.
   def grouped_items

@@ -1,9 +1,10 @@
 <main class="wrap fade-up confirm">
   <div class="confirm-inner">
+    <% if flash[:alert] %><div class="checkout-note checkout-alert" style="margin-bottom:24px"><%= flash[:alert] %></div><% end %>
     <div class="confirm-check">
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 13l4 4L19 7"/></svg>
     </div>
-    <div class="eyebrow clay" style="margin-top:24px"><%= @order.paid? ? "Payment received" : "Order received" %></div>
+    <div class="eyebrow clay" style="margin-top:24px"><%= @order.paid? ? "Payment received" : (@order.payment_link_sent? ? "Order confirmed — ready to pay" : "Order received") %></div>
     <h1 class="display confirm-title">Thank you, <%= @order.customer_name.to_s.split(" ").first %></h1>
     <p class="confirm-lead">
       <% case @order.payment_status %>
@@ -17,11 +18,25 @@
       <% when "failed" %>
         The payment for order <span class="mono clay-text"><%= @order.number %></span> didn't go through, and nothing was charged.
         <a href="<%= checkout_path %>" class="clay-text">Try again</a>, or write to the studio.
+      <% when "requested" %>
+        Bianna has confirmed she can send order <span class="mono clay-text"><%= @order.number %></span><%= " to #{@order.country_name}" if @order.country_name.present? %>.
+        The total with delivery is <strong><%= money @order.total %></strong>.
+        <% if Mypos.enabled? %>
+          <span style="display:block;margin-top:22px"><a href="<%= checkout_pay_path(@order.number) %>" class="btn clay">Pay <%= money @order.total %> by card <%= icon :arrow, size: 16 %></a></span>
+        <% end %>
       <% else %>
+        <% if @order.awaiting_quote? %>
+        Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio, and nothing has been charged. Bianna will check delivery to <%= @order.country_name %> and email you at
+        <strong><%= @order.customer_email %></strong> with the delivery cost and a link to pay by card.
+        <% else %>
         Your order <span class="mono clay-text"><%= @order.number %></span> is with the studio. Bianna will email you at
         <strong><%= @order.customer_email %></strong> to confirm the pieces<%= ", the delivery cost to #{@order.country_name}" if @order.delivery_to_quote? %> and how to pay<%= " — then it's sent #{@order.delivery_phrase}" if @order.delivery_priced? %>.
+        <% end %>
       <% end %>
     </p>
+    <% unless @order.payment_status == "failed" %>
+      <p class="confirm-lead confirm-timing"><%= order_timing(@order) %></p>
+    <% end %>
   </div>
 
   <div class="confirm-summary">
@@ -30,7 +45,7 @@
     </div>
     <% @order.order_lines.each do |l| %>
       <div class="confirm-line">
-        <span><%= l.display_name %> <span style="color:var(--muted)">× <%= l.qty %></span></span>
+        <span><%= l.display_name %> <span style="color:var(--muted)">× <%= l.qty %></span> <%= line_ready_tag(l.from_stock) %></span>
         <span class="serif" style="font-size:16px"><%= money l.subtotal %></span>
       </div>
     <% end %>

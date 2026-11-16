@@ -13,6 +13,7 @@ class SetsController < ApplicationController
     @meta_image = @set.image
     @meta_type = "product"
     @meta_price = @set.current_price
+    @meta_ready = @set.any_ready_to_ship?
     @meta_description = [ "€#{@set.current_price}", @set.short.presence || @set.long_desc ].compact.join(" — ").squish.truncate(200)
     track("set/#{@set.id}", @set.name, piece: true, name: "#{@set.name} (set)")
   end

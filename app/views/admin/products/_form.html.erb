@@ -35,6 +35,18 @@
           </label>
         <% end %>
       </div>
+      <% if @product.has_variants? %>
+        <div class="field">
+          <div class="field-label">In stock</div>
+          <div class="input" style="display:flex;align-items:center;color:var(--muted)">Set per variation</div>
+        </div>
+      <% else %>
+        <label class="field">
+          <div class="field-label">In stock</div>
+          <%= f.number_field :stock, min: 0, class: "input", placeholder: "Made to order" %>
+          <div class="field-hint">Only you see this number. Above 0 = "Ready to ship" with a Buy button; blank or 0 = "Made to order" with a Request button. It goes down by itself as orders come in.</div>
+        </label>
+      <% end %>
       <label class="field">
         <div class="field-label">Short description</div>
         <%= f.text_field :short, class: "input", placeholder: "One quiet line about the piece." %>
@@ -84,7 +96,7 @@
                   <div class="admin-row-thumb" style="width:42px;height:42px">
                     <% if v.primary_image %><%= image_tag v.primary_image, class: "cover-img" %><% else %><%= placeholder(tone: @product.tone) %><% end %>
                   </div>
-                  <div class="admin-row-main"><div class="admin-row-name"><%= v.label.presence || "Variation ##{v.id}" %></div><div class="admin-row-sub"><%= money v.price %></div></div>
+                  <div class="admin-row-main"><div class="admin-row-name"><%= v.label.presence || "Variation ##{v.id}" %></div><div class="admin-row-sub"><%= money v.price %> · <%= stock_label(v) %></div></div>
                   <span class="admin-row-go"><%= icon :edit, size: 16 %></span>
                 </a>
               <% end %>

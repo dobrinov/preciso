@@ -29,6 +29,7 @@
           </div>
           <% if l.variant %><div class="cart-line-tag"><%= l.variant.label %></div><% end %>
           <% if l.kind == "set" %><div class="cart-line-tag">Set</div><% end %>
+          <div><%= line_ready_tag(l.ready?) %></div>
           <div class="cart-line-bottom">
             <div class="qty small">
               <%= button_to cart_update_path, method: :patch, params: { kind: l.kind, id: l.id, qty: l.qty - 1, variant_id: l.variant&.id },
@@ -48,6 +49,9 @@
       <span class="cart-total-label">Total</span>
       <span class="cart-total"><%= money cart.total %></span>
     </div>
+    <% if lines.any? { |l| !l.ready? } %>
+      <div class="cart-foot-note made-note"><strong>Made to order:</strong> <%= lead_time.made %>.<%= " Your order is sent together once everything is ready." if lines.any?(&:ready?) %></div>
+    <% end %>
     <div class="cart-foot-note"><%= delivery_note %>.</div>
     <a href="<%= checkout_path %>" class="btn clay block" data-action="storefront#closeCart">Checkout <%= icon :arrow, size: 16 %></a>
   </div>

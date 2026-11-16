@@ -74,6 +74,7 @@ Rails.application.routes.draw do
 
     resources :orders, only: [ :index, :show, :update, :destroy ], param: :number do
       post :resend_email, on: :member
+      post :send_payment_link, on: :member
     end
     resources :categories
     resources :products do
@@ -86,6 +87,7 @@ Rails.application.routes.draw do
     resource :about, only: [ :edit, :update ], controller: "about"
     resource :home_page, only: [ :edit, :update ], controller: "home_page"
     resource :vacation, only: [ :edit, :update ], controller: "vacation"
+    resource :lead_times, only: [ :edit, :update ], controller: "lead_times"
     resource :payments, only: [ :edit, :update ], controller: "payment_settings"
     resources :delivery_options, path: "delivery", only: [ :index, :create, :update, :destroy ]
     resource :emails, only: [ :edit, :update ], controller: "notification_settings" do

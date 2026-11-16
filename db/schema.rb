@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_110000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -215,6 +215,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "lead_times", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "made_note"
+    t.string "ready_note"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notification_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "studio_email"
@@ -223,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
 
   create_table "order_lines", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "from_stock", default: false, null: false
     t.string "item_id"
     t.string "kind", default: "product", null: false
     t.string "name"
@@ -252,10 +260,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
     t.string "number", null: false
     t.datetime "paid_at"
     t.string "payment_details"
+    t.datetime "payment_link_sent_at"
     t.string "payment_reference"
     t.string "payment_status", default: "none", null: false
     t.string "postal_code"
+    t.text "quote_note"
     t.string "status", default: "new", null: false
+    t.datetime "stock_taken_at"
     t.integer "total", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["number"], name: "index_orders_on_number", unique: true
@@ -274,6 +285,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
     t.string "name", null: false
     t.integer "price", default: 0, null: false
     t.string "short"
+    t.integer "stock"
     t.datetime "updated_at", null: false
   end
 
@@ -285,6 +297,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
     t.string "name", null: false
     t.integer "price", default: 0, null: false
     t.string "short"
+    t.integer "stock"
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_products_on_category_id"
   end
@@ -340,6 +353,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
     t.integer "position", default: 0
     t.integer "price", default: 0, null: false
     t.integer "product_id", null: false
+    t.integer "stock"
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_variants_on_product_id"
   end

@@ -1,0 +1,17 @@
+Hi <%= @order.customer_name.to_s.split(" ").first %>,
+
+Bianna has checked delivery <%= @order.country_name.present? ? "to #{@order.country_name}" : "for your order" %> and can send your order <%= @order.number %>. The total with delivery is <%= money @order.total %>.
+
+Pay securely by card here:
+<%= checkout_pay_url(@order.number) %>
+
+<% if @order.quote_note.present? %>
+A note from Bianna:
+<%= @order.quote_note %>
+
+<% end %>
+<%= order_timing(@order) %>
+
+<%= render "summary", order: @order %>
+
+— Preciso

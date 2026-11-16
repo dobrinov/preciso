@@ -14,6 +14,12 @@ class OrderMailer < ApplicationMailer
     customer_mail "Payment received — order #{order.number}"
   end
 
+  # Customer: the studio confirmed delivery — here's the link to pay.
+  def payment_link(order)
+    @order = order
+    customer_mail "Your order #{order.number} is confirmed — ready to pay"
+  end
+
   # Customer: status changed by the studio.
   def status_changed(order)
     @order = order

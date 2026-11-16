@@ -83,7 +83,13 @@
                 <div class="field-label">Your country</div>
                 <input class="input" type="text" name="country_other" placeholder="Where should we deliver?"
                        data-checkout-target="countryOther" data-action="input->checkout#validate">
-                <div class="field-hint">We don't have a set delivery price for your country yet — place your order and Bianna will email you the delivery cost and how to pay.</div>
+                <div class="field-hint">
+                  <% if Mypos.enabled? %>
+                    We don't have a set delivery price for your country yet. Place your order — nothing is charged now. Bianna will check delivery to you and, once she's confirmed she can send it, email you the delivery cost with a link to pay by card.
+                  <% else %>
+                    We don't have a set delivery price for your country yet — place your order and Bianna will email you the delivery cost and how to pay.
+                  <% end %>
+                </div>
               </label>
 
               <div class="form-stack" data-checkout-target="addressFields" data-kind="address" hidden>
@@ -144,6 +150,7 @@
                 </div>
                 <div style="flex:1;min-width:0">
                   <div class="summary-name"><%= l.record.name %><% if l.variant %> <span style="color:var(--muted)">· <%= l.variant.label %></span><% end %></div>
+                  <div><%= line_ready_tag(l.ready?) %></div>
                   <div style="font-size:12px;color:var(--muted)"><% if l.reminder_discounted? %><s><%= money l.regular_price %></s> <% end %><%= money l.unit_price %><%= " × #{l.qty}" if l.qty > 1 %></div>
                 </div>
                 <div class="serif" style="font-size:16px"><%= money l.subtotal %></div>
@@ -153,6 +160,11 @@
           <% if @delivery.any? %>
             <div class="summary-sub-row" style="margin-top:18px"><span>Items</span><span><%= money @total %></span></div>
             <div class="summary-sub-row"><span>Delivery</span><span data-checkout-target="delivery">Choose country</span></div>
+          <% end %>
+          <% if @lines.any? { |l| !l.ready? } %>
+            <div class="made-note summary-made-note">
+              <strong>Made to order:</strong> <%= lead_time.made %>.<%= " Your order is sent together once everything is ready." if @lines.any?(&:ready?) %>
+            </div>
           <% end %>
           <div class="summary-total-row">
             <span class="cart-total-label">Total</span>

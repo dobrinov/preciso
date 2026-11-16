@@ -33,6 +33,51 @@ module ApplicationHelper
     @_home_page ||= HomePage.instance
   end
 
+  # Ready-to-ship vs made-to-order wording (memoized per request).
+  def lead_time
+    @_lead_time ||= LeadTime.instance
+  end
+
+  # "Buy" when the studio has it ready to ship, "Request" when it's made to order.
+  def order_verb(ready) = ready ? "Buy" : "Request"
+
+  # Availability line for product/set pages: a label plus the lead time.
+  # The studio's actual stock count is never shown.
+  def availability_tag(ready, **opts)
+    content_tag(:div, class: "availability #{ready ? "is-ready" : "is-made"}", **opts) do
+      safe_join([
+        content_tag(:span, "", class: "availability-dot"),
+        content_tag(:span, ready ? "Ready to ship" : "Made to order", class: "availability-label"),
+        content_tag(:span, ready ? lead_time.ready : lead_time.made, class: "availability-note")
+      ])
+    end
+  end
+
+  # One sentence on when an order will be sent, for the confirmation page and
+  # customer emails.
+  def order_timing(order)
+    lc = ->(s) { s.sub(/\A\p{Lu}/) { |c| c.downcase } }
+    if order.all_from_stock?
+      "Everything in your order is ready to ship — #{lc[lead_time.ready]}."
+    elsif order.order_lines.none?(&:from_stock)
+      "Your pieces are made to order — #{lc[lead_time.made]}."
+    else
+      "Some of your pieces are made to order — #{lc[lead_time.made]}. We'll send everything together once it's ready."
+    end
+  end
+
+  # Admin-only stock summary: "3 in stock" / "Made to order". A piece with
+  # variations adds up its variations' stock.
+  def stock_label(record)
+    count = record.is_a?(Product) && record.has_variants? ? record.variants.sum { |v| v.stock.to_i } : record.stock.to_i
+    count.positive? ? "#{count} in stock" : "Made to order"
+  end
+
+  # Short per-line tag for cart, checkout and the order confirmation.
+  def line_ready_tag(ready)
+    content_tag(:span, ready ? "Ready to ship" : "Made to order", class: "line-ready #{ready ? "is-ready" : "is-made"}")
+  end
+
   # The vacation/slower-processing singleton (memoized per request).
   def vacation
     @_vacation ||= Vacation.instance
@@ -123,7 +168,7 @@ module ApplicationHelper
           "@type" => "Offer",
           "price" => @meta_price.to_s,
           "priceCurrency" => "EUR",
-          "availability" => "https://schema.org/InStock",
+          "availability" => "https://schema.org/#{@meta_ready ? "InStock" : "MadeToOrder"}",
           "url" => canonical_url
         }
       }

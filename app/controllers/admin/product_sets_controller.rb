@@ -46,7 +46,7 @@ module Admin
     end
 
     def set_params
-      params.require(:set).permit(:name, :price, :short, :long_desc)
+      params.require(:set).permit(:name, :price, :stock, :short, :long_desc)
     end
 
     # item_ids is an array of product ids (repeated for quantity); collapse to set_items.

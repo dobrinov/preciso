@@ -17,6 +17,9 @@ class Cart
     end
 
     def reminder_discounted? = unit_price < regular_price
+    # The whole line is ready to ship only if the studio holds all `qty`;
+    # otherwise it's made to order.
+    def ready? = record.ready_to_ship?(variant: variant, qty: qty)
     def subtotal = unit_price * qty
   end
 
@@ -88,6 +91,7 @@ class Cart
   def count = raw.sum { |l| l["qty"].to_i }
   def total = detailed.sum(&:subtotal)
   def empty? = raw.empty?
+  def any_made_to_order? = detailed.any? { |l| !l.ready? }
 
   private
 

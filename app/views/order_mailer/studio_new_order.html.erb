@@ -18,7 +18,7 @@
         </tr>
         <tr>
           <td colspan="2" style="padding-top:12px;font-family:<%= EmailHelper::SANS %>;font-weight:300;font-size:14.5px;line-height:1.6;color:<%= EmailHelper::INK_SOFT %>;">
-            <%= paid ? "Paid by card through myPOS. Ready to prepare and ship." : "No online payment. Contact #{first} to confirm#{" the delivery cost and" if @order.country_name.present? && !@order.delivery_priced?} how to pay." %>
+            <%= paid ? "Paid by card through myPOS. Ready to prepare and ship." : @order.awaiting_quote? ? "Delivery to #{@order.country_name} needs a price. Check you can send it, then open the order in admin to confirm the delivery cost and email #{first} a payment link." : "No online payment. Contact #{first} to confirm#{" the delivery cost and" if @order.country_name.present? && !@order.delivery_priced?} how to pay." %>
           </td>
         </tr>
       </table>
