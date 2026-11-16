@@ -17,6 +17,7 @@
            when "delivery_options" then "delivery"
            when "notification_settings" then "emails"
            when "cart_reminders" then "reminders"
+           when "subscribers" then "subscribers"
            end
   nav = [
     ["dashboard",  "Dashboard",  :grid,   admin_dashboard_path],
@@ -36,6 +37,7 @@
     ["delivery",    "Delivery",    :truck,  admin_delivery_options_path],
     ["emails",      "Emails",      :mail,   edit_admin_emails_path],
     ["reminders",   "Cart reminders", :mail, admin_cart_reminders_path],
+    ["subscribers", "Subscribers", :mail, admin_subscribers_path],
   ]
 %>
 <aside class="admin-aside">

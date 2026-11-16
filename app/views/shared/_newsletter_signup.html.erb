@@ -1,0 +1,22 @@
+<% state = local_assigns[:state] %>
+<div id="newsletter_signup" class="news-signup">
+  <div class="news-copy">
+    <div class="eyebrow">Keep in touch</div>
+    <p class="news-title">New pieces, studio events &amp; the occasional offer</p>
+  </div>
+  <% if state == :done %>
+    <p class="news-done fade-up"><%= icon :check, size: 16 %> Thank you — you're on the list. We write only when there's something worth sharing.</p>
+  <% else %>
+    <%= form_with url: subscribe_path, class: "news-form", data: { turbo_stream: true } do %>
+      <label class="news-field">
+        <span class="visually-hidden">Your email</span>
+        <input class="input" type="email" name="email" required autocomplete="email" placeholder="Your email" value="<%= local_assigns[:email] %>">
+      </label>
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="news-hp" aria-hidden="true">
+      <button type="submit" class="btn sm">Subscribe</button>
+      <p class="news-note">
+        <% if state == :error %><span class="news-error"><%= message %></span><% else %>No spam — unsubscribe with one click in any email.<% end %>
+      </p>
+    <% end %>
+  <% end %>
+</div>

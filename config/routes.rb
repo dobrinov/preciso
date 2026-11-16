@@ -34,6 +34,10 @@ Rails.application.routes.draw do
   get  "cart/back/:token", to: "cart_reminders#back", as: :cart_reminder_return
   match "cart/stop/:token", to: "cart_reminders#unsubscribe", as: :cart_reminder_unsubscribe, via: [ :get, :post ]
 
+  # ---- newsletter ("keep me posted") ----
+  post  "subscribe", to: "subscriptions#create", as: :subscribe
+  match "news/stop/:token", to: "subscriptions#unsubscribe", as: :subscription_unsubscribe, via: [ :get, :post ]
+
   # ---- checkout ----
   get  "checkout", to: "checkout#new",    as: :checkout
   post "checkout", to: "checkout#create"
@@ -71,6 +75,12 @@ Rails.application.routes.draw do
     post "cart-reminders/send-due", to: "cart_reminders#send_due", as: :send_due_cart_reminders
     post "cart-reminders/preview", to: "cart_reminders#preview", as: :preview_cart_reminder
     delete "analytics", to: "analytics#reset", as: :reset_analytics
+
+    resources :subscribers, only: [ :index, :create, :destroy ] do
+      post :unsubscribe, on: :member
+      post :announce, on: :collection
+      post :preview, on: :collection
+    end
 
     resources :orders, only: [ :index, :show, :update, :destroy ], param: :number do
       post :resend_email, on: :member

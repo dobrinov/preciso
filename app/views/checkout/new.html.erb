@@ -50,6 +50,10 @@
                 <span>Email me a reminder<%= " with a small thank-you offer" if CartReminderSetting.instance.discount_percent.positive? %> if I don't finish my order. Just one email — you can stop it anytime.</span>
               </label>
             <% end %>
+            <label class="field reminder-optin">
+              <input type="checkbox" name="news_consent" value="1">
+              <span>Keep me posted about new pieces, studio events and occasional offers. Unsubscribe anytime.</span>
+            </label>
             <% if @delivery.any? %>
               <label class="field">
                 <div class="field-label">Delivery country</div>

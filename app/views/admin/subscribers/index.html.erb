@@ -1,0 +1,112 @@
+<% content_for :title, "Preciso — Subscribers" %>
+<div class="pagehead">
+  <div>
+    <h1 class="display pagehead-title">Subscribers</h1>
+    <p class="pagehead-sub">People who asked to hear about new pieces, studio events and offers — from the footer form or the checkout tick-box.</p>
+  </div>
+  <div class="pagehead-actions">
+    <a href="<%= admin_subscribers_path(format: :csv, show: @filter) %>" class="btn ghost sm" data-turbo="false">Export CSV</a>
+  </div>
+</div>
+
+<div class="admin-pad rm-grid">
+  <%= form_with model: @newsletter, url: announce_admin_subscribers_path, method: :post, class: "card-pad rm-settings" do |f| %>
+    <% if flash[:notice] %>
+      <div class="flash-saved fade-up"><%= icon :check, size: 16 %> <%= flash[:notice] %></div>
+    <% elsif flash[:alert] %>
+      <div class="flash-saved fade-up" style="color:#a14a3a"><%= flash[:alert] %></div>
+    <% end %>
+    <div>
+      <div class="field-label" style="margin:0">Send an announcement</div>
+      <div class="field-hint">
+        One email to every active subscriber (<%= @counts["active"] %>), each with its own unsubscribe link. Replies come to your studio address.
+        <% unless Notifier.configured? %><br><strong>Email sending isn't set up on the server yet — nothing will go out.</strong><% end %>
+      </div>
+    </div>
+    <label class="field"><div class="field-label">Subject</div>
+      <%= f.text_field :subject, class: "input", required: true, maxlength: 200, placeholder: "New autumn pieces are in the shop" %>
+    </label>
+    <label class="field"><div class="field-label">Message</div>
+      <%= f.text_area :body, rows: 6, class: "input", required: true, placeholder: "A few words about the new pieces, the offer, or the event — date, time and place." %>
+      <div class="field-hint">Shown under “Hi &lt;name&gt;,”. Line breaks are kept.</div>
+    </label>
+    <div class="rm-row2">
+      <label class="field"><div class="field-label">Button text <span style="text-transform:none;letter-spacing:0">(optional)</span></div>
+        <%= f.text_field :button_label, class: "input", placeholder: "See the new pieces" %>
+      </label>
+      <label class="field"><div class="field-label">Button link</div>
+        <%= f.url_field :button_url, class: "input", placeholder: "https://www.precisodesign.com/…" %>
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <%= f.button formaction: preview_admin_subscribers_path, class: "btn ghost" do %>Send a preview to me<% end %>
+      <%= f.button class: "btn clay", data: { turbo_confirm: "Send this to #{pluralize(@counts["active"], "subscriber")}? It can't be undone." } do %><%= icon :mail, size: 16 %> Send to all<% end %>
+    </div>
+  <% end %>
+
+  <div class="rm-side">
+    <div class="an-mini-stats">
+      <% [["Subscribed", @counts["active"]], ["New · 30 days", @new_this_month], ["Unsubscribed", @counts["unsubscribed"]], ["Sent emails", @newsletters.size]].each do |l, v| %>
+        <div><div class="stat-label"><%= l %></div><div class="v"><%= v %></div></div>
+      <% end %>
+    </div>
+    <%= form_with url: admin_subscribers_path, method: :post, class: "card-pad", style: "gap:12px", data: { turbo: false } do %>
+      <div class="field-label" style="margin:0">Add someone</div>
+      <input class="input" type="email" name="email" required placeholder="Email">
+      <input class="input" type="text" name="name" placeholder="Name (optional)">
+      <div class="field-hint" style="margin:0">Only add people who asked you to — e.g. at a studio visit or a fair.</div>
+      <button type="submit" class="btn ghost sm">Add subscriber</button>
+    <% end %>
+  </div>
+</div>
+
+<% if @newsletters.any? %>
+  <div class="admin-pad" style="padding-top:0">
+    <section class="panel">
+      <div class="an-table-wrap">
+        <div class="nl-list">
+          <div class="nl-row rm-head"><span>Announcement</span><span>Status</span><span>Delivered</span><span>When</span></div>
+          <% @newsletters.each do |n| %>
+            <div class="nl-row">
+              <span><%= n.subject %><span class="sub"><%= n.body.truncate(90) %></span></span>
+              <span><span class="rm-status rm-status--<%= n.status == "sending" ? "pending" : n.status %>"><%= n.status_label %></span></span>
+              <span><%= n.sent_count %> of <%= n.recipients_count %><% if n.failed_count.positive? %><span class="sub"><%= n.failed_count %> failed</span><% end %></span>
+              <span class="sub" style="font-size:12px"><%= time_ago n.created_at %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </div>
+<% end %>
+
+<div class="filter-bar">
+  <a href="<%= admin_subscribers_path %>" class="filter-btn <%= 'active' if @filter == "active" %>">Subscribed <span class="ct"><%= @counts["active"] %></span></a>
+  <a href="<%= admin_subscribers_path(show: "unsubscribed") %>" class="filter-btn <%= 'active' if @filter == "unsubscribed" %>">Unsubscribed <span class="ct"><%= @counts["unsubscribed"] %></span></a>
+</div>
+
+<div class="admin-pad">
+  <section class="panel">
+    <div class="an-table-wrap">
+      <div class="sb-list">
+        <div class="sb-row rm-head"><span>Subscriber</span><span>From</span><span><%= @filter == "active" ? "Joined" : "Left" %></span><span>Visitor</span><span></span></div>
+        <% if @subscribers.empty? %><div class="empty-state"><%= @filter == "active" ? "No subscribers yet. They appear here once someone signs up in the footer or at checkout." : "Nobody has unsubscribed." %></div><% end %>
+        <% @subscribers.each do |s| %>
+          <div class="sb-row">
+            <span><%= s.email %><% if s.name.present? %><span class="sub"><%= s.name %></span><% end %></span>
+            <span class="sub" style="font-size:12px"><%= s.source_label %></span>
+            <span class="sub" style="font-size:12px"><%= time_ago(s.unsubscribed_at || s.created_at) %></span>
+            <span><% if s.sid %><a href="<%= admin_analytics_visitor_path(s.sid, range: "all") %>" class="an-link">Journey →</a><% end %></span>
+            <span class="sb-actions">
+              <% if s.active? %>
+                <%= button_to "Unsubscribe", unsubscribe_admin_subscriber_path(s), method: :post, class: "sb-link" %>
+              <% else %>
+                <%= button_to "Delete", admin_subscriber_path(s), method: :delete, class: "sb-link", form: { data: { turbo_confirm: "Delete #{s.email} for good?" } } %>
+              <% end %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>

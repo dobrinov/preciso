@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
   create_table "abouts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -222,6 +222,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_110000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "newsletters", force: :cascade do |t|
+    t.text "body", null: false
+    t.string "button_label"
+    t.string "button_url"
+    t.datetime "created_at", null: false
+    t.integer "failed_count", default: 0, null: false
+    t.datetime "finished_at"
+    t.integer "recipients_count", default: 0, null: false
+    t.integer "sent_count", default: 0, null: false
+    t.string "status", default: "sending", null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notification_settings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "studio_email"
@@ -311,6 +325,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_110000) do
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_set_items_on_product_id"
     t.index ["product_set_id"], name: "index_set_items_on_product_set_id"
+  end
+
+  create_table "subscribers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name"
+    t.string "sid"
+    t.string "source", default: "footer", null: false
+    t.string "token", null: false
+    t.datetime "unsubscribed_at"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_subscribers_on_email", unique: true
+    t.index ["token"], name: "index_subscribers_on_token", unique: true
   end
 
   create_table "vacations", force: :cascade do |t|

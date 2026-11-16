@@ -64,6 +64,7 @@ class CheckoutController < ApplicationController
       order.save!
       lines.each { |attrs| order.order_lines.create!(attrs) }
     end
+    subscribe_to_news(order)
     record_event("checkout_submit", label: order.number, total: order.total,
                  name: [ order.delivery_option_name, (online ? "card" : "pay later") ].compact.join(" · "))
 
@@ -94,6 +95,15 @@ class CheckoutController < ApplicationController
   end
 
   private
+
+  # The checkout "keep me posted" tick-box. Never blocks the order.
+  def subscribe_to_news(order)
+    return unless params[:news_consent] == "1"
+    Subscriber.subscribe(order.customer_email, name: order.customer_name, source: "checkout", sid: analytics_sid) &&
+      record_event("subscribe", label: "checkout")
+  rescue => e
+    Rails.logger.warn("newsletter sign-up at checkout failed: #{e.message}")
+  end
 
   # A card order that may never be paid: keep (or start) this shopper's cart
   # reminder, tied to the order, if they opted in. A reminder offer they used

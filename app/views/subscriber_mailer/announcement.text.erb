@@ -1,0 +1,12 @@
+<% first = @subscriber.name.to_s.split(" ").first %>
+<%= first.present? ? "Hi #{first}," : "Hello," %>
+
+<%= @newsletter.body %>
+<% if @newsletter.button_url.present? %>
+
+<%= @newsletter.button_label %>: <%= @newsletter.button_url %>
+<% end %>
+
+— Preciso
+
+You're getting this because you asked to hear about new pieces, offers and events from Preciso. Unsubscribe: <%= @unsubscribe_url %>

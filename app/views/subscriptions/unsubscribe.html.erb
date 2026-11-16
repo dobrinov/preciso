@@ -1,0 +1,12 @@
+<% content_for :title, "Unsubscribe · Preciso" %>
+<main class="wrap" style="padding:120px 0;text-align:center;max-width:560px">
+  <% if @done %>
+    <h1 class="display" style="font-size:40px">You're unsubscribed</h1>
+    <p style="color:var(--muted);margin-top:12px">We won't send news or offers to <%= @email %> any more. Order emails still arrive as usual.</p>
+    <a href="<%= root_path %>" class="btn clay" style="margin-top:26px">Back to the shop</a>
+  <% else %>
+    <h1 class="display" style="font-size:40px">Unsubscribe from studio news?</h1>
+    <p style="color:var(--muted);margin-top:12px">We'll stop sending new-piece announcements, offers and event news to <%= @email %>.</p>
+    <%= button_to "Unsubscribe", subscription_unsubscribe_path(params[:token]), method: :post, class: "btn clay", form: { style: "margin-top:26px", data: { turbo: false } } %>
+  <% end %>
+</main>
